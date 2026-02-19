@@ -1,32 +1,91 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import AdminPage from './pages/adminPage'
-import HomePage from './pages/homePage'
-import LoginPage from './pages/loginPage'
-import { Toaster } from 'react-hot-toast'
-import ProviderPage from './pages/providerPage'
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Navbar from "./components/common/Navbar";
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import OTPPage from "./pages/OTPPage";
+import DashboardPage from "./pages/DashboardPage";
+import AdminPage from "./pages/adminPage";
+import ProviderPage from "./pages/providerPage";
+import "./App.css";
 
-function App() {
+const AppLayout = ({ children }) => {
+  const location = useLocation();
+  const hideNavbarPaths = ["/login", "/register", "/verify-otp"];
+  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
-    <BrowserRouter>
-
-      <div className="w-full ">
-
-        <Toaster position="top-right" />
-
-        <Routes path="/">
-
-          <Route path="/*" element={<HomePage />} />
-          <Route path="/register" element={<h1 className="text-3xl font-bold">Register</h1>} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/*" element={<AdminPage />} />
-          <Route path="/provider/*" element={<ProviderPage />} />
-          
-        </Routes>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {shouldShowNavbar && <Navbar />}
+      <div className={shouldShowNavbar ? "container mx-auto px-4 py-8" : ""}>
+        {children}
       </div>
+    </div>
+  );
+};
 
-    </BrowserRouter>
-  )
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-otp" element={<OTPPage />} />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/provider/dashboard"
+              element={
+                <ProtectedRoute role="provider">
+                  <ProviderPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/customer/dashboard"
+              element={
+                <ProtectedRoute role="customer">
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </AppLayout>
+      </AuthProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App;
