@@ -4,6 +4,7 @@ import HomePage from './pages/homePage'
 import LoginPage from './pages/loginPage'
 import { Toaster } from 'react-hot-toast'
 import ProviderPage from './pages/providerPage'
+import MyProducts from "./pages/MyProducts";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/provider/*" element={<ProviderPage />} />
+          <Route path="/my-products" element={<MyProducts />} />
           
         </Routes>
       </div>
