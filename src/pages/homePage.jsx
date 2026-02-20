@@ -7,7 +7,7 @@ export default function HomePage() {
 
             <Header/>
 
-            <Routes path="/">
+            <Routes path>
                 <Route path="/" element={<h1 className="text-3xl font-bold text-primary">Welcome to the Home Page</h1>} />
                 <Route path="/products" element={<h1 className="text-3xl font-bold text-primary">Products Page</h1>} />
                 <Route path="/about" element={<h1 className="text-3xl font-bold text-primary">About Page</h1>} />
