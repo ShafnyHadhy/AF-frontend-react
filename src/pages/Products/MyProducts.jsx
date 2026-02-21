@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import DeleteProduct from "./DeleteProduct";
+
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
@@ -41,25 +43,6 @@ const MyProducts = () => {
     fetchProducts();
   }, [token]);
 
-  const handleProductDelete = async (productID) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-
-    try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/api/products/${productID}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      toast.success("Product deleted successfully");
-      setProducts(products.filter(p => p.productID !== productID));
-      if (selectedProduct?.productID === productID) {
-        setSelectedProduct(null);
-      }
-    } catch (error) {
-      console.error("Delete error", error);
-      toast.error("Failed to delete product");
-    }
-  };
 
   const handleToggleSell = async (productID, isCurrentlySelling) => {
     if (!isCurrentlySelling) {
@@ -328,15 +311,15 @@ const MyProducts = () => {
                         >
                           <span className="material-icons text-sm">edit</span>
                         </Link>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleProductDelete(product.productID);
+                        <DeleteProduct
+                          productID={product.productID}
+                          onDeleteSuccess={(id) => {
+                            setProducts(products.filter(p => p.productID !== id));
+                            if (selectedProduct?.productID === id) {
+                              setSelectedProduct(null);
+                            }
                           }}
-                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-red-500 transition-colors shadow-sm"
-                        >
-                          <span className="material-icons text-sm">delete</span>
-                        </button>
+                        />
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
