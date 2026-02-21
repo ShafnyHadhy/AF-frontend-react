@@ -65,7 +65,7 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-sm">
-                    ♻️
+                    
                   </div>
                   <div>
                     <p className="text-xs text-white/70">Welcome to</p>

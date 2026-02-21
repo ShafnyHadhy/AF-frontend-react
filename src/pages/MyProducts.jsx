@@ -21,7 +21,7 @@ const MyProducts = () => {
           }
         );
 
-        setProducts(res.data.products);
+        setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products", error);
       }
@@ -31,11 +31,28 @@ const MyProducts = () => {
   }, [token]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6">My Products Dashboard</h1>
+  <div className="min-h-screen bg-gray-900 text-white flex">
+    
+    {/* Sidebar */}
+    <div className="w-64 bg-gray-800 p-6 hidden md:block">
+      <h2 className="text-2xl font-bold mb-8">EcoCycle</h2>
+      <ul className="space-y-4">
+        <li className="text-green-400 font-semibold">My Products</li>
+        <li className="text-gray-400 hover:text-white cursor-pointer">Repairs</li>
+        <li className="text-gray-400 hover:text-white cursor-pointer">Recycling</li>
+        <li className="text-gray-400 hover:text-white cursor-pointer">Marketplace</li>
+      </ul>
+    </div>
+
+    {/* Main Content */}
+    <div className="flex-1 p-8">
+      <h1 className="text-3xl font-bold mb-6">
+        My Products Dashboard
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* LEFT SIDE - Product Cards */}
+        
+        {/* Product Grid */}
         <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {products.length === 0 ? (
             <p>No products registered yet.</p>
@@ -50,19 +67,20 @@ const MyProducts = () => {
           )}
         </div>
 
-        {/* RIGHT SIDE - Detail Panel */}
+        {/* Detail Panel */}
         <div>
           {selectedProduct ? (
             <ProductDetailPanel product={selectedProduct} />
           ) : (
-            <div className="bg-white rounded-xl shadow p-6 text-gray-500">
+            <div className="bg-gray-800 rounded-xl p-6 text-gray-400">
               Select a product to view details
             </div>
           )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default MyProducts;
