@@ -10,6 +10,7 @@ import EditProduct from "./pages/Products/EditProduct";
 import Marketplace from "./pages/Products/Marketplace";
 import ProductPublicDetails from "./pages/Products/ProductPublicDetails";
 import Analytics from "./pages/Products/Analytics";
+import QRScreen from "./pages/Products/QRScreen";
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/edit-product/:productID" element={<EditProduct />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/product-public/:productID" element={<ProductPublicDetails />} />
+          <Route path="/qr-screen/:productID" element={<QRScreen />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/*" element={<HomePage />} />
 
@@ -42,3 +44,4 @@ function App() {
 }
 
 export default App
+ 

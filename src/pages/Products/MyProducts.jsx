@@ -330,6 +330,23 @@ const MyProducts = () => {
                         >
                           <span className="material-icons text-sm">{product.isForSale ? 'money_off' : 'sell'}</span>
                         </button>
+                        <Link
+                          to={`/qr-screen/${product.productID}`}
+                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
+                          title="View QR Code"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="material-symbols-outlined text-sm">qr_code_2</span>
+                        </Link>
+                        <Link
+                          to={`/product-public/${product.productID}`}
+                          target="_blank"
+                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
+                          title="View Public Timeline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <span className="material-icons text-sm">history</span>
+                        </Link>
                       </div>
                     </div>
                     <div className="p-4">
