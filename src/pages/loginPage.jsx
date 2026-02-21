@@ -23,7 +23,8 @@ export default function LoginPage() {
       console.log(response.data);
 
       localStorage.setItem("token", response.data.token);
-      
+      localStorage.setItem("email", response.data.user.email);
+
       const user = response.data.user;
 
       if (user.role == "admin") {
@@ -39,8 +40,8 @@ export default function LoginPage() {
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Login failed. Please try again."
+        err?.message ||
+        "Login failed. Please try again."
       );
 
       toast.error("Login failed. Please check your credentials.");
@@ -65,7 +66,7 @@ export default function LoginPage() {
                 {/* Logo */}
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-sm">
-                    
+
                   </div>
                   <div>
                     <p className="text-xs text-white/70">Welcome to</p>

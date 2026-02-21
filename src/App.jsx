@@ -4,8 +4,12 @@ import HomePage from './pages/homePage'
 import LoginPage from './pages/loginPage'
 import { Toaster } from 'react-hot-toast'
 import ProviderPage from './pages/providerPage'
-import MyProducts from "./pages/MyProducts";
-import AddProduct from "./pages/AddProduct";
+import MyProducts from "./pages/Products/MyProducts";
+import AddProduct from "./pages/Products/AddProduct";
+import EditProduct from "./pages/Products/EditProduct";
+import Marketplace from "./pages/Products/Marketplace";
+import ProductPublicDetails from "./pages/Products/ProductPublicDetails";
+import Analytics from "./pages/Products/Analytics";
 
 function App() {
 
@@ -18,14 +22,18 @@ function App() {
 
         <Routes path="/">
 
-          <Route path="/*" element={<HomePage />} />
           <Route path="/register" element={<h1 className="text-3xl font-bold">Register</h1>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/provider/*" element={<ProviderPage />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/add-product" element={<AddProduct />} />
-          
+          <Route path="/edit-product/:productID" element={<EditProduct />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/product-public/:productID" element={<ProductPublicDetails />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/*" element={<HomePage />} />
+
         </Routes>
       </div>
 
