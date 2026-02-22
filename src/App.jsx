@@ -11,6 +11,8 @@ import Marketplace from "./pages/Products/Marketplace";
 import ProductPublicDetails from "./pages/Products/ProductPublicDetails";
 import Analytics from "./pages/Products/Analytics";
 import QRScreen from "./pages/Products/QRScreen";
+import RequestRepair from "./pages/Products/RequestRepair";
+import RequestRecycling from "./pages/Products/RequestRecycling";
 
 function App() {
 
@@ -33,6 +35,8 @@ function App() {
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/product-public/:productID" element={<ProductPublicDetails />} />
           <Route path="/qr-screen/:productID" element={<QRScreen />} />
+          <Route path="/request-repair/:productID" element={<RequestRepair />} />
+          <Route path="/request-recycling/:productID" element={<RequestRecycling />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/*" element={<HomePage />} />
 
@@ -44,4 +48,3 @@ function App() {
 }
 
 export default App
- 

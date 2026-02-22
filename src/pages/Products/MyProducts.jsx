@@ -349,15 +349,47 @@ const MyProducts = () => {
                         </Link>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-bold text-sm">{product.brand} {product.model}</h3>
-                      <p className="text-[10px] text-zinc-500 font-mono">SN: {product.serialNumber}</p>
-                      <div className="mt-3 w-full bg-zinc-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
+                    <div className="p-4 space-y-4">
+                      <div>
+                        <h3 className="font-bold text-sm">{product.brand} {product.model}</h3>
+                        <p className="text-[10px] text-zinc-500 font-mono">SN: {product.serialNumber}</p>
                       </div>
-                      <div className="mt-1 flex justify-between text-[9px] font-bold text-zinc-400 uppercase">
-                        <span>Progress</span>
-                        <span>{getProgressWidth(product)}</span>
+
+                      <div className="mt-3">
+                        <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
+                        </div>
+                        <div className="mt-1 flex justify-between text-[9px] font-bold text-zinc-400 uppercase">
+                          <span>Progress</span>
+                          <span>{getProgressWidth(product)}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        <Link
+                          to={`/my-products`}
+                          onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
+                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-primary hover:bg-primary hover:text-zinc-900 transition-colors"
+                        >
+                          <span className="material-icons text-xl">info</span>
+                          <span className="text-[10px] font-bold mt-1 uppercase">Details</span>
+                        </Link>
+                        <Link
+                          to={`/request-repair/${product.productID}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors"
+                        >
+                          <span className="material-icons text-xl">build</span>
+                          <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
+                        </Link>
+                        <Link
+                          to={`/request-recycling/${product.productID}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors"
+                        >
+                          <span className="material-icons text-xl">recycling</span>
+                          <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
+                        </Link>
                       </div>
                     </div>
                   </div>
