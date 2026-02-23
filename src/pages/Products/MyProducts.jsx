@@ -166,7 +166,7 @@ const MyProducts = () => {
             <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">search</span>
             <input
               className="pl-10 pr-4 py-2 bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary shadow-inner"
-              placeholder="Search Brand, Model, SKU..."
+              placeholder="Search Product Name, Model, Category..."
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -256,9 +256,9 @@ const MyProducts = () => {
                 activeFilter === "Active" ? (product.status?.toLowerCase() === 'active' || product.status?.toLowerCase() === 'registered') :
                   product.status?.toLowerCase() === activeFilter.toLowerCase());
 
-            const matchesSearch = product.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
               product.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              product.serialNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+              product.category?.toLowerCase().includes(searchQuery.toLowerCase());
 
             return matchesCategory && matchesSearch;
           }).length === 0 ? (
@@ -275,9 +275,9 @@ const MyProducts = () => {
                       activeFilter === "Active" ? (product.status?.toLowerCase() === 'active' || product.status?.toLowerCase() === 'registered') :
                         product.status?.toLowerCase() === activeFilter.toLowerCase());
 
-                  const matchesSearch = product.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     product.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    product.serialNumber?.toLowerCase().includes(searchQuery.toLowerCase());
+                    product.category?.toLowerCase().includes(searchQuery.toLowerCase());
 
                   return matchesCategory && matchesSearch;
                 })
@@ -293,9 +293,9 @@ const MyProducts = () => {
                         <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                         <span className="material-symbols-outlined text-6xl text-zinc-300">
-                          {product.brand?.toLowerCase().includes('phone') ? 'smartphone' :
-                            product.brand?.toLowerCase().includes('laptop') ? 'laptop_mac' :
-                              product.brand?.toLowerCase().includes('watch') ? 'watch' : 'inventory_2'}
+                          {product.category?.toLowerCase().includes('electronics') ? 'smartphone' :
+                            product.category?.toLowerCase().includes('appliances') ? 'kitchen' :
+                              product.category?.toLowerCase().includes('furniture') ? 'chair' : 'inventory_2'}
                         </span>
                       )}
                       <div className="absolute top-2 left-2 flex gap-1">
@@ -351,8 +351,8 @@ const MyProducts = () => {
                     </div>
                     <div className="p-4 space-y-4">
                       <div>
-                        <h3 className="font-bold text-sm">{product.brand} {product.model}</h3>
-                        <p className="text-[10px] text-zinc-500 font-mono">SN: {product.serialNumber}</p>
+                        <h3 className="font-bold text-sm">{product.productName} {product.model}</h3>
+                        <p className="text-[10px] text-zinc-500 font-mono">Category: {product.category}</p>
                       </div>
 
                       <div className="mt-3">

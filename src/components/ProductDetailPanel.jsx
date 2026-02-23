@@ -1,9 +1,7 @@
 const ProductDetailPanel = ({ product }) => {
   return (
     <div className="bg-white rounded-xl shadow p-6">
-      <h2 className="text-xl font-bold mb-4">
-        {product.brand} {product.model}
-      </h2>
+      <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{product.productName} {product.model}</h2>
 
       <p className="text-sm text-gray-600">
         Serial: {product.serialNumber}

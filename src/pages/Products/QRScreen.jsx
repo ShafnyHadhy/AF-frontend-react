@@ -74,7 +74,7 @@ const QRScreen = () => {
                     <div className="absolute -right-20 -top-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
 
                     <header className="mb-8">
-                        <h1 className="text-2xl font-black uppercase tracking-tight mb-2">{product.brand}</h1>
+                        <h1 className="text-2xl font-black uppercase tracking-tight mb-2">{product.productName}</h1>
                         <p className="text-zinc-500 font-bold text-lg">{product.model}</p>
                         <div className="inline-block mt-4 px-4 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">
                             <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest leading-none mb-1">Serial Number</p>

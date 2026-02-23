@@ -9,10 +9,9 @@ const AddProduct = () => {
   const today = new Date().toLocaleDateString('en-CA');
 
   const [formData, setFormData] = useState({
-    brand: "",
+    productName: "",
     model: "",
-    serialNumber: "",
-    purchaseDate: "",
+    category: "Electronics",
     description: "",
     purchasePrice: "",
     condition: "good",
@@ -23,17 +22,6 @@ const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "purchaseDate" && value) {
-      const today = new Date().toLocaleDateString('en-CA');
-      if (value > today) {
-        toast.error("You cannot select a future date!", {
-          style: { background: '#ef4444', color: '#fff' }
-        });
-        setFormData({ ...formData, [name]: "" });
-        return;
-      }
-    }
 
     if (name === "purchasePrice") {
       if (value !== "" && !/^[0-9.]*$/.test(value)) {
@@ -62,16 +50,6 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation
-    const today = new Date().toLocaleDateString('en-CA');
-
-    if (formData.purchaseDate > today) {
-      toast.error("Purchase date cannot be in the future!", {
-        style: { background: '#ef4444', color: '#fff' }
-      });
-      return;
-    }
-
     const price = parseFloat(formData.purchasePrice);
     if (isNaN(price) || price < 0) {
       toast.error("Please enter a valid numeric price!", {
@@ -96,7 +74,8 @@ const AddProduct = () => {
     } catch (error) {
       console.error(error);
       const errorMessage = error.response?.data?.message || "Error adding product";
-      toast.error(errorMessage, {
+      const errorDetail = error.response?.data?.error ? `: ${error.response.data.error}` : "";
+      toast.error(errorMessage + errorDetail, {
         style: { background: '#ef4444', color: '#fff' }
       });
     }
@@ -127,11 +106,11 @@ const AddProduct = () => {
           {/* Product Info Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
+              <label className="text-xs font-bold uppercase text-zinc-400">Product Name <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                name="brand"
-                placeholder="e.g. Apple, Samsung"
+                name="productName"
+                placeholder="e.g. iPhone 15, MacBook Pro"
                 onChange={handleChange}
                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                 required
@@ -142,35 +121,27 @@ const AddProduct = () => {
               <input
                 type="text"
                 name="model"
-                placeholder="e.g. iPhone 15, Galaxy S23"
+                placeholder="e.g. A3106, M3 Chip"
                 onChange={handleChange}
                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                 required
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Serial Number <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="serialNumber"
-                placeholder="Enter unique ID"
+              <label className="text-xs font-bold uppercase text-zinc-400">Category <span className="text-red-500">*</span></label>
+              <select
+                name="category"
+                value={formData.category}
                 onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
                 required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Purchase Date <span className="text-red-500">*</span></label>
-              <input
-                type="date"
-                name="purchaseDate"
-                max={today}
-                value={formData.purchaseDate}
-                onChange={handleChange}
-                onKeyDown={(e) => e.preventDefault()}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                required
-              />
+              >
+                <option value="Electronics">Electronics</option>
+                <option value="Home Appliances">Home Appliances</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Fashion & Wearables">Fashion & Wearables</option>
+                <option value="Others">Others</option>
+              </select>
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-zinc-400">Purchase Price ($) <span className="text-red-500">*</span></label>

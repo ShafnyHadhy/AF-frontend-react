@@ -64,7 +64,7 @@ const RequestRepair = () => {
                             )}
                         </div>
                         <div>
-                            <h3 className="font-bold">{product?.brand} {product?.model}</h3>
+                            <h3 className="font-bold">{product?.productName} {product?.model}</h3>
                             <p className="text-xs text-zinc-500 font-mono">SN: {product?.serialNumber}</p>
                         </div>
                     </div>

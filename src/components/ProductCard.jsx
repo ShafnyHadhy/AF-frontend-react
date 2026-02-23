@@ -4,9 +4,9 @@ const ProductCard = ({ product, onClick }) => {
       onClick={onClick}
       className="bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer p-4"
     >
-      <h2 className="text-xl font-semibold">
-        {product.brand} {product.model}
-      </h2>
+      <h3 className="font-bold text-lg mb-1">
+        {product.productName} {product.model}
+      </h3>
 
       <p className="text-sm text-gray-500 mt-1">
         Serial: {product.serialNumber}

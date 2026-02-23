@@ -73,7 +73,7 @@ const ProductPublicDetails = () => {
                                     <span className="bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                                         Verified Record
                                     </span>
-                                    <h1 className="text-3xl font-bold mt-4 mb-2">{product.brand} {product.model}</h1>
+                                    <h1 className="text-3xl font-bold mt-4 mb-2">{product.productName} {product.model}</h1>
                                     <p className="text-zinc-500 font-mono text-sm leading-none mb-4">Serial: {product.serialNumber}</p>
                                     {product.description && (
                                         <p className="text-zinc-600 dark:text-zinc-400 text-sm italic border-l-2 border-primary/30 pl-4 py-1 mb-6">

@@ -10,10 +10,9 @@ const EditProduct = () => {
     const today = new Date().toLocaleDateString('en-CA');
 
     const [formData, setFormData] = useState({
-        brand: "",
+        productName: "",
         model: "",
-        serialNumber: "",
-        purchaseDate: "",
+        category: "Electronics",
         description: "",
         purchasePrice: "",
         condition: "good",
@@ -39,10 +38,9 @@ const EditProduct = () => {
                 const fetchedProduct = res.data;
                 setProduct(fetchedProduct);
                 setFormData({
-                    brand: fetchedProduct.brand,
+                    productName: fetchedProduct.productName,
                     model: fetchedProduct.model,
-                    serialNumber: fetchedProduct.serialNumber,
-                    purchaseDate: fetchedProduct.purchaseDate ? new Date(fetchedProduct.purchaseDate).toISOString().split('T')[0] : "",
+                    category: fetchedProduct.category || "Electronics",
                     description: fetchedProduct.description || "",
                     purchasePrice: fetchedProduct.purchasePrice || "",
                     condition: fetchedProduct.condition || "good",
@@ -62,17 +60,6 @@ const EditProduct = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        if (name === "purchaseDate" && value) {
-            const today = new Date().toLocaleDateString('en-CA');
-            if (value > today) {
-                toast.error("You cannot select a future date!", {
-                    style: { background: '#ef4444', color: '#fff' }
-                });
-                setFormData({ ...formData, [name]: "" });
-                return;
-            }
-        }
 
         if (name === "purchasePrice") {
             if (value !== "" && !/^[0-9.]*$/.test(value)) {
@@ -101,16 +88,6 @@ const EditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validation
-        const today = new Date().toLocaleDateString('en-CA');
-
-        if (formData.purchaseDate > today) {
-            toast.error("Purchase date cannot be in the future!", {
-                style: { background: '#ef4444', color: '#fff' }
-            });
-            return;
-        }
-
         const price = parseFloat(formData.purchasePrice);
         if (isNaN(price) || price < 0) {
             toast.error("Please enter a valid numeric price!", {
@@ -134,7 +111,9 @@ const EditProduct = () => {
             navigate("/my-products");
         } catch (error) {
             console.error(error);
-            toast.error("Error updating product");
+            const errorMessage = error.response?.data?.message || "Error updating product";
+            const errorDetail = error.response?.data?.error ? `: ${error.response.data.error}` : "";
+            toast.error(errorMessage + errorDetail);
         }
     };
 
@@ -171,12 +150,12 @@ const EditProduct = () => {
                     {/* Product Info Section */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
+                            <label className="text-xs font-bold uppercase text-zinc-400">Product Name <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
-                                name="brand"
-                                value={formData.brand}
-                                placeholder="e.g. Apple, Samsung"
+                                name="productName"
+                                value={formData.productName}
+                                placeholder="e.g. iPhone 15, MacBook Pro"
                                 onChange={handleChange}
                                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 required
@@ -188,11 +167,27 @@ const EditProduct = () => {
                                 type="text"
                                 name="model"
                                 value={formData.model}
-                                placeholder="e.g. iPhone 15, Galaxy S23"
+                                placeholder="e.g. A3106, M3 Chip"
                                 onChange={handleChange}
                                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                 required
                             />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="text-xs font-bold uppercase text-zinc-400">Category <span className="text-red-500">*</span></label>
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
+                                required
+                            >
+                                <option value="Electronics">Electronics</option>
+                                <option value="Home Appliances">Home Appliances</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Fashion & Wearables">Fashion & Wearables</option>
+                                <option value="Others">Others</option>
+                            </select>
                         </div>
                         <div className="md:col-span-2 space-y-2">
                             <label className="text-xs font-bold uppercase text-zinc-400">Description</label>
@@ -206,31 +201,6 @@ const EditProduct = () => {
                             ></textarea>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-zinc-400">Serial Number <span className="text-red-500">*</span></label>
-                            <input
-                                type="text"
-                                name="serialNumber"
-                                value={formData.serialNumber}
-                                placeholder="Enter unique ID"
-                                onChange={handleChange}
-                                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase text-zinc-400">Purchase Date <span className="text-red-500">*</span></label>
-                            <input
-                                type="date"
-                                name="purchaseDate"
-                                max={today}
-                                value={formData.purchaseDate}
-                                onChange={handleChange}
-                                onKeyDown={(e) => e.preventDefault()}
-                                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                required
-                            />
-                        </div>
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase text-zinc-400">Purchase Price ($) <span className="text-red-500">*</span></label>
                             <input
