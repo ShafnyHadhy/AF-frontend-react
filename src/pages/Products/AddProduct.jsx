@@ -95,7 +95,10 @@ const AddProduct = () => {
       navigate("/my-products");
     } catch (error) {
       console.error(error);
-      toast.error("Error adding product");
+      const errorMessage = error.response?.data?.message || "Error adding product";
+      toast.error(errorMessage, {
+        style: { background: '#ef4444', color: '#fff' }
+      });
     }
   };
 
@@ -160,7 +163,9 @@ const AddProduct = () => {
               <label className="text-xs font-bold uppercase text-zinc-400">Purchase Date <span className="text-red-500">*</span></label>
               <input
                 type="date"
+                name="purchaseDate"
                 max={today}
+                value={formData.purchaseDate}
                 onChange={handleChange}
                 onKeyDown={(e) => e.preventDefault()}
                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
