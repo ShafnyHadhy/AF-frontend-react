@@ -7,7 +7,6 @@ const EditProduct = () => {
     const { productID } = useParams();
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
-    const today = new Date().toLocaleDateString('en-CA');
 
     const [formData, setFormData] = useState({
         productName: "",

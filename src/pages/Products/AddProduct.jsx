@@ -4,9 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const AddProduct = () => {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const today = new Date().toLocaleDateString('en-CA');
+	const navigate = useNavigate();
+	const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
     productName: "",
