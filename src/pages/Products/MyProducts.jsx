@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
 
-
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -28,7 +27,6 @@ const MyProducts = () => {
             },
           }
         );
-
         setProducts(res.data);
       } catch (error) {
         console.error("Error fetching products", error);
@@ -39,7 +37,6 @@ const MyProducts = () => {
 
     fetchProducts();
   }, [token]);
-
 
   const handleToggleSell = async (productID, isCurrentlySelling) => {
     if (!isCurrentlySelling) {
@@ -96,9 +93,7 @@ const MyProducts = () => {
   const handleSellSubmit = async () => {
     const price = parseFloat(sellPrice);
     if (isNaN(price) || price <= 0) {
-      toast.error("Please enter a valid numeric price!", {
-        style: { background: '#ef4444', color: '#fff' }
-      });
+      toast.error("Please enter a valid numeric price!");
       return;
     }
 
@@ -121,29 +116,19 @@ const MyProducts = () => {
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "in transit":
-        return "bg-orange-500";
-      case "retail ready":
-      case "registered":
+        return "bg-blue-100 text-blue-700 border-blue-200";
       case "active":
+      case "registered":
       case "distributed":
-        return "bg-primary text-zinc-900";
-      case "manufacturing":
-        return "bg-blue-500 text-white";
+        return "bg-green-100 text-green-700 border-green-200";
       case "repair request":
-        return "bg-amber-500 text-white";
-      case "not repairable":
-        return "bg-zinc-700 text-white";
+        return "bg-amber-100 text-amber-700 border-amber-200";
       case "recycling request":
-        return "bg-emerald-500 text-white";
-      case "recycled":
-        return "bg-green-700 text-white";
-      case "sold":
-        return "bg-purple-600 text-white";
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
       case "end of life":
-      case "legacy":
-        return "bg-red-500 text-white";
+        return "bg-red-100 text-red-700 border-red-200";
       default:
-        return "bg-zinc-500 text-white";
+        return "bg-gray-100 text-gray-700 border-gray-200";
     }
   };
 
@@ -151,506 +136,344 @@ const MyProducts = () => {
     if (!product.lifecycle || product.lifecycle.length === 0) return "0%";
     const stages = ["registered", "manufacturing", "in transit", "distributed", "active", "repair request", "recycled", "sold"];
     const currentStage = product.status?.toLowerCase();
-
     if (currentStage === "recycled" || currentStage === "sold") return "100%";
-    if (currentStage === "not repairable") return "85%";
-
     const index = stages.indexOf(currentStage);
-    if (index === -1) return "50%"; // default for unknown
-    return `${Math.min(100, ((index + 1) / 5) * 100)}%`; // Use 5 as base for 'active' phase
+    if (index === -1) return "50%";
+    return `${Math.min(100, ((index + 1) / 5) * 100)}%`;
   };
+
+  // Helper to filter and search products
+  const filteredProducts = products.filter(product => {
+    const status = product.status?.toLowerCase() || "";
+    const name = product.productName?.toLowerCase() || "";
+    const brand = product.Brand?.toLowerCase() || "";
+    const model = product.model?.toLowerCase() || "";
+    const id = product.productID?.toLowerCase() || "";
+    const search = searchQuery.toLowerCase();
+
+    const matchesCategory = activeFilter === "All" ||
+      (activeFilter === "Listed for Sale" ? product.isForSale :
+        activeFilter === "Active" ? (status === 'active' || status === 'registered') :
+          status === activeFilter.toLowerCase());
+
+    const matchesSearch = name.includes(search) ||
+      brand.includes(search) ||
+      model.includes(search) ||
+      id.includes(search);
+
+    return matchesCategory && matchesSearch;
+  });
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-display">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-              <span className="material-icons text-zinc-900">inventory_2</span>
-            </div>
-            <span className="font-bold text-xl tracking-tight">EcoCycle Pro</span>
-          </div>
-          <div className="hidden md:flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-            {["All", "In Transit", "Active", "End of Life", "Listed for Sale", "Analytics"].map((filter) => (
-              <button
-                key={filter}
-                onClick={() => {
-                  if (filter === "Analytics") {
-                    window.location.href = "/analytics";
-                  } else {
-                    setActiveFilter(filter);
-                  }
-                }}
-                className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeFilter === filter
-                  ? "bg-white dark:bg-zinc-700 shadow-sm border border-zinc-200 dark:border-zinc-600 text-zinc-900 dark:text-white"
-                  : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                  }`}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative hidden lg:block">
-            <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">search</span>
-            <input
-              className="pl-10 pr-4 py-2 bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg text-sm w-64 focus:ring-2 focus:ring-primary shadow-inner"
-              placeholder="Search Product Name, Model, Category..."
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <button className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 relative">
-            <span className="material-icons text-zinc-600 dark:text-zinc-400">notifications</span>
-            <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-zinc-900"></span>
-          </button>
-          <div className="w-10 h-10 rounded-full bg-zinc-200 overflow-hidden border-2 border-primary/20">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User Profile" />
-          </div>
-        </div>
-      </nav>
+    <div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="material-icons text-primary text-3xl">recycling</span>
+            <h1 className="text-xl font-bold tracking-tight text-gray-800">EcoCycle <span className="text-primary">Pro</span></h1>
+          </Link>
 
-      <main className="flex-1 flex overflow-hidden">
+          <div className="flex-1 max-w-md mx-8 hidden md:block">
+            <div className="relative">
+              <span className="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+              <input
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-primary focus:border-primary text-sm"
+                placeholder="Search products or serial numbers..."
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <nav className="flex items-center gap-4">
+            <button className="p-2 text-gray-500 hover:text-primary transition-colors relative">
+              <span className="material-icons">notifications</span>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs font-semibold text-gray-900">John Doe</p>
+                <p className="text-[10px] text-gray-500">Eco Manager</p>
+              </div>
+              <img alt="User" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" />
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6 items-start h-[calc(100vh-4rem)] bg-gray-50">
         {/* Sidebar */}
-        <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 p-6 flex flex-col gap-8 hidden xl:flex overflow-y-auto">
+        <aside className="w-72 flex-shrink-0 hidden lg:block space-y-8 sticky top-0 self-start h-full overflow-y-auto bg-slate-50 border border-gray-200 rounded-2xl p-6 shadow-sm custom-scrollbar">
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Sustainability</h3>
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => toast.success("Scanning for nearby certified recyclers...")}
-                className="flex items-center gap-3 w-full p-2 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-xl">recycling</span>
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
+            <div className="space-y-2">
+              <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition-all shadow-sm">
+                <span className="material-icons text-sm">location_on</span>
                 Find Recycler
               </button>
-              <Link
-                to="/analytics"
-                className="flex items-center gap-3 w-full p-2 text-sm font-medium rounded-lg hover:bg-primary/10 hover:text-primary transition-colors"
-              >
-                <span className="material-symbols-outlined text-xl">eco</span>
+              <Link to="/analytics" className="w-full flex items-center gap-3 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                <span className="material-icons text-sm">analytics</span>
                 Impact Report
               </Link>
             </div>
           </section>
 
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Lifecycle Stage</h3>
-            <div className="space-y-1">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Lifecycle Stage</h3>
+            <ul className="space-y-1">
               {[
-                { label: "In Transit", color: "text-orange-500", key: "In Transit" },
-                { label: "Active", color: "text-primary", key: "Active" },
-                { label: "End of Life", color: "text-red-500", key: "End of Life" },
-                { label: "Listed for Sale", color: "text-orange-400", key: "Listed for Sale" }
+                { label: "All Products", id: "All", icon: "inventory_2" },
+                { label: "Active Use", id: "Active", icon: "verified" },
+                { label: "In Transit", id: "In Transit", icon: "local_shipping" },
+                { label: "End of Life", id: "End of Life", icon: "history_edu" },
+                { label: "Marketplace", id: "Listed for Sale", icon: "sell" },
               ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => setActiveFilter(item.key)}
-                  className={`flex items-center justify-between w-full p-2 rounded-lg transition-colors ${activeFilter === item.key ? 'bg-zinc-100 dark:bg-zinc-800' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'}`}
-                >
-                  <span className={`text-sm font-bold ${item.color}`}>{item.label}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded font-mono ${activeFilter === item.key ? 'bg-white dark:bg-zinc-700 shadow-sm' : 'bg-zinc-100 dark:bg-zinc-800'}`}>
-                    {item.key === "Listed for Sale"
-                      ? products.filter(p => p.isForSale).length.toString().padStart(2, '0')
-                      : item.key === "Active"
-                        ? products.filter(p => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'registered').length.toString().padStart(2, '0')
-                        : products.filter(p => p.status?.toLowerCase() === item.label.toLowerCase()).length.toString().padStart(2, '0')
-                    }
-                  </span>
-                </button>
+                <li key={item.id}>
+                  <button
+                    onClick={() => setActiveFilter(item.id)}
+                    className={`flex items-center justify-between w-full px-3 py-2 rounded-md transition-all ${activeFilter === item.id ? 'bg-green-50 text-primary font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-icons text-sm">{item.icon}</span>
+                      {item.label}
+                    </span>
+                    <span className={`text-xs px-2 py-0.5 rounded border ${activeFilter === item.id ? 'bg-white border-green-200 shadow-sm' : 'text-gray-400 border-transparent'}`}>
+                      {item.id === "All" ? products.length :
+                        item.id === "Listed for Sale" ? products.filter(p => p.isForSale).length :
+                          item.id === "Active" ? products.filter(p => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'registered').length :
+                            products.filter(p => p.status?.toLowerCase() === item.id.toLowerCase()).length
+                      }
+                    </span>
+                  </button>
+                </li>
               ))}
-            </div>
+            </ul>
           </section>
         </aside>
 
         {/* Main Content */}
-        <section className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+        <section className="flex-1 h-full overflow-y-auto bg-white border border-gray-200 rounded-2xl p-8 shadow-sm custom-scrollbar">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold">Product Catalog</h1>
-              <p className="text-zinc-500 text-sm font-bold">Unified management of products, lifecycle tracking, and QR tagging.</p>
+              <h2 className="text-2xl font-bold text-gray-900">Product Catalog</h2>
+              <p className="text-sm text-gray-500">Manage and track your sustainable assets</p>
             </div>
-            <div className="flex gap-2">
-              <Link to="/add-product" className="bg-primary hover:bg-primary/90 text-zinc-900 px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition-all shadow-md">
-                <span className="material-icons text-sm font-bold">add</span>
-                Register Product
+            <div className="flex gap-3">
+              <Link to="/add-product" className="px-4 py-2 bg-primary text-white rounded-lg font-bold flex items-center gap-2 hover:bg-secondary transition-all shadow-sm">
+                <span className="material-icons text-sm">add</span>
+                Register
               </Link>
             </div>
           </div>
 
-          {products.filter(product => {
-            const matchesCategory = activeFilter === "All" ||
-              (activeFilter === "Listed for Sale" ? product.isForSale :
-                activeFilter === "Active" ? (product.status?.toLowerCase() === 'active' || product.status?.toLowerCase() === 'registered') :
-                  product.status?.toLowerCase() === activeFilter.toLowerCase());
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <article key={product._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all group relative">
+                <div className="relative aspect-video overflow-hidden bg-gray-100 flex items-center justify-center">
+                  {product.images?.[0] ? (
+                    <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <span className="material-icons text-4xl text-gray-300">inventory_2</span>
+                  )}
+                  <span className={`absolute top-3 left-3 px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded border ${getStatusColor(product.status)}`}>
+                    {product.status || 'Active'}
+                  </span>
 
-            const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              product.model?.toLowerCase().includes(searchQuery.toLowerCase());
+                  {/* Floating Actions */}
+                  <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Link to={`/edit-product/${product.productID}`} className="p-2 bg-white/90 rounded-full shadow-sm hover:text-primary transition-colors">
+                      <span className="material-icons text-sm">edit</span>
+                    </Link>
+                    <DeleteProduct productID={product.productID} onDeleteSuccess={(id) => setProducts(products.filter(p => p.productID !== id))} />
+                  </div>
+                </div>
 
-            return matchesCategory && matchesSearch;
-          }).length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-20 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl">
-              <span className="material-icons text-6xl text-zinc-300 mb-4">{searchQuery ? 'search_off' : 'inventory_2'}</span>
-              <p className="text-zinc-500 font-bold">{searchQuery ? `No matches for "${searchQuery}"` : "No products found for this category."}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-              {products
-                .filter(product => {
-                  const matchesCategory = activeFilter === "All" ||
-                    (activeFilter === "Listed for Sale" ? product.isForSale :
-                      activeFilter === "Active" ? (product.status?.toLowerCase() === 'active' || product.status?.toLowerCase() === 'registered') :
-                        product.status?.toLowerCase() === activeFilter.toLowerCase());
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-1">
+                    <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{product.productName}</h4>
+                    <span className="text-xs font-bold text-gray-900 whitespace-nowrap ml-2">Rs. {product.price || 0}</span>
+                  </div>
+                  <p className="text-[10px] text-gray-500 mb-4">{product.Brand || "Unknown Brand"} • {product.model || "Unknown Model"} • SN: {(product.productID || "N/A").slice(-8).toUpperCase()}</p>
 
-                  const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    product.Brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    product.model?.toLowerCase().includes(searchQuery.toLowerCase());
-
-                  return matchesCategory && matchesSearch;
-                })
-                .map((product) => (
-                  <div
-                    key={product._id}
-                    className={`bg-white dark:bg-zinc-900 border-2 rounded-xl overflow-hidden group transition-all shadow-sm ${selectedProduct?._id === product._id ? 'border-primary' : 'border-zinc-200 dark:border-zinc-800 hover:border-primary/50'
-                      }`}
-                  >
-                    <div className="relative h-40 overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                      {product.images?.[0] ? (
-                        <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                      ) : (
-                        <span className="material-symbols-outlined text-6xl text-zinc-300">
-                          inventory_2
-                        </span>
-                      )}
-                      <div className="absolute top-2 left-2 flex gap-1">
-                        <span className={`${getStatusColor(product.status)} text-zinc-900 text-[9px] font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1`}>
-                          <span className="w-1 h-1 rounded-full bg-white"></span> {product.status || 'Active'}
-                        </span>
-                      </div>
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link
-                          to={`/edit-product/${product.productID}`}
-                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span className="material-icons text-sm">edit</span>
-                        </Link>
-                        <DeleteProduct
-                          productID={product.productID}
-                          onDeleteSuccess={(id) => {
-                            setProducts(products.filter(p => p.productID !== id));
-                            if (selectedProduct?.productID === id) {
-                              setSelectedProduct(null);
-                            }
-                          }}
-                        />
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleToggleSell(product.productID, product.isForSale);
-                          }}
-                          className={`p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg transition-colors shadow-sm ${product.isForSale ? 'text-orange-500 hover:text-zinc-600' : 'text-zinc-600 dark:text-zinc-400 hover:text-primary'}`}
-                          title={product.isForSale ? `Product listed for sale at Rs. ${product.price}` : "List for Sale"}
-                        >
-                          <span className="material-icons text-sm">{product.isForSale ? 'money_off' : 'sell'}</span>
-                        </button>
-                        <Link
-                          to={`/qr-screen/${product.productID}`}
-                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
-                          title="View QR Code"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <span className="material-symbols-outlined text-sm">qr_code_2</span>
-                        </Link>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
-                          className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
-                          title="View Lifecycle History"
-                        >
-                          <span className="material-icons text-sm">history</span>
-                        </button>
-                      </div>
+                  <div className="mb-4">
+                    <div className="flex justify-between text-[10px] font-medium text-gray-500 mb-1">
+                      <span>Lifecycle Progress</span>
+                      <span>{getProgressWidth(product)}</span>
                     </div>
-                    <div className="p-4 space-y-4">
-                      <div>
-                        <h3 className="font-bold text-sm">{product.productName}</h3>
-                        <p className="text-[10px] text-zinc-500 font-mono">{product.Brand} • {product.model}</p>
-                        <p className="text-xs font-bold text-primary mt-1">Rs. {product.price || 0}</p>
-                      </div>
-
-                      <div className="mt-3">
-                        <div className="w-full bg-zinc-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
-                        </div>
-                        <div className="mt-1 flex justify-between text-[9px] font-bold text-zinc-400 uppercase">
-                          <span>Progress</span>
-                          <span>{getProgressWidth(product)}</span>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-2">
-                        {product.status?.toLowerCase() === "repair request" ? (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleResolveRepair(product.productID, "repaired"); }}
-                              className="flex-1 flex flex-col items-center justify-center p-2 rounded-lg bg-primary/20 text-primary hover:bg-primary hover:text-zinc-900 transition-colors border border-primary/20"
-                            >
-                              <span className="material-icons text-xl">done_all</span>
-                              <span className="text-[10px] font-bold mt-1 uppercase">Mark Repaired</span>
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleResolveRepair(product.productID, "not repairable"); }}
-                              className="flex-1 flex flex-col items-center justify-center p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20"
-                            >
-                              <span className="material-icons text-xl">block</span>
-                              <span className="text-[10px] font-bold mt-1 uppercase">Not Repairable</span>
-                            </button>
-                          </div>
-                        ) : product.status?.toLowerCase() === "recycling request" ? (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleCompleteRecycling(product.productID); }}
-                            className="w-full flex flex-col items-center justify-center p-2 rounded-lg bg-emerald-500/20 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors border border-emerald-500/20"
-                          >
-                            <span className="material-icons text-xl">check_circle</span>
-                            <span className="text-[10px] font-bold mt-1 uppercase">Complete Recycling</span>
-                          </button>
-                        ) : (
-                          <div className="grid grid-cols-3 gap-2">
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
-                              className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-primary hover:bg-primary hover:text-zinc-900 transition-colors"
-                            >
-                              <span className="material-icons text-xl">info</span>
-                              <span className="text-[10px] font-bold mt-1 uppercase">Details</span>
-                            </button>
-
-                            {/* REPAIR BUTTON: Hidden if already not repairable or recycled/sold */}
-                            {!["not repairable", "recycled", "sold"].includes(product.status?.toLowerCase()) ? (
-                              <Link
-                                to={`/request-repair/${product.productID}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors"
-                              >
-                                <span className="material-icons text-xl">build</span>
-                                <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
-                              </Link>
-                            ) : (
-                              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 opacity-50 cursor-not-allowed">
-                                <span className="material-icons text-xl">build</span>
-                                <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
-                              </div>
-                            )}
-
-                            {/* RECYCLE BUTTON: Hidden if already recycled/sold */}
-                            {!["recycled", "sold"].includes(product.status?.toLowerCase()) ? (
-                              <Link
-                                to={`/request-recycling/${product.productID}`}
-                                onClick={(e) => e.stopPropagation()}
-                                className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors"
-                              >
-                                <span className="material-icons text-xl">recycling</span>
-                                <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
-                              </Link>
-                            ) : (
-                              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 opacity-50 cursor-not-allowed">
-                                <span className="material-icons text-xl">recycling</span>
-                                <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
                     </div>
                   </div>
-                ))}
-            </div>
-          )}
+
+                  {product.status?.toLowerCase() === "repair request" ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-primary bg-green-50 border border-green-100 rounded hover:bg-green-100 flex items-center justify-center gap-1">
+                        <span className="material-icons text-sm">done</span> Fixed
+                      </button>
+                      <button onClick={() => handleResolveRepair(product.productID, "not repairable")} className="py-2 px-1 text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 rounded hover:bg-red-100 flex items-center justify-center gap-1">
+                        <span className="material-icons text-sm">block</span> Junk
+                      </button>
+                    </div>
+                  ) : product.status?.toLowerCase() === "recycling request" ? (
+                    <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 rounded hover:bg-emerald-700 flex items-center justify-center gap-2">
+                      <span className="material-icons text-sm">check_circle</span> Complete Recycling
+                    </button>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      <button onClick={() => setSelectedProduct(product)} className="py-2 px-1 text-[11px] font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 flex flex-col items-center gap-1">
+                        <span className="material-icons text-sm">info</span> Details
+                      </button>
+                      <Link to={`/request-repair/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 flex flex-col items-center gap-1">
+                        <span className="material-icons text-sm">build</span> Repair
+                      </Link>
+                      <Link to={`/request-recycling/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-white bg-primary rounded hover:bg-secondary flex flex-col items-center gap-1">
+                        <span className="material-icons text-sm">recycling</span> Recycle
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-[10px] font-bold flex items-center gap-1 ${product.isForSale ? 'text-orange-500' : 'text-gray-400 hover:text-primary transition-colors'}`}>
+                      <span className="material-icons text-xs">{product.isForSale ? 'money_off' : 'sell'}</span>
+                      {product.isForSale ? 'Listed' : 'Sell'}
+                    </button>
+                    <Link to={`/qr-screen/${product.productID}`} className="text-gray-400 hover:text-primary transition-colors">
+                      <span className="material-icons text-xs">qr_code_2</span>
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+
+            <Link to="/add-product" className="bg-gray-50 rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center p-6 text-center hover:bg-gray-100 transition-all min-h-[300px]">
+              <span className="material-icons text-4xl text-gray-300 mb-2">add_circle_outline</span>
+              <p className="text-sm font-medium text-gray-500 mb-4">Register a new product to start tracking its lifecycle.</p>
+              <button className="px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-bold text-gray-700 shadow-sm">Add Product</button>
+            </Link>
+          </div>
         </section>
-
-        {/* Details Side Panel (Drawer) */}
-        {selectedProduct && (
-          <aside className="fixed right-0 top-0 h-full w-full md:w-[450px] bg-white dark:bg-zinc-900 shadow-2xl z-[60] border-l border-zinc-200 dark:border-zinc-800 flex flex-col animate-in slide-in-from-right duration-300">
-            <header className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-              <h2 className="text-xl font-bold">Product Details</h2>
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-              >
-                <span className="material-icons">close</span>
-              </button>
-            </header>
-
-            <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
-              {/* Product Visuals */}
-              <div className="aspect-video bg-zinc-100 dark:bg-zinc-800 rounded-2xl overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
-                {selectedProduct.images?.[0] ? (
-                  <img src={selectedProduct.images[0]} alt={selectedProduct.model} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="material-symbols-outlined text-7xl text-zinc-300">inventory_2</span>
-                )}
-              </div>
-
-              {/* Core Info */}
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-2xl font-bold">{selectedProduct.productName}</h3>
-                  <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest">{selectedProduct.Brand} • {selectedProduct.model}</p>
-                  <p className="text-xl font-bold text-primary">Rs. {selectedProduct.price || 0}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  <span className={`${getStatusColor(selectedProduct.status)} font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-sm`}>
-                    {selectedProduct.status}
-                  </span>
-                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider border border-zinc-200 dark:border-zinc-700">
-                    {selectedProduct.condition} Condition
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                  <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Product ID</p>
-                  <p className="font-mono text-xs font-bold truncate">{selectedProduct.productID}</p>
-                </div>
-                {selectedProduct.description && (
-                  <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                    <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Description</p>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">{selectedProduct.description}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* QR Code Section */}
-              {selectedProduct.qrCode && (
-                <div className="p-6 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col items-center gap-4">
-                  <div className="w-40 h-40 bg-white p-3 rounded-xl shadow-lg border-2 border-primary">
-                    <img src={selectedProduct.qrCode} alt="QR Code" className="w-full h-full" />
-                  </div>
-                  <p className="text-[10px] text-zinc-400 font-black uppercase text-center leading-tight">
-                    Digital Passport QR Code<br />
-                    <span className="text-primary">Verified on Ledger</span>
-                  </p>
-                </div>
-              )}
-
-              {/* Timeline */}
-              <div className="space-y-6 pt-4">
-                <h4 className="font-bold flex items-center gap-2">
-                  <span className="material-icons text-primary text-lg">history</span>
-                  Lifecycle History
-                </h4>
-                <div className="relative pl-6 border-l-2 border-zinc-100 dark:border-zinc-800 space-y-8 pb-4">
-                  {selectedProduct.lifecycle?.slice().reverse().map((event, idx) => (
-                    <div key={idx} className="relative">
-                      <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]"></div>
-                      <div className="flex flex-col gap-0.5">
-                        <p className="font-bold text-sm capitalize">{event.eventType}</p>
-                        <p className="text-xs text-zinc-500 font-medium leading-relaxed">{event.description}</p>
-                        <p className="text-[9px] font-bold text-zinc-400 uppercase mt-1">
-                          {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <footer className="p-6 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
-              <Link
-                to={`/edit-product/${selectedProduct.productID}`}
-                className="flex items-center justify-center gap-2 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl font-bold text-sm transition-colors"
-              >
-                <span className="material-icons text-sm">edit</span>
-                Edit Info
-              </Link>
-              <button
-                onClick={() => setSelectedProduct(null)}
-                className="py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-bold text-sm transition-all"
-              >
-                Close Panel
-              </button>
-            </footer>
-          </aside>
-        )}
-
       </main>
 
+      {/* Product Detail Drawer */}
+      <div className={`fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-[60] overflow-y-auto ${selectedProduct ? 'translate-x-0' : 'translate-x-full'}`}>
+        {selectedProduct && (
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold">Product Details</h3>
+              <button onClick={() => setSelectedProduct(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <span className="material-icons">close</span>
+              </button>
+            </div>
 
-      <footer className="bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-6 py-2 flex items-center justify-between text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
-        <div className="flex gap-6">
-          <span className="flex items-center gap-2 font-bold"><span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_5px_#13ec5b]"></span> Network: Stable</span>
-          <span className="flex items-center gap-2 font-bold"><span className="material-icons text-[12px]">security</span> Encryption: AES-256</span>
-        </div>
-        <div className="font-bold italic">
-          EcoCycle Systems • Secure Tagging Module v2.4.0
-        </div>
-      </footer>
+            <div className="aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden flex items-center justify-center">
+              {selectedProduct.images?.[0] ? (
+                <img src={selectedProduct.images[0]} alt="Detail View" className="w-full h-full object-cover" />
+              ) : (
+                <span className="material-icons text-6xl text-gray-300">inventory_2</span>
+              )}
+            </div>
+
+            <div className="mb-8">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-lg font-bold text-gray-900">{selectedProduct.productName}</h4>
+                <span className="font-bold text-primary">Rs. {selectedProduct.price || 0}</span>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed mb-4">{selectedProduct.description || "No description available."}</p>
+
+              <div className="bg-gray-50 p-4 rounded-lg flex items-center gap-4">
+                <div className="w-16 h-16 bg-white p-1 border border-gray-200 rounded shadow-sm">
+                  {selectedProduct.qrCode ? (
+                    <img src={selectedProduct.qrCode} alt="Passport QR" className="w-full h-full" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><span className="material-icons text-gray-300">qr_code</span></div>
+                  )}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase">Serial Passport</p>
+                  <p className="text-sm font-mono font-bold truncate max-w-[200px]">{(selectedProduct.productID || "N/A").toUpperCase()}</p>
+                  <p className="text-xs text-primary font-medium">Verified by EcoCycle v2.4</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Lifecycle History</h4>
+              <div className="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
+                {selectedProduct.lifecycle?.slice().reverse().map((event, idx) => (
+                  <div key={idx} className="relative pl-8">
+                    <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-white border-2 border-primary shadow-sm flex items-center justify-center">
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    </div>
+                    <p className="text-xs font-bold text-gray-900 capitalize">{event.eventType}</p>
+                    <p className="text-[10px] text-gray-500 mb-1">
+                      {new Date(event.date).toLocaleDateString()} • {event.location || "System"}
+                    </p>
+                    <p className="text-xs text-gray-600 italic">"{event.description}"</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4 border-t border-gray-100 sticky bottom-0 bg-white">
+              <button onClick={() => { handleToggleSell(selectedProduct.productID, selectedProduct.isForSale); setSelectedProduct(null); }} className="flex-1 py-3 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors">
+                {selectedProduct.isForSale ? 'Unlist' : 'List for Sale'}
+              </button>
+              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-white font-bold text-center rounded-lg hover:bg-secondary transition-colors">
+                Edit Product
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Overlay for drawer */}
+      {selectedProduct && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 animate-in fade-in duration-300" onClick={() => setSelectedProduct(null)}></div>
+      )}
 
       {/* Sell Modal */}
       {showSellModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-3xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden animate-in zoom-in-95 duration-300">
-            <div className="p-8">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <span className="material-icons text-primary text-3xl">sell</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-2">List for Sale</h2>
-              <p className="text-zinc-500 text-sm font-bold mb-8">Set your desired price to list this product on the marketplace.</p>
+        <div className="fixed inset-0 flex items-center justify-center z-[70] animate-in fade-in duration-300 p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSellModal(false)}></div>
+          <div className="bg-white rounded-2xl w-full max-w-md p-8 relative shadow-2xl animate-in zoom-in-95 duration-300">
+            <h3 className="text-xl font-bold mb-2">List for Resale</h3>
+            <p className="text-sm text-gray-500 mb-6">List your product on the EcoCycle marketplace. Higher lifecycle efficiency increases resale value.</p>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                    Selling Price (Rs.)
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
-                    <input
-                      autoFocus
-                      type="text"
-                      placeholder="0.00"
-                      value={sellPrice}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === "" || /^[0-9]*$/.test(val)) {
-                          setSellPrice(val);
-                        }
-                      }}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 pl-8 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-xl"
-                    />
-                  </div>
-                  <p className="text-[10px] text-zinc-400 font-bold uppercase italic">
-                    Only numeric values are accepted.
-                  </p>
+            <div className="space-y-4 mb-8">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Set Your Price (Rs.)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
+                  <input
+                    autoFocus
+                    className="w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg font-bold outline-none transition-all"
+                    placeholder="0.00"
+                    type="number"
+                    value={sellPrice}
+                    onChange={(e) => setSellPrice(e.target.value)}
+                  />
                 </div>
+                <p className="text-[10px] text-green-600 mt-2 font-medium">Verified listing ensures faster sales and trust.</p>
               </div>
+              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <span className="material-icons text-blue-500 text-sm">info</span>
+                <p className="text-[10px] text-blue-700 leading-tight">A small sustainability fee may apply to fund local recycling projects.</p>
+              </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-10">
-                <button
-                  onClick={() => setShowSellModal(false)}
-                  className="p-4 rounded-2xl font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSellSubmit}
-                  className="p-4 rounded-2xl font-bold bg-primary text-zinc-900 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                >
-                  Confirm Listing
-                </button>
-              </div>
+            <div className="flex gap-3">
+              <button className="flex-1 py-3 font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors" onClick={() => setShowSellModal(false)}>Cancel</button>
+              <button className="flex-1 py-3 font-bold text-white bg-primary rounded-xl hover:bg-secondary transition-all shadow-lg shadow-green-100" onClick={handleSellSubmit}>Confirm Listing</button>
             </div>
           </div>
         </div>
