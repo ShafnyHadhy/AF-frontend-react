@@ -30,9 +30,6 @@ const MyProducts = () => {
         );
 
         setProducts(res.data);
-        if (res.data.length > 0) {
-          setSelectedProduct(res.data[0]);
-        }
       } catch (error) {
         console.error("Error fetching products", error);
       } finally {
@@ -326,8 +323,7 @@ const MyProducts = () => {
                 .map((product) => (
                   <div
                     key={product._id}
-                    onClick={() => setSelectedProduct(product)}
-                    className={`bg-white dark:bg-zinc-900 border-2 rounded-xl overflow-hidden group transition-all shadow-sm cursor-pointer ${selectedProduct?._id === product._id ? 'border-primary' : 'border-zinc-200 dark:border-zinc-800 hover:border-primary/50'
+                    className={`bg-white dark:bg-zinc-900 border-2 rounded-xl overflow-hidden group transition-all shadow-sm ${selectedProduct?._id === product._id ? 'border-primary' : 'border-zinc-200 dark:border-zinc-800 hover:border-primary/50'
                       }`}
                   >
                     <div className="relative h-40 overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
@@ -380,15 +376,13 @@ const MyProducts = () => {
                         >
                           <span className="material-symbols-outlined text-sm">qr_code_2</span>
                         </Link>
-                        <Link
-                          to={`/product-public/${product.productID}`}
-                          target="_blank"
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
                           className="p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-primary transition-colors shadow-sm"
-                          title="View Public Timeline"
-                          onClick={(e) => e.stopPropagation()}
+                          title="View Lifecycle History"
                         >
                           <span className="material-icons text-sm">history</span>
-                        </Link>
+                        </button>
                       </div>
                     </div>
                     <div className="p-4 space-y-4">
@@ -435,14 +429,13 @@ const MyProducts = () => {
                           </button>
                         ) : (
                           <div className="grid grid-cols-3 gap-2">
-                            <Link
-                              to={`/my-products`}
+                            <button
                               onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
                               className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-primary hover:bg-primary hover:text-zinc-900 transition-colors"
                             >
                               <span className="material-icons text-xl">info</span>
                               <span className="text-[10px] font-bold mt-1 uppercase">Details</span>
-                            </Link>
+                            </button>
 
                             {/* REPAIR BUTTON: Hidden if already not repairable or recycled/sold */}
                             {!["not repairable", "recycled", "sold"].includes(product.status?.toLowerCase()) ? (
