@@ -4,16 +4,16 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const AddProduct = () => {
-	const navigate = useNavigate();
-	const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
     productName: "",
+    Brand: "",
     model: "",
-    category: "Electronics",
-    description: "",
-    purchasePrice: "",
     condition: "good",
+    description: "",
+    price: "",
   });
 
   const [images, setImages] = useState([]);
@@ -21,13 +21,12 @@ const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "purchasePrice") {
-      if (value !== "" && !/^[0-9.]*$/.test(value)) {
-        return; // Only allow numbers and decimal
+    // Numeric validation for price field
+    if (name === "price") {
+      if (value !== "" && !/^\d*$/.test(value)) {
+        return;
       }
     }
-
     setFormData({ ...formData, [name]: value });
   };
 
@@ -49,18 +48,10 @@ const AddProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const price = parseFloat(formData.purchasePrice);
-    if (isNaN(price) || price < 0) {
-      toast.error("Please enter a valid numeric price!", {
-        style: { background: '#ef4444', color: '#fff' }
-      });
-      return;
-    }
-
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/products`,
-        { ...formData, purchasePrice: price, images },
+        { ...formData, images },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -116,6 +107,17 @@ const AddProduct = () => {
               />
             </div>
             <div className="space-y-2">
+              <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                name="Brand"
+                placeholder="e.g. Apple, Samsung"
+                onChange={handleChange}
+                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <label className="text-xs font-bold uppercase text-zinc-400">Model <span className="text-red-500">*</span></label>
               <input
                 type="text"
@@ -127,37 +129,17 @@ const AddProduct = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Category <span className="text-red-500">*</span></label>
+              <label className="text-xs font-bold uppercase text-zinc-400">Condition</label>
               <select
-                name="category"
-                value={formData.category}
+                name="condition"
                 onChange={handleChange}
                 className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
                 required
               >
-                <option value="Electronics">Electronics</option>
-                <option value="Home Appliances">Home Appliances</option>
-                <option value="Furniture">Furniture</option>
-                <option value="Fashion & Wearables">Fashion & Wearables</option>
-                <option value="Others">Others</option>
+                <option value="new">Brand New</option>
+                <option value="good">Good / Used</option>
+                <option value="damaged">Damaged / For Parts</option>
               </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Purchase Price ($) <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="purchasePrice"
-                placeholder="0.00"
-                value={formData.purchasePrice}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "" || /^[0-9.]*$/.test(val)) {
-                    handleChange(e);
-                  }
-                }}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
-                required
-              />
             </div>
             <div className="md:col-span-2 space-y-2">
               <label className="text-xs font-bold uppercase text-zinc-400">Description</label>
@@ -170,17 +152,19 @@ const AddProduct = () => {
               ></textarea>
             </div>
             <div className="md:col-span-2 space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Condition</label>
-              <select
-                name="condition"
-                onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
-                required
-              >
-                <option value="new">Brand New</option>
-                <option value="good">Good / Used</option>
-                <option value="damaged">Damaged / For Parts</option>
-              </select>
+              <label className="text-xs font-bold uppercase text-zinc-400">Price (Rs.) <span className="text-red-500">*</span></label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
+                <input
+                  type="text"
+                  name="price"
+                  value={formData.price}
+                  placeholder="e.g. 5000"
+                  onChange={handleChange}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 pl-12 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  required
+                />
+              </div>
             </div>
           </div>
 
