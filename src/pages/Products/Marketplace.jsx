@@ -97,14 +97,12 @@ const Marketplace = () => {
                                         <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <span className="material-symbols-outlined text-6xl text-zinc-300">
-                                            {product.category?.toLowerCase().includes('electronics') ? 'smartphone' :
-                                                product.category?.toLowerCase().includes('appliances') ? 'kitchen' :
-                                                    product.category?.toLowerCase().includes('furniture') ? 'chair' : 'inventory_2'}
+                                            inventory_2
                                         </span>
                                     )}
                                     <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                                         <span className="bg-primary text-zinc-900 font-bold px-3 py-1 rounded-full text-xs shadow-lg">
-                                            ${product.price}
+                                            Rs. {product.price}
                                         </span>
                                         {product.qrCode && (
                                             <div
@@ -126,7 +124,8 @@ const Marketplace = () => {
                                     </div>
                                 </div>
                                 <div className="p-5">
-                                    <h3 className="font-bold text-lg mb-1">{product.productName} {product.model}</h3>
+                                    <h3 className="font-bold text-lg mb-1">{product.productName}</h3>
+                                    <p className="text-[10px] text-zinc-400 font-bold uppercase mb-2">{product.Brand} • {product.model}</p>
                                     <div className="flex items-center gap-2 mb-4">
                                         <div className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden border border-zinc-300 dark:border-zinc-700">
                                             <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${product.ownerEmail}`} alt="Seller" />

@@ -63,15 +63,6 @@ const Analytics = () => {
                 {/* Filters Section */}
                 <section className="bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-primary/5 rounded-2xl p-6 mb-8 flex flex-wrap gap-6 items-end shadow-sm">
                     <div className="flex flex-col gap-2">
-                        <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Product Category</label>
-                        <select className="bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg text-sm px-4 py-2 pr-10 focus:ring-primary font-bold">
-                            <option>All Categories</option>
-                            <option>Consumer Electronics</option>
-                            <option>Apparel & Textiles</option>
-                            <option>Automotive Parts</option>
-                        </select>
-                    </div>
-                    <div className="flex flex-col gap-2">
                         <label className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Date Range</label>
                         <div className="flex items-center bg-zinc-100 dark:bg-zinc-800 border-none rounded-lg px-3">
                             <span className="material-icons text-sm text-slate-400 mr-2">calendar_today</span>
