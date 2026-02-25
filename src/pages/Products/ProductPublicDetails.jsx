@@ -73,8 +73,9 @@ const ProductPublicDetails = () => {
                                     <span className="bg-primary/20 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                                         Verified Record
                                     </span>
-                                    <h1 className="text-3xl font-bold mt-4 mb-2">{product.productName} {product.model}</h1>
-                                    <p className="text-zinc-500 font-mono text-sm leading-none mb-4">Serial: {product.serialNumber}</p>
+                                    <h1 className="text-3xl font-bold mt-4 mb-1">{product.productName}</h1>
+                                    <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-4">{product.Brand} • {product.model}</p>
+                                    <p className="text-zinc-400 font-mono text-[10px] leading-none mb-4">ID: {product.productID}</p>
                                     {product.description && (
                                         <p className="text-zinc-600 dark:text-zinc-400 text-sm italic border-l-2 border-primary/30 pl-4 py-1 mb-6">
                                             {product.description}
@@ -91,9 +92,9 @@ const ProductPublicDetails = () => {
                                         <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Condition</p>
                                         <p className="font-bold text-lg capitalize">{product.condition}</p>
                                     </div>
-                                    <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-                                        <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Purchase Price</p>
-                                        <p className="font-bold text-lg">${product.purchasePrice || '0.00'}</p>
+                                    <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 col-span-2 text-center">
+                                        <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Original Price</p>
+                                        <p className="font-bold text-2xl text-primary">Rs. {product.price || 0}</p>
                                     </div>
                                 </div>
                             </div>

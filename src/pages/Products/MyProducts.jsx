@@ -180,7 +180,7 @@ const MyProducts = () => {
             <span className="font-bold text-xl tracking-tight">EcoCycle Pro</span>
           </div>
           <div className="hidden md:flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-            {["All", "Manufacturing", "In Transit", "Active", "End of Life", "Listed for Sale", "Analytics"].map((filter) => (
+            {["All", "In Transit", "Active", "End of Life", "Listed for Sale", "Analytics"].map((filter) => (
               <button
                 key={filter}
                 onClick={() => {
@@ -248,7 +248,6 @@ const MyProducts = () => {
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4">Lifecycle Stage</h3>
             <div className="space-y-1">
               {[
-                { label: "Manufacturing", color: "text-blue-500", key: "Manufacturing" },
                 { label: "In Transit", color: "text-orange-500", key: "In Transit" },
                 { label: "Active", color: "text-primary", key: "Active" },
                 { label: "End of Life", color: "text-red-500", key: "End of Life" },
@@ -296,8 +295,7 @@ const MyProducts = () => {
                   product.status?.toLowerCase() === activeFilter.toLowerCase());
 
             const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              product.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              product.category?.toLowerCase().includes(searchQuery.toLowerCase());
+              product.model?.toLowerCase().includes(searchQuery.toLowerCase());
 
             return matchesCategory && matchesSearch;
           }).length === 0 ? (
@@ -315,8 +313,8 @@ const MyProducts = () => {
                         product.status?.toLowerCase() === activeFilter.toLowerCase());
 
                   const matchesSearch = product.productName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    product.model?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    product.category?.toLowerCase().includes(searchQuery.toLowerCase());
+                    product.Brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    product.model?.toLowerCase().includes(searchQuery.toLowerCase());
 
                   return matchesCategory && matchesSearch;
                 })
@@ -331,9 +329,7 @@ const MyProducts = () => {
                         <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                         <span className="material-symbols-outlined text-6xl text-zinc-300">
-                          {product.category?.toLowerCase().includes('electronics') ? 'smartphone' :
-                            product.category?.toLowerCase().includes('appliances') ? 'kitchen' :
-                              product.category?.toLowerCase().includes('furniture') ? 'chair' : 'inventory_2'}
+                          inventory_2
                         </span>
                       )}
                       <div className="absolute top-2 left-2 flex gap-1">
@@ -364,7 +360,7 @@ const MyProducts = () => {
                             handleToggleSell(product.productID, product.isForSale);
                           }}
                           className={`p-1.5 bg-white/90 dark:bg-zinc-800/90 rounded-lg transition-colors shadow-sm ${product.isForSale ? 'text-orange-500 hover:text-zinc-600' : 'text-zinc-600 dark:text-zinc-400 hover:text-primary'}`}
-                          title={product.isForSale ? "Unlist from Marketplace" : "List for Sale"}
+                          title={product.isForSale ? `Product listed for sale at Rs. ${product.price}` : "List for Sale"}
                         >
                           <span className="material-icons text-sm">{product.isForSale ? 'money_off' : 'sell'}</span>
                         </button>
@@ -387,8 +383,9 @@ const MyProducts = () => {
                     </div>
                     <div className="p-4 space-y-4">
                       <div>
-                        <h3 className="font-bold text-sm">{product.productName} {product.model}</h3>
-                        <p className="text-[10px] text-zinc-500 font-mono">Category: {product.category}</p>
+                        <h3 className="font-bold text-sm">{product.productName}</h3>
+                        <p className="text-[10px] text-zinc-500 font-mono">{product.Brand} • {product.model}</p>
+                        <p className="text-xs font-bold text-primary mt-1">Rs. {product.price || 0}</p>
                       </div>
 
                       <div className="mt-3">
@@ -507,7 +504,8 @@ const MyProducts = () => {
               <div className="space-y-4">
                 <div>
                   <h3 className="text-2xl font-bold">{selectedProduct.productName}</h3>
-                  <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest">{selectedProduct.model} • {selectedProduct.category}</p>
+                  <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest">{selectedProduct.Brand} • {selectedProduct.model}</p>
+                  <p className="text-xl font-bold text-primary">Rs. {selectedProduct.price || 0}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-2">
@@ -520,15 +518,17 @@ const MyProducts = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
                   <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Product ID</p>
                   <p className="font-mono text-xs font-bold truncate">{selectedProduct.productID}</p>
                 </div>
-                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                  <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Purchase Price</p>
-                  <p className="font-bold">${selectedProduct.purchasePrice || '0.00'}</p>
-                </div>
+                {selectedProduct.description && (
+                  <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Description</p>
+                    <p className="text-sm text-zinc-600 dark:text-zinc-400">{selectedProduct.description}</p>
+                  </div>
+                )}
               </div>
 
               {/* QR Code Section */}
@@ -613,10 +613,10 @@ const MyProducts = () => {
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                    Selling Price ($)
+                    Selling Price (Rs.)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
                     <input
                       autoFocus
                       type="text"
@@ -624,7 +624,7 @@ const MyProducts = () => {
                       value={sellPrice}
                       onChange={(e) => {
                         const val = e.target.value;
-                        if (val === "" || /^[0-9.]*$/.test(val)) {
+                        if (val === "" || /^[0-9]*$/.test(val)) {
                           setSellPrice(val);
                         }
                       }}
