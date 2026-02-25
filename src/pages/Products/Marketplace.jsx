@@ -30,6 +30,27 @@ const Marketplace = () => {
         }
     };
 
+    const handleBuy = async (productID) => {
+        if (!token) {
+            toast.error("Please login to buy products");
+            return;
+        }
+
+        if (!window.confirm("Are you sure you want to buy this product?")) return;
+
+        try {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/products/${productID}/buy`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Product purchased successfully!");
+            setProducts(products.filter(p => p.productID !== productID));
+        } catch (error) {
+            console.error("Buy error", error);
+            toast.error(error.response?.data?.message || "Failed to purchase product");
+        }
+    };
+
     useEffect(() => {
         const fetchMarketplace = async () => {
             try {
@@ -122,13 +143,14 @@ const Marketplace = () => {
                                         </button>
                                     ) : (
                                         <button
-                                            onClick={() => toast.success("Buy feature coming soon!")}
+                                            onClick={() => handleBuy(product.productID)}
                                             className="w-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 py-3 rounded-xl font-bold hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors flex items-center justify-center gap-2"
                                         >
                                             <span className="material-icons text-sm">shopping_cart</span>
                                             Buy Now
                                         </button>
                                     )}
+
                                 </div>
                             </div>
                         ))}

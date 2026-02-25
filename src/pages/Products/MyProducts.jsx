@@ -68,6 +68,34 @@ const MyProducts = () => {
     }
   };
 
+  const handleResolveRepair = async (productID, resolution) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/products/${productID}/resolve-repair`,
+        { resolution },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success(`Repair resolved as ${resolution}`);
+      setProducts(products.map(p => p.productID === productID ? res.data.product : p));
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to resolve repair");
+    }
+  };
+
+  const handleCompleteRecycling = async (productID) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/products/${productID}/complete-recycling`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Recycling completed!");
+      setProducts(products.map(p => p.productID === productID ? res.data.product : p));
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to complete recycling");
+    }
+  };
+
   const handleSellSubmit = async () => {
     const price = parseFloat(sellPrice);
     if (isNaN(price) || price <= 0) {
@@ -101,24 +129,38 @@ const MyProducts = () => {
       case "registered":
       case "active":
       case "distributed":
-        return "bg-primary";
+        return "bg-primary text-zinc-900";
       case "manufacturing":
-        return "bg-blue-500";
+        return "bg-blue-500 text-white";
+      case "repair request":
+        return "bg-amber-500 text-white";
+      case "not repairable":
+        return "bg-zinc-700 text-white";
+      case "recycling request":
+        return "bg-emerald-500 text-white";
+      case "recycled":
+        return "bg-green-700 text-white";
+      case "sold":
+        return "bg-purple-600 text-white";
       case "end of life":
       case "legacy":
-        return "bg-red-500";
+        return "bg-red-500 text-white";
       default:
-        return "bg-zinc-500";
+        return "bg-zinc-500 text-white";
     }
   };
 
   const getProgressWidth = (product) => {
     if (!product.lifecycle || product.lifecycle.length === 0) return "0%";
-    const stages = ["registered", "manufacturing", "in transit", "distributed", "active"];
+    const stages = ["registered", "manufacturing", "in transit", "distributed", "active", "repair request", "recycled", "sold"];
     const currentStage = product.status?.toLowerCase();
+
+    if (currentStage === "recycled" || currentStage === "sold") return "100%";
+    if (currentStage === "not repairable") return "85%";
+
     const index = stages.indexOf(currentStage);
-    if (index === -1) return "100%";
-    return `${((index + 1) / stages.length) * 100}%`;
+    if (index === -1) return "50%"; // default for unknown
+    return `${Math.min(100, ((index + 1) / 5) * 100)}%`; // Use 5 as base for 'active' phase
   };
 
   if (loading) {
@@ -365,31 +407,78 @@ const MyProducts = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2">
-                        <Link
-                          to={`/my-products`}
-                          onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
-                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-primary hover:bg-primary hover:text-zinc-900 transition-colors"
-                        >
-                          <span className="material-icons text-xl">info</span>
-                          <span className="text-[10px] font-bold mt-1 uppercase">Details</span>
-                        </Link>
-                        <Link
-                          to={`/request-repair/${product.productID}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors"
-                        >
-                          <span className="material-icons text-xl">build</span>
-                          <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
-                        </Link>
-                        <Link
-                          to={`/request-recycling/${product.productID}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors"
-                        >
-                          <span className="material-icons text-xl">recycling</span>
-                          <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
-                        </Link>
+                      <div className="grid grid-cols-1 gap-2">
+                        {product.status?.toLowerCase() === "repair request" ? (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleResolveRepair(product.productID, "repaired"); }}
+                              className="flex-1 flex flex-col items-center justify-center p-2 rounded-lg bg-primary/20 text-primary hover:bg-primary hover:text-zinc-900 transition-colors border border-primary/20"
+                            >
+                              <span className="material-icons text-xl">done_all</span>
+                              <span className="text-[10px] font-bold mt-1 uppercase">Mark Repaired</span>
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleResolveRepair(product.productID, "not repairable"); }}
+                              className="flex-1 flex flex-col items-center justify-center p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20"
+                            >
+                              <span className="material-icons text-xl">block</span>
+                              <span className="text-[10px] font-bold mt-1 uppercase">Not Repairable</span>
+                            </button>
+                          </div>
+                        ) : product.status?.toLowerCase() === "recycling request" ? (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleCompleteRecycling(product.productID); }}
+                            className="w-full flex flex-col items-center justify-center p-2 rounded-lg bg-emerald-500/20 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors border border-emerald-500/20"
+                          >
+                            <span className="material-icons text-xl">check_circle</span>
+                            <span className="text-[10px] font-bold mt-1 uppercase">Complete Recycling</span>
+                          </button>
+                        ) : (
+                          <div className="grid grid-cols-3 gap-2">
+                            <Link
+                              to={`/my-products`}
+                              onClick={(e) => { e.stopPropagation(); setSelectedProduct(product); }}
+                              className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-primary hover:bg-primary hover:text-zinc-900 transition-colors"
+                            >
+                              <span className="material-icons text-xl">info</span>
+                              <span className="text-[10px] font-bold mt-1 uppercase">Details</span>
+                            </Link>
+
+                            {/* REPAIR BUTTON: Hidden if already not repairable or recycled/sold */}
+                            {!["not repairable", "recycled", "sold"].includes(product.status?.toLowerCase()) ? (
+                              <Link
+                                to={`/request-repair/${product.productID}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-amber-600 hover:bg-amber-600 hover:text-white transition-colors"
+                              >
+                                <span className="material-icons text-xl">build</span>
+                                <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
+                              </Link>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 opacity-50 cursor-not-allowed">
+                                <span className="material-icons text-xl">build</span>
+                                <span className="text-[10px] font-bold mt-1 uppercase">Repair</span>
+                              </div>
+                            )}
+
+                            {/* RECYCLE BUTTON: Hidden if already recycled/sold */}
+                            {!["recycled", "sold"].includes(product.status?.toLowerCase()) ? (
+                              <Link
+                                to={`/request-recycling/${product.productID}`}
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors"
+                              >
+                                <span className="material-icons text-xl">recycling</span>
+                                <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
+                              </Link>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 opacity-50 cursor-not-allowed">
+                                <span className="material-icons text-xl">recycling</span>
+                                <span className="text-[10px] font-bold mt-1 uppercase">Recycle</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
