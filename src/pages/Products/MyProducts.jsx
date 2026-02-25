@@ -487,7 +487,113 @@ const MyProducts = () => {
           )}
         </section>
 
+        {/* Details Side Panel (Drawer) */}
+        {selectedProduct && (
+          <aside className="fixed right-0 top-0 h-full w-full md:w-[450px] bg-white dark:bg-zinc-900 shadow-2xl z-[60] border-l border-zinc-200 dark:border-zinc-800 flex flex-col animate-in slide-in-from-right duration-300">
+            <header className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
+              <h2 className="text-xl font-bold">Product Details</h2>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              >
+                <span className="material-icons">close</span>
+              </button>
+            </header>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+              {/* Product Visuals */}
+              <div className="aspect-video bg-zinc-100 dark:bg-zinc-800 rounded-2xl overflow-hidden shadow-inner border border-zinc-200 dark:border-zinc-700 flex items-center justify-center">
+                {selectedProduct.images?.[0] ? (
+                  <img src={selectedProduct.images[0]} alt={selectedProduct.model} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="material-symbols-outlined text-7xl text-zinc-300">inventory_2</span>
+                )}
+              </div>
+
+              {/* Core Info */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-2xl font-bold">{selectedProduct.productName}</h3>
+                  <p className="text-zinc-500 font-bold uppercase text-xs tracking-widest">{selectedProduct.model} • {selectedProduct.category}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <span className={`${getStatusColor(selectedProduct.status)} font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-sm`}>
+                    {selectedProduct.status}
+                  </span>
+                  <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-bold px-3 py-1 rounded-full text-[10px] uppercase tracking-wider border border-zinc-200 dark:border-zinc-700">
+                    {selectedProduct.condition} Condition
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                  <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Product ID</p>
+                  <p className="font-mono text-xs font-bold truncate">{selectedProduct.productID}</p>
+                </div>
+                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                  <p className="text-[10px] text-zinc-400 font-bold uppercase mb-1">Purchase Price</p>
+                  <p className="font-bold">${selectedProduct.purchasePrice || '0.00'}</p>
+                </div>
+              </div>
+
+              {/* QR Code Section */}
+              {selectedProduct.qrCode && (
+                <div className="p-6 bg-zinc-50 dark:bg-zinc-800/40 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col items-center gap-4">
+                  <div className="w-40 h-40 bg-white p-3 rounded-xl shadow-lg border-2 border-primary">
+                    <img src={selectedProduct.qrCode} alt="QR Code" className="w-full h-full" />
+                  </div>
+                  <p className="text-[10px] text-zinc-400 font-black uppercase text-center leading-tight">
+                    Digital Passport QR Code<br />
+                    <span className="text-primary">Verified on Ledger</span>
+                  </p>
+                </div>
+              )}
+
+              {/* Timeline */}
+              <div className="space-y-6 pt-4">
+                <h4 className="font-bold flex items-center gap-2">
+                  <span className="material-icons text-primary text-lg">history</span>
+                  Lifecycle History
+                </h4>
+                <div className="relative pl-6 border-l-2 border-zinc-100 dark:border-zinc-800 space-y-8 pb-4">
+                  {selectedProduct.lifecycle?.slice().reverse().map((event, idx) => (
+                    <div key={idx} className="relative">
+                      <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]"></div>
+                      <div className="flex flex-col gap-0.5">
+                        <p className="font-bold text-sm capitalize">{event.eventType}</p>
+                        <p className="text-xs text-zinc-500 font-medium leading-relaxed">{event.description}</p>
+                        <p className="text-[9px] font-bold text-zinc-400 uppercase mt-1">
+                          {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <footer className="p-6 border-t border-zinc-100 dark:border-zinc-800 grid grid-cols-2 gap-4">
+              <Link
+                to={`/edit-product/${selectedProduct.productID}`}
+                className="flex items-center justify-center gap-2 py-3 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-xl font-bold text-sm transition-colors"
+              >
+                <span className="material-icons text-sm">edit</span>
+                Edit Info
+              </Link>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="py-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-bold text-sm transition-all"
+              >
+                Close Panel
+              </button>
+            </footer>
+          </aside>
+        )}
+
       </main>
+
 
       <footer className="bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 px-6 py-2 flex items-center justify-between text-[10px] text-zinc-400 uppercase tracking-widest font-bold">
         <div className="flex gap-6">
