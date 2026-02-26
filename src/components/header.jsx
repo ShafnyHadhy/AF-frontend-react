@@ -21,6 +21,12 @@ export default function Header() {
                         >
                             How it Works
                         </Link>
+                        <Link 
+                            className="text-sm font-medium text-slate-600 transition-colors hover:text-[#2463eb] dark:text-slate-300"
+                            to="/my-products"
+                        >
+                            My Products
+                        </Link>
                         <Link
                             className="text-sm font-medium text-slate-600 transition-colors hover:text-[#2463eb] dark:text-slate-300"
                             to="/services"
