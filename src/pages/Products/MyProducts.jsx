@@ -221,10 +221,6 @@ const MyProducts = () => {
                 <span className="material-icons text-sm">location_on</span>
                 Find Recycler
               </button>
-              <Link to="/analytics" className="w-full flex items-center gap-3 px-4 py-2.5 bg-white text-gray-700 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-all">
-                <span className="material-icons text-sm">analytics</span>
-                Impact Report
-              </Link>
             </div>
           </section>
 
