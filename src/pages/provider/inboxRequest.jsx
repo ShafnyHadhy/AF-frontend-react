@@ -1,6 +1,6 @@
 export default function InboxRequests() {
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 px-8">
             <h2 className="text-lg font-bold text-slate-900">Inbox Requests</h2>
             <div className="space-y-3">
                 {[1, 2, 3, 4].map((i) => (

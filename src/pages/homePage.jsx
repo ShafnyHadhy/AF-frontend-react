@@ -7,39 +7,19 @@ import { BiArrowToRight } from "react-icons/bi";
 export default function HomePage() {
   return (
     <div className="bg-[#f6f6f8] text-slate-900 font-[Inter,sans-serif] dark:bg-[#111621] dark:text-slate-100">
-      <Header />
 
-      <div className="w-full h-full">
-        <Routes path="/">
-          <Route path="/" />
-          <Route
-            path="/services"
-            element={
-              <h1 className="text-3xl font-bold text-primary">Services Page</h1>
-            }
-          />
-          <Route
-            path="/providers"
-            element={
-              <h1 className="text-3xl font-bold text-primary">
-                Providers Page
-              </h1>
-            }
-          />
-          <Route
-            path="/impact"
-            element={
-              <h1 className="text-3xl font-bold text-primary">Impact Page</h1>
-            }
-          />
-          <Route
-            path="/*"
-            element={
-              <h1 className="text-3xl font-bold text-primary">404 Not Found</h1>
-            }
-          />
-        </Routes>
-      </div>
+        <Header />
+
+        <div className="w-full h-full"> 
+             <Routes path="/">
+               <Route path="/" />
+               <Route path="/services" element={<h1 className="text-3xl font-bold text-primary">Services Page</h1>} />
+               <Route path="/providers" element={<h1 className="text-3xl font-bold text-primary">Providers Page</h1>} />
+               <Route path="/impact" element={<h1 className="text-3xl font-bold text-primary">Impact Page</h1>} />
+               <Route path="/*" element={<h1 className="text-3xl font-bold text-primary">404 Not Found</h1>} />
+           </Routes>
+       </div>
+
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pb-20 lg:pb-32 pt-10 lg:pt-20">
@@ -63,7 +43,10 @@ export default function HomePage() {
 
             <button className="flex items-center gap-2 text-base font-semibold leading-6 text-slate-900 transition-all hover:gap-3 dark:text-white">
               View Demo
-              <span aria-hidden="true" className="material-symbols-outlined">
+              <span
+                aria-hidden="true"
+                className="material-symbols-outlined"
+              >
                 <BiArrowToRight className="text-white" />
               </span>
             </button>
@@ -90,7 +73,10 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section className="bg-white py-24 dark:bg-[#111621]" id="how-it-works">
+      <section
+        className="bg-white py-24 dark:bg-[#111621]"
+        id="how-it-works"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
@@ -158,7 +144,9 @@ export default function HomePage() {
             <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-10 shadow-sm dark:border-slate-700 dark:bg-slate-800">
               <div>
                 <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-[#2463eb]/10 text-[#2463eb]">
-                  <span className="material-symbols-outlined text-3xl"></span>
+                  <span className="material-symbols-outlined text-3xl">
+                    
+                  </span>
                 </div>
                 <h3 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">
                   Repair Services
@@ -170,15 +158,21 @@ export default function HomePage() {
                 </p>
                 <ul className="mb-10 space-y-4">
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#2463eb]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#2463eb]">
+                      
+                    </span>{" "}
                     Electronics &amp; Appliances
                   </li>
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#2463eb]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#2463eb]">
+                      
+                    </span>{" "}
                     Fashion &amp; Footwear
                   </li>
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#2463eb]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#2463eb]">
+                      
+                    </span>{" "}
                     Furniture &amp; Home Goods
                   </li>
                 </ul>
@@ -192,27 +186,35 @@ export default function HomePage() {
             <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-10 shadow-sm dark:border-slate-700 dark:bg-slate-800">
               <div>
                 <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-[#10b981]/10 text-[#10b981]">
-                  <span className="material-symbols-outlined text-3xl"></span>
+                  <span className="material-symbols-outlined text-3xl">
+                    
+                  </span>
                 </div>
                 <h3 className="mb-4 text-3xl font-bold text-slate-900 dark:text-white">
                   Recycling Services
                 </h3>
                 <p className="mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
-                  When a product reaches its end, ensure it returns to the loop.
-                  We partner with certified facilities to handle your materials
-                  responsibly and sustainably.
+                  When a product reaches its end, ensure it returns to the
+                  loop. We partner with certified facilities to handle your
+                  materials responsibly and sustainably.
                 </p>
                 <ul className="mb-10 space-y-4">
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#10b981]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#10b981]">
+                      
+                    </span>{" "}
                     Certified E-waste Handling
                   </li>
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#10b981]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#10b981]">
+                      
+                    </span>{" "}
                     Plastic &amp; Metal Recovery
                   </li>
                   <li className="flex items-center gap-3 text-slate-700 dark:text-slate-300">
-                    <span className="material-symbols-outlined text-[#10b981]"></span>{" "}
+                    <span className="material-symbols-outlined text-[#10b981]">
+                      
+                    </span>{" "}
                     Textile Recycling Programs
                   </li>
                 </ul>
@@ -246,7 +248,9 @@ export default function HomePage() {
               href="#"
             >
               View all partners{" "}
-              <span className="material-symbols-outlined text-sm"></span>
+              <span className="material-symbols-outlined text-sm">
+                
+              </span>
             </a>
           </div>
 
@@ -255,7 +259,9 @@ export default function HomePage() {
             <div className="min-w-[320px] snap-start rounded-xl border border-slate-200 bg-[#f6f6f8] p-6 dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-100 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-700">
-                  <span className="material-symbols-outlined text-[#2463eb]"></span>
+                  <span className="material-symbols-outlined text-[#2463eb]">
+                    
+                  </span>
                 </div>
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                   Repair
@@ -299,7 +305,9 @@ export default function HomePage() {
             <div className="min-w-[320px] snap-start rounded-xl border border-slate-200 bg-[#f6f6f8] p-6 dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-100 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-700">
-                  <span className="material-symbols-outlined text-[#10b981]"></span>
+                  <span className="material-symbols-outlined text-[#10b981]">
+                    
+                  </span>
                 </div>
                 <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                   Recycler
@@ -343,7 +351,9 @@ export default function HomePage() {
             <div className="min-w-[320px] snap-start rounded-xl border border-slate-200 bg-[#f6f6f8] p-6 dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-4 flex items-start justify-between">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-slate-100 bg-white shadow-sm dark:border-slate-600 dark:bg-slate-700">
-                  <span className="material-symbols-outlined text-[#2463eb]"></span>
+                  <span className="material-symbols-outlined text-[#2463eb]">
+                    
+                  </span>
                 </div>
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
                   Repair
