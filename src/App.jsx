@@ -1,13 +1,10 @@
-import {
-  BrowserRouter,
-  Route,
-  Router,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminPage from "./pages/adminPage";
 import HomePage from "./pages/homePage";
 import LoginPage from "./pages/loginPage";
+import RegisterPage from "./pages/registerPage";
+import UserPage from "./pages/userPage";
+import VerifyOTPPage from "./pages/verifyOTPPage";
 import { Toaster } from "react-hot-toast";
 import ProviderPage from "./pages/providerPage";
 import MyProducts from "./pages/Products/MyProducts";
@@ -19,24 +16,19 @@ import Analytics from "./pages/Products/Analytics";
 import QRScreen from "./pages/Products/QRScreen";
 import RequestRepair from "./pages/Products/RequestRepair";
 import RequestRecycling from "./pages/Products/RequestRecycling";
-import { AuthProvider } from "./context/AuthContext";
 
-const AppLayout = ({ children }) => {
-  const location = useLocation();
-  const hideNavbarPaths = ["/login", "/register", "/verify-otp"];
-  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
-
+function App() {
   return (
     <BrowserRouter>
-      <div className="w-full ">
+      <div className="w-full">
         <Toaster position="top-right" />
 
-        <Routes path="/">
-          <Route
-            path="/register"
-            element={<h1 className="text-3xl font-bold">Register</h1>}
-          />
+        <Routes>
+          <Route path="/register/step1" element={<RegisterPage />} />
+          <Route path="/user" element={<UserPage />} />
+          <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/edit-profile" element={<div>Edit Profile Page</div>} />
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/provider/*" element={<ProviderPage />} />
           <Route path="/my-products" element={<MyProducts />} />
@@ -61,61 +53,6 @@ const AppLayout = ({ children }) => {
         </Routes>
       </div>
     </BrowserRouter>
-  );
-};
-
-function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/verify-otp" element={<OTPPage />} />
-
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute role="admin">
-                  <AdminPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/provider/dashboard"
-              element={
-                <ProtectedRoute role="provider">
-                  <ProviderPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/customer/dashboard"
-              element={
-                <ProtectedRoute role="customer">
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </AppLayout>
-      </AuthProvider>
-    </Router>
   );
 }
 
