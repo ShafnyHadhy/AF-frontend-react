@@ -45,10 +45,6 @@ export default function HomePage() {
       <section className="relative overflow-hidden pb-20 lg:pb-32 pt-10 lg:pt-20">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,var(--color-blue-50),white)] dark:bg-none" />
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="mb-8 inline-flex items-center rounded-full bg-[#2463eb]/10 px-3 py-1 text-sm font-medium text-[#2463eb] ring-1 ring-inset ring-[#2463eb]/20">
-            <span className="mr-2">🌱</span> Join the movement for a greener
-            planet
-          </div>
 
           <h1 className="mx-auto max-w-4xl text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:text-6xl">
             Extend the Life of Your Products.{" "}
@@ -60,7 +56,7 @@ export default function HomePage() {
             you. Reduce waste and contribute to a circular economy with ease.
           </p>
 
-          <div className="mt-10 flex items-center justify-center gap-x-6">
+          <div className="mt-10 flex items-center justify-center gap-x-6 mb-30">
             <button className="rounded-lg bg-[#2463eb] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-blue-700 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#2463eb]">
               Get Started for Free
             </button>
