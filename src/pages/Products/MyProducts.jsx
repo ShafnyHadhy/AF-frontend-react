@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -16,6 +16,7 @@ const MyProducts = () => {
 
   const token = localStorage.getItem("token");
 
+  // --- API HANDLERS ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -113,6 +114,7 @@ const MyProducts = () => {
     }
   };
 
+  // --- RENDER HELPERS ---
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "in transit":
@@ -142,28 +144,31 @@ const MyProducts = () => {
     return `${Math.min(100, ((index + 1) / 5) * 100)}%`;
   };
 
-  // Helper to filter and search products
-  const filteredProducts = products.filter(product => {
-    const status = product.status?.toLowerCase() || "";
-    const name = product.productName?.toLowerCase() || "";
-    const brand = product.Brand?.toLowerCase() || "";
-    const model = product.model?.toLowerCase() || "";
-    const id = product.productID?.toLowerCase() || "";
-    const search = searchQuery.toLowerCase();
+  // Helper to filter and search products (Memoized for performance to reduce load)
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const status = product.status?.toLowerCase() || "";
+      const name = product.productName?.toLowerCase() || "";
+      const brand = product.Brand?.toLowerCase() || "";
+      const model = product.model?.toLowerCase() || "";
+      const id = product.productID?.toLowerCase() || "";
+      const search = searchQuery.toLowerCase();
 
-    const matchesCategory = activeFilter === "All" ||
-      (activeFilter === "Listed for Sale" ? product.isForSale :
-        activeFilter === "Active" ? (status === 'active' || status === 'registered') :
-          status === activeFilter.toLowerCase());
+      const matchesCategory = activeFilter === "All" ||
+        (activeFilter === "Listed for Sale" ? product.isForSale :
+          activeFilter === "Active" ? (status === 'active' || status === 'registered') :
+            status === activeFilter.toLowerCase());
 
-    const matchesSearch = name.includes(search) ||
-      brand.includes(search) ||
-      model.includes(search) ||
-      id.includes(search);
+      const matchesSearch = name.includes(search) ||
+        brand.includes(search) ||
+        model.includes(search) ||
+        id.includes(search);
 
-    return matchesCategory && matchesSearch;
-  });
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, activeFilter, searchQuery]);
 
+  // --- MAIN RENDER ---
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -217,7 +222,7 @@ const MyProducts = () => {
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-secondary transition-all shadow-sm">
+              <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary text-zinc-900 rounded-lg font-bold hover:bg-secondary transition-all shadow-sm">
                 <span className="material-icons text-sm">location_on</span>
                 Find Recycler
               </button>
@@ -265,7 +270,7 @@ const MyProducts = () => {
               <p className="text-sm text-gray-500">Manage and track your sustainable assets</p>
             </div>
             <div className="flex gap-3">
-              <Link to="/add-product" className="px-4 py-2 bg-primary text-white rounded-lg font-bold flex items-center gap-2 hover:bg-secondary transition-all shadow-sm">
+              <Link to="/add-product" className="px-4 py-2 bg-primary text-zinc-900 rounded-lg font-bold flex items-center gap-2 hover:bg-secondary transition-all shadow-sm">
                 <span className="material-icons text-sm">add</span>
                 Register
               </Link>
@@ -277,7 +282,7 @@ const MyProducts = () => {
               <article key={product._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all group relative">
                 <div className="relative aspect-video overflow-hidden bg-gray-100 flex items-center justify-center">
                   {product.images?.[0] ? (
-                    <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={product.images[0]} alt={product.model} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <span className="material-icons text-4xl text-gray-300">inventory_2</span>
                   )}
@@ -332,7 +337,7 @@ const MyProducts = () => {
                       <Link to={`/request-repair/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-gray-600 bg-gray-50 border border-gray-200 rounded hover:bg-gray-100 flex flex-col items-center gap-1">
                         <span className="material-icons text-sm">build</span> Repair
                       </Link>
-                      <Link to={`/request-recycling/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-white bg-primary rounded hover:bg-secondary flex flex-col items-center gap-1">
+                      <Link to={`/request-recycling/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-zinc-900 bg-primary rounded hover:bg-secondary flex flex-col items-center gap-1">
                         <span className="material-icons text-sm">recycling</span> Recycle
                       </Link>
                     </div>
@@ -373,7 +378,7 @@ const MyProducts = () => {
 
             <div className="aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden flex items-center justify-center">
               {selectedProduct.images?.[0] ? (
-                <img src={selectedProduct.images[0]} alt="Detail View" className="w-full h-full object-cover" />
+                <img src={selectedProduct.images[0]} alt="Detail View" loading="lazy" className="w-full h-full object-cover" />
               ) : (
                 <span className="material-icons text-6xl text-gray-300">inventory_2</span>
               )}
@@ -424,7 +429,7 @@ const MyProducts = () => {
               <button onClick={() => { handleToggleSell(selectedProduct.productID, selectedProduct.isForSale); setSelectedProduct(null); }} className="flex-1 py-3 bg-white border border-gray-200 text-gray-700 font-bold rounded-lg hover:bg-gray-50 transition-colors">
                 {selectedProduct.isForSale ? 'Unlist' : 'List for Sale'}
               </button>
-              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-white font-bold text-center rounded-lg hover:bg-secondary transition-colors">
+              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-zinc-900 font-bold text-center rounded-lg hover:bg-secondary transition-colors">
                 Edit Product
               </Link>
             </div>
@@ -469,7 +474,7 @@ const MyProducts = () => {
 
             <div className="flex gap-3">
               <button className="flex-1 py-3 font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors" onClick={() => setShowSellModal(false)}>Cancel</button>
-              <button className="flex-1 py-3 font-bold text-white bg-primary rounded-xl hover:bg-secondary transition-all shadow-lg shadow-green-100" onClick={handleSellSubmit}>Confirm Listing</button>
+              <button className="flex-1 py-3 font-bold text-zinc-900 bg-primary rounded-xl hover:bg-secondary transition-all shadow-lg shadow-green-100" onClick={handleSellSubmit}>Confirm Listing</button>
             </div>
           </div>
         </div>
