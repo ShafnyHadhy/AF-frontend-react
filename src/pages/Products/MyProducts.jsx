@@ -181,10 +181,10 @@ const MyProducts = () => {
     <div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="material-icons text-primary text-3xl">recycling</span>
-            <h1 className="text-xl font-bold tracking-tight text-gray-800">EcoCycle <span className="text-primary">Pro</span></h1>
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2 lg:pl-[4.125rem]">
+            <span className="material-icons text-green-600 text-3xl">recycling</span>
+            <h1 className="text-xl font-bold tracking-tight text-gray-800">EcoCycle <span className="text-green-600">Pro</span></h1>
           </Link>
 
           <div className="flex-1 max-w-md mx-8 hidden md:block">
@@ -242,7 +242,7 @@ const MyProducts = () => {
                 <li key={item.id}>
                   <button
                     onClick={() => setActiveFilter(item.id)}
-                    className={`flex items-center justify-between w-full px-3 py-2 rounded-md transition-all ${activeFilter === item.id ? 'bg-green-50 text-primary font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
+                    className={`flex items-center justify-between w-full px-3 py-2 rounded-md transition-all ${activeFilter === item.id ? 'bg-green-100 text-green-800 font-bold' : 'text-gray-600 hover:bg-gray-100'}`}
                   >
                     <span className="flex items-center gap-2">
                       <span className="material-icons text-sm">{item.icon}</span>
@@ -292,7 +292,7 @@ const MyProducts = () => {
 
                   {/* Floating Actions */}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Link to={`/edit-product/${product.productID}`} className="p-2 bg-white/90 rounded-full shadow-sm hover:text-primary transition-colors">
+                    <Link to={`/edit-product/${product.productID}`} className="p-2 bg-white/90 rounded-full shadow-sm hover:text-green-600 transition-colors">
                       <span className="material-icons text-sm">edit</span>
                     </Link>
                     <DeleteProduct productID={product.productID} onDeleteSuccess={(id) => setProducts(products.filter(p => p.productID !== id))} />
@@ -301,7 +301,7 @@ const MyProducts = () => {
 
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-1">
-                    <h4 className="font-bold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">{product.productName}</h4>
+                    <h4 className="font-bold text-gray-900 group-hover:text-green-600 transition-colors line-clamp-1">{product.productName}</h4>
                     <span className="text-xs font-bold text-gray-900 whitespace-nowrap ml-2">Rs. {product.price || 0}</span>
                   </div>
                   <p className="text-[10px] text-gray-500 mb-4">{product.Brand || "Unknown Brand"} • {product.model || "Unknown Model"} • SN: {(product.productID || "N/A").slice(-8).toUpperCase()}</p>
@@ -318,7 +318,7 @@ const MyProducts = () => {
 
                   {product.status?.toLowerCase() === "repair request" ? (
                     <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-primary bg-green-50 border border-green-100 rounded hover:bg-green-100 flex items-center justify-center gap-1">
+                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-100 rounded hover:bg-green-100 flex items-center justify-center gap-1">
                         <span className="material-icons text-sm">done</span> Fixed
                       </button>
                       <button onClick={() => handleResolveRepair(product.productID, "not repairable")} className="py-2 px-1 text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 rounded hover:bg-red-100 flex items-center justify-center gap-1">
@@ -344,11 +344,11 @@ const MyProducts = () => {
                   )}
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-[10px] font-bold flex items-center gap-1 ${product.isForSale ? 'text-orange-500' : 'text-gray-400 hover:text-primary transition-colors'}`}>
+                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-[10px] font-bold flex items-center gap-1 ${product.isForSale ? 'text-orange-500' : 'text-gray-400 hover:text-green-600 transition-colors'}`}>
                       <span className="material-icons text-xs">{product.isForSale ? 'money_off' : 'sell'}</span>
                       {product.isForSale ? 'Listed' : 'Sell'}
                     </button>
-                    <Link to={`/qr-screen/${product.productID}`} className="text-gray-400 hover:text-primary transition-colors">
+                    <Link to={`/qr-screen/${product.productID}`} className="text-gray-400 hover:text-green-600 transition-colors">
                       <span className="material-icons text-xs">qr_code_2</span>
                     </Link>
                   </div>
@@ -402,7 +402,7 @@ const MyProducts = () => {
                 <div>
                   <p className="text-[10px] font-bold text-gray-400 uppercase">Serial Passport</p>
                   <p className="text-sm font-mono font-bold truncate max-w-[200px]">{(selectedProduct.productID || "N/A").toUpperCase()}</p>
-                  <p className="text-xs text-primary font-medium">Verified by EcoCycle v2.4</p>
+                  <p className="text-xs text-green-600 font-medium">Verified by EcoCycle v2.4</p>
                 </div>
               </div>
             </div>
