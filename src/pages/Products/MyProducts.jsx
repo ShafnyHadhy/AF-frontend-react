@@ -344,12 +344,12 @@ const MyProducts = () => {
                   )}
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-[10px] font-bold flex items-center gap-1 ${product.isForSale ? 'text-orange-500' : 'text-gray-400 hover:text-green-600 transition-colors'}`}>
-                      <span className="material-icons text-xs">{product.isForSale ? 'money_off' : 'sell'}</span>
+                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-[11px] font-bold flex items-center gap-1 ${product.isForSale ? 'text-orange-500' : 'text-gray-600 hover:text-green-600 transition-colors'}`}>
+                      <span className="material-icons text-sm">{product.isForSale ? 'money_off' : 'sell'}</span>
                       {product.isForSale ? 'Listed' : 'Sell'}
                     </button>
-                    <Link to={`/qr-screen/${product.productID}`} className="text-gray-400 hover:text-green-600 transition-colors">
-                      <span className="material-icons text-xs">qr_code_2</span>
+                    <Link to={`/qr-screen/${product.productID}`} className="text-gray-600 hover:text-green-600 transition-colors">
+                      <span className="material-icons text-sm">qr_code_2</span>
                     </Link>
                   </div>
                 </div>
