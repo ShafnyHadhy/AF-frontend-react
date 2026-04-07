@@ -10,6 +10,10 @@ export default function ManageRequestPage() {
     const navigate = useNavigate();
     const [request, setRequest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+
+    const availableStatuses = ['Pending', 'Accepted', 'Scheduled', 'In Progress', 'Completed', 'Cancelled'];
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -55,10 +59,43 @@ export default function ManageRequestPage() {
         switch (status) {
             case 'Pending': return 'bg-amber-100 text-amber-800 border-amber-200';
             case 'Accepted': return 'bg-green-100 text-green-800 border-green-200';
+            case 'Scheduled': return 'bg-blue-100 text-blue-800 border-blue-200';
             case 'In Progress': return 'bg-blue-100 text-blue-800 border-blue-200';
             case 'Completed': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
             case 'Cancelled': return 'bg-red-100 text-red-800 border-red-200';
             default: return 'bg-slate-100 text-slate-800 border-slate-200';
+        }
+    };
+
+    const handleUpdateStatus = async (newStatus) => {
+        if (newStatus === request.status) {
+            setIsDropdownOpen(false);
+            return;
+        }
+
+        try {
+            setIsUpdating(true);
+            setIsDropdownOpen(false);
+            const token = localStorage.getItem('token');
+            const response = await axios.patch(
+                import.meta.env.VITE_API_URL + `/api/repairs/${id}/status`,
+                { status: newStatus },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Update local state and lifecycle array implicitly or fetch from response if full object returned
+            if (response.data) {
+                setRequest(prev => ({
+                    ...prev,
+                    status: newStatus,
+                    lifecycle: [...(prev.lifecycle || []), { status: newStatus, timestamp: new Date().toISOString(), note: `Status updated to ${newStatus}` }]
+                }));
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('Failed to update status. Please try again.');
+        } finally {
+            setIsUpdating(false);
         }
     };
 
@@ -174,10 +211,35 @@ export default function ManageRequestPage() {
                         {/* Quick Actions */}
                         <div className="bg-white rounded-2xl border border-green-200 p-6 shadow-sm">
                             <h3 className="text-sm font-bold text-slate-900 mb-4">Quick Actions</h3>
-                            <div className="space-y-3">
-                                <button className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm">
-                                    Update Status
+                            <div className="space-y-3 relative">
+                                <button 
+                                    disabled={isUpdating}
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {isUpdating ? 'Updating...' : 'Update Status'}
+                                    <span className="material-symbols-outlined text-sm">{isDropdownOpen ? 'expand_less' : 'expand_more'}</span>
                                 </button>
+
+                                {isDropdownOpen && (
+                                    <div className="absolute top-12 left-0 w-full bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+                                        {availableStatuses.map(status => (
+                                            <button
+                                                key={status}
+                                                onClick={() => handleUpdateStatus(status)}
+                                                disabled={status === request.status}
+                                                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                                                    status === request.status 
+                                                    ? 'bg-slate-50 text-slate-400 cursor-not-allowed' 
+                                                    : 'text-slate-700 hover:bg-green-50 hover:text-green-700 font-medium'
+                                                }`}
+                                            >
+                                                {status} {status === request.status && '(Current)'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
                                 <button className="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-sm font-medium rounded-xl transition-colors">
                                     Message Customer
                                 </button>

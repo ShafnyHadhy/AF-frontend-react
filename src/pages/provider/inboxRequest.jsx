@@ -171,7 +171,13 @@ export default function InboxRequests() {
                                                     ? 'bg-amber-100 text-amber-700'
                                                     : request.status === 'Accepted'
                                                         ? 'bg-green-100 text-green-700'
-                                                        : 'bg-red-100 text-red-700'
+                                                        : request.status === 'Scheduled'
+                                                            ? 'bg-blue-100 text-blue-700'
+                                                            : request.status === 'In Progress'
+                                                                ? 'bg-blue-100 text-blue-700'
+                                                                : request.status === 'Completed'
+                                                                    ? 'bg-emerald-100 text-emerald-700'
+                                                                    : 'bg-red-100 text-red-700'                      
                                             }`}>
                                                 {request.status}
                                             </span>
@@ -179,7 +185,7 @@ export default function InboxRequests() {
                                                 className="text-xs text-slate-600 hover:underline px-2"
                                                 to={`/provider/manage-request/${request._id}`}
                                             >
-                                                View
+                                                View More
                                             </Link>
                                         </div>
                                     </div>
