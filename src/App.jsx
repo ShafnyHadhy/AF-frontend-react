@@ -24,7 +24,7 @@ function App() {
 
         <Toaster position="top-right" />
 
-        <Routes path="/">
+        <Routes>
 
           <Route path="/register" element={<h1 className="text-3xl font-bold">Register</h1>} />
           <Route path="/login" element={<LoginPage />} />
