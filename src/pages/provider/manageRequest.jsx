@@ -256,7 +256,7 @@ export default function ManageRequestPage() {
                                     <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                                         <div className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-white bg-green-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10"></div>
                                         <div className="w-[calc(100%-2rem)] md:w-[calc(50%-1.5rem)] bg-slate-50 p-3 rounded-xl border border-slate-100 shadow-sm">
-                                            <div className="flex items-center justify-between space-x-2 mb-1">
+                                            <div className="flex flex-col items-start justify-center space-y-1 mb-1">
                                                 <div className="font-bold text-slate-900 text-sm">{stage.status}</div>
                                                 <div className="text-[10px] text-slate-500">{new Date(stage.timestamp).toLocaleDateString()}</div>
                                             </div>
