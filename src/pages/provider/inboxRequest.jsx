@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { RiProgress3Line } from "react-icons/ri";
+import { FiSend } from "react-icons/fi";
+import { TbProgressCheck, TbProgressX, TbProgressHelp, TbProgressBolt } from "react-icons/tb";
+import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 
 export default function InboxRequests() {
 
@@ -11,6 +14,7 @@ export default function InboxRequests() {
     const [messageInput, setMessageInput] = useState('');
     const [chatThreads, setChatThreads] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
+    const [activeFilter, setActiveFilter] = useState('All');
 
     useEffect(() => {
 
@@ -114,6 +118,14 @@ export default function InboxRequests() {
         setMessageInput(text);
     };
 
+    const filteredRequests = requests.filter( request => {
+        if (activeFilter === 'All') return true;
+        if (activeFilter === 'Accepted') {
+            return ['Accepted', 'Scheduled', 'In Progress', 'Completed'].includes(request.status);
+        }
+        return request.status === activeFilter;
+    });
+
     const selectedChatMessages = selectedRequest ? chatThreads[selectedRequest._id] || [] : [];
 
     return (
@@ -126,17 +138,29 @@ export default function InboxRequests() {
                             <span className="text-xs text-slate-500">{requests.length} items</span>
                         </div>
                         <div>
-                            <button className="px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium hover:bg-amber-200"
+                            <button 
+                                className="px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-300"
+                                onClick={() => setActiveFilter('All')}
+                            >
+                                All
+                            </button>
+                            <button 
+                                className="ml-2 px-3 py-1.5 rounded-full bg-amber-100 text-amber-700 text-xs font-medium hover:bg-amber-200"
+                                onClick={() => setActiveFilter('Pending')}
                             >
                                 Pending
                             </button>
-                            <button className="ml-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-xs font-medium hover:bg-green-200"
+                            <button 
+                                className="ml-2 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-xs font-medium hover:bg-green-200"
+                                onClick={() => setActiveFilter('Accepted')}
                             >
                                 Accepted
                             </button>
-                            <button className="ml-2 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200"
+                            <button 
+                                className="ml-2 px-3 py-1.5 rounded-full bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200"
+                                onClick={() => setActiveFilter('Cancelled')}
                             >
-                                Declined
+                                Cancelled
                             </button>
                         </div>
 
@@ -147,39 +171,39 @@ export default function InboxRequests() {
                                 </div>
                             )}
 
-                            {!isLoading && requests.map((request) => (
+                            {!isLoading && filteredRequests.map((request) => (
                                 <button
                                     key={request._id}
                                     onClick={() => handleSelectRequest(request)}
                                     className={`w-full text-left bg-white rounded-2xl p-4 shadow-soft border transition-colors cursor-pointer ${
                                         selectedRequest?._id === request._id
                                             ? 'border-green-400 ring-1 ring-green-200'
-                                            : 'border-green-100 hover:border-green-300'
+                                            : 'border-green-200 hover:border-green-300'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-sm font-semibold text-slate-900 truncate">{request.productName}</h3>
-                                            <p className="text-xs text-slate-400 mt-1 truncate">
+                                            <p className="text-xs text-slate-400 mt-1 truncate italic">
                                                 Customer: {request.user?.firstName} {request.user?.lastName}
                                             </p>
                                             <p className="text-xs text-slate-500 mt-1 line-clamp-2">{request.description}</p>
                                         </div>
                                         <div className="flex flex-col items-end gap-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                                                request.status === 'Pending'
-                                                    ? 'bg-amber-100 text-amber-700'
-                                                    : request.status === 'Accepted'
-                                                        ? 'bg-green-100 text-green-700'
-                                                        : request.status === 'Scheduled'
-                                                            ? 'bg-blue-100 text-blue-700'
-                                                            : request.status === 'In Progress'
-                                                                ? 'bg-blue-100 text-blue-700'
-                                                                : request.status === 'Completed'
-                                                                    ? 'bg-emerald-100 text-emerald-700'
-                                                                    : 'bg-red-100 text-red-700'                      
-                                            }`}>
-                                                {request.status}
+                                            <span className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                                                request.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
+                                                request.status === 'Accepted' ? 'bg-green-100 text-green-700' :
+                                                request.status === 'Scheduled' ? 'bg-blue-100 text-blue-700' :
+                                                request.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                                                request.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                                                'bg-red-100 text-red-700'                      
+                                            }`} title={request.status}>
+                                                {request.status === 'Pending' && <TbProgressHelp className="text-[18px]" />} 
+                                                {request.status === 'Accepted' && <TbProgressCheck className="text-[18px]" />}
+                                                {request.status === 'Scheduled' && <RiProgress3Line className="text-[18px]" />}
+                                                {request.status === 'In Progress' && <TbProgressBolt className="text-[18px]" />}
+                                                {request.status === 'Completed' && <IoCheckmarkDoneCircleOutline className="text-[18px]" />}
+                                                {request.status === 'Cancelled' && <TbProgressX className="text-[18px]" />}
                                             </span>
                                             <Link 
                                                 className="text-xs text-slate-600 hover:underline px-2"
@@ -205,7 +229,7 @@ export default function InboxRequests() {
                             </div>
                         ) : (
                             <div className="w-full min-h-128 bg-white rounded-2xl shadow-soft border border-green-300 flex flex-col overflow-hidden">
-                                <div className="p-5 border-b border-slate-100 bg-slate-50/70">
+                                <div className="p-5 border-b border-slate-200 bg-slate-100">
                                     <div className="flex items-start justify-between gap-4">
                                         <div>
                                             <h3 className="text-base font-semibold text-slate-900">{selectedRequest.productName}</h3>
@@ -223,7 +247,7 @@ export default function InboxRequests() {
                                                 {selectedRequest.status}
                                             </span>
                                         )}
-                                        {selectedRequest.status === 'Declined' && (
+                                        {selectedRequest.status === 'Cancelled' && (
                                             <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-100 text-red-700">
                                                 {selectedRequest.status}
                                             </span>
@@ -256,10 +280,10 @@ export default function InboxRequests() {
                                             placeholder="Type your message..."
                                             value={messageInput}
                                             onChange={(e) => setMessageInput(e.target.value)}
-                                            className="flex-1 resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            className="flex-1 resize-none rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                                         />
-                                        <button onClick={handleSendMessage} className="px-4 py-3 rounded-2xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
-                                            Send
+                                        <button onClick={handleSendMessage} className="px-3 py-3 rounded-xl bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
+                                            <FiSend className="w-4 h-4" />
                                         </button>
                                     </div>
 
