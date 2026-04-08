@@ -16,6 +16,7 @@ import Analytics from "./pages/Products/Analytics";
 import QRScreen from "./pages/Products/QRScreen";
 import RequestRepair from "./pages/Products/RequestRepair";
 import RequestRecycling from "./pages/Products/RequestRecycling";
+import ManageRequestPage from './pages/provider/manageRequest'
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/edit-profile" element={<div>Edit Profile Page</div>} />
           <Route path="/admin/*" element={<AdminPage />} />
           <Route path="/provider/*" element={<ProviderPage />} />
+          <Route path="/provider/manage-request/:id" element={<ManageRequestPage />} />
           <Route path="/my-products" element={<MyProducts />} />
           <Route path="/add-product" element={<AddProduct />} />
           <Route path="/edit-product/:productID" element={<EditProduct />} />
