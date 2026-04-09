@@ -9,10 +9,10 @@ import {
   ArrowUpRight, Users, Clock
 } from 'lucide-react';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
 
-export default function AdminPage() {
+export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +52,7 @@ export default function AdminPage() {
       doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30);
 
       // KPI Summary
-      doc.autoTable({
+      autoTable(doc, {
         startY: 40,
         head: [['Total Repairs', 'Total Recycling', 'Completed Repairs', 'Completed Recycling']],
         body: [[
@@ -66,7 +66,7 @@ export default function AdminPage() {
       });
 
       // Detailed Data Table
-      doc.autoTable({
+      autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 10,
         head: [['Type', 'Product', 'User', 'Status', 'Date']],
         body: data.map(item => [
@@ -83,7 +83,8 @@ export default function AdminPage() {
       doc.save(`eco-revive-report-${Date.now()}.pdf`);
       toast.success("PDF Report Exported!");
     } catch (error) {
-      toast.error("Failed to generate PDF");
+      console.error(error);
+      toast.error("Failed to generate PDF: " + (error.response?.data?.message || error.message));
     }
   };
 
