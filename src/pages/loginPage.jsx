@@ -54,9 +54,9 @@ export default function LoginPage() {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "provider") {
-        navigate("/user");
+        navigate("/provider");
       } else if (user.role === "recycler") {
-        navigate("/user");
+        navigate("/recycler");
       } else {
         navigate("/user");
       }
