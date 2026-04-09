@@ -69,11 +69,6 @@ export default function ProviderDashboardLayout({ activeTab, setActiveTab, provi
 
                         {/* Right Section: Actions & Profile */}
                         <div className="flex items-center gap-3">
-                            {/* Simple Search Mockup (SaaS Standard) */}
-                            {/* <button className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100 text-slate-400 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
-                                <span className="material-symbols-outlined text-[18px]">search</span>
-                                <span className="text-xs font-medium">Search...</span>
-                            </button> */}
 
                             {/* Notifications */}
                             <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
@@ -150,6 +145,17 @@ export default function ProviderDashboardLayout({ activeTab, setActiveTab, provi
                     {children}
                 </div>
             </main>
+
+             <footer className="w-full py-8 border-t border-slate-200 bg-slate-50">
+                <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row gap-4 mb-3 md:mb-0">
+                    {['Privacy', 'Terms', 'Report', 'Support'].map((item) => (
+                    <a key={item} className="text-xs text-slate-500 hover:text-green-600 transition-all" href="#">{item}</a>
+                    ))}
+                </div>
+                <p className="text-xs text-slate-500">© 2026 ReVolve. All rights reserved.</p>
+                </div>
+            </footer>
         </div>
     );
 }

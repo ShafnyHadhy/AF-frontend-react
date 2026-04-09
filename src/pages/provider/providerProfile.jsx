@@ -455,18 +455,7 @@ export default function ProviderProfile() {
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="w-full py-4 border-t border-slate-200 bg-slate-50">
-        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-4 mb-3 md:mb-0">
-            {['Privacy', 'Terms', 'Report', 'Support'].map((item) => (
-              <a key={item} className="text-xs text-slate-500 hover:text-green-600 transition-all" href="#">{item}</a>
-            ))}
-          </div>
-          <p className="text-xs text-slate-500">© 2026 ReVolve. All rights reserved.</p>
-        </div>
-      </footer>
+     
     </div>
   );
 };

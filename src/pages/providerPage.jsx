@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import ProviderDashboardLayout from '../components/ProviderDashboardLayout';
 import ProviderProfile from './provider/providerProfile';
 import InboxRequests from './provider/inboxRequest';
@@ -6,11 +7,23 @@ import Settings from './provider/providerSettings';
 import EarningsReports from './provider/earningView';
 
 export default function ProviderDashboardPage() {
-    const [activeTab, setActiveTab] = useState('overview');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'overview');
+    
+    useEffect(() => {
+        if (location.state?.activeTab) {
+            setActiveTab(location.state.activeTab);
+        }
+    }, [location.state?.activeTab]);
+
     const providerName = 'John Smith'; // This should come from user context
     
     return (
-        <ProviderDashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} providerName={providerName}>
+        <ProviderDashboardLayout 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            providerName={providerName}
+        >
             {activeTab === 'overview' && <DashboardOverview />}
             {activeTab === 'inbox' && <InboxRequests />}
             {activeTab === 'profile' && <ProviderProfile />}
