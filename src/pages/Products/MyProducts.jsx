@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
@@ -168,6 +170,56 @@ const MyProducts = () => {
     });
   }, [products, activeFilter, searchQuery]);
 
+  // --- PDF GENERATOR ---
+  const handleGeneratePDF = () => {
+    const doc = new jsPDF();
+    
+    // Add Company Logo Text (ReVolve)
+    doc.setFontSize(22);
+    doc.setTextColor(22, 101, 52); // Tailwind bg-[#166534]
+    doc.text("ReVolve", 14, 20);
+    
+    // Title
+    doc.setFontSize(16);
+    doc.setTextColor(30, 41, 59); // zinc-800
+    doc.text("Product Catalog Report", 14, 30);
+    
+    // Metadata: DateTime
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    const now = new Date();
+    doc.text(`Generated on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`, 14, 38);
+    doc.text(`Report Period: ${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`, 14, 43);
+
+    // Table Data
+    const tableColumn = ["Product ID", "Name", "Brand", "Condition", "Status", "Price (Rs.)"];
+    const tableRows = [];
+
+    filteredProducts.forEach(product => {
+      const productData = [
+        product.productID,
+        product.productName,
+        product.Brand,
+        product.condition,
+        product.status || "Unknown",
+        product.price ? `Rs. ${product.price}` : "0"
+      ];
+      tableRows.push(productData);
+    });
+
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+      startY: 50,
+      theme: 'striped',
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [22, 101, 52] }
+    });
+
+    doc.save(`ReVolve_Products_${now.toISOString().split('T')[0]}.pdf`);
+    toast.success("Catalog Report Downloaded!");
+  };
+
   // --- MAIN RENDER ---
   if (loading) {
     return (
@@ -180,11 +232,15 @@ const MyProducts = () => {
   return (
     <div className="bg-gray-50 font-sans text-gray-900 min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b-[3px] border-green-300 shadow-sm shadow-green-100/50">
+      <header className="sticky top-0 z-50 bg-white border-b border-green-300 shadow-sm shadow-green-100/50">
         <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 lg:pl-[4.125rem]">
-            <span className="material-icons text-green-600 text-3xl">recycling</span>
-            <h1 className="text-xl font-bold tracking-tight text-gray-800">EcoCycle <span className="text-green-600">Pro</span></h1>
+          <Link to="/" className="flex items-center gap-2.5 group cursor-pointer lg:pl-[4.125rem]">
+            <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+              <span className="material-icons text-[20px]">eco</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight text-slate-900 font-['Manrope']">
+              ReVolve
+            </span>
           </Link>
 
           <div className="flex-1 max-w-md mx-8 hidden md:block">
@@ -218,13 +274,13 @@ const MyProducts = () => {
 
       <main className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6 items-start h-[calc(100vh-4rem)] bg-gray-50">
         {/* Sidebar */}
-        <aside className="w-72 flex-shrink-0 hidden lg:block space-y-8 sticky top-0 self-start h-full overflow-y-auto bg-slate-50 border-[3px] border-green-300 rounded-2xl p-6 shadow-md shadow-green-100/50 custom-scrollbar">
+        <aside className="w-72 flex-shrink-0 hidden lg:block space-y-8 sticky top-0 self-start h-full overflow-y-auto bg-slate-50 border border-green-300 rounded-2xl p-6 shadow-md shadow-green-100/50 custom-scrollbar">
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button className="w-full flex items-center gap-3 px-4 py-2.5 bg-primary text-zinc-900 rounded-lg font-bold hover:bg-secondary transition-all shadow-md shadow-green-100/50 border-[3px] border-green-300">
-                <span className="material-icons text-sm">location_on</span>
-                Find Recycler
+              <button className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300" onClick={() => toast.success('Select a product to request repair or recycling.')}>
+                <span className="material-icons text-[14px]">home_repair_service</span>
+                Repair / Recycle Request
               </button>
             </div>
           </section>
@@ -263,14 +319,18 @@ const MyProducts = () => {
         </aside>
 
         {/* Main Content */}
-        <section className="flex-1 h-full overflow-y-auto bg-white border-[3px] border-green-300 rounded-2xl p-8 shadow-md shadow-green-100/50 custom-scrollbar">
+        <section className="flex-1 h-full overflow-y-auto bg-white border border-green-300 rounded-2xl p-8 shadow-md shadow-green-100/50 custom-scrollbar">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Product Catalog</h2>
               <p className="text-sm text-gray-500">Manage and track your sustainable assets</p>
             </div>
             <div className="flex gap-3">
-              <Link to="/add-product" className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-200 transition-all shadow-md shadow-green-100/50 border-[3px] border-green-300">
+              <button onClick={handleGeneratePDF} className="px-4 py-2 bg-white text-gray-900 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-100 transition-all shadow-md shadow-green-100/50 border border-green-300">
+                <span className="material-icons text-sm text-gray-900">picture_as_pdf</span>
+                Download Report
+              </button>
+              <Link to="/add-product" className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-200 transition-all shadow-md shadow-green-100/50 border border-green-300">
                 <span className="material-icons text-sm">add</span>
                 Register
               </Link>
@@ -279,7 +339,7 @@ const MyProducts = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredProducts.map((product) => (
-              <article key={product._id} className="bg-white rounded-xl border-[3px] border-green-300 overflow-hidden shadow-md shadow-green-100/50 hover:shadow-lg hover:shadow-green-200/50 transition-all group relative">
+              <article key={product._id} className="bg-white rounded-xl border border-green-300 overflow-hidden shadow-md shadow-green-100/50 hover:shadow-lg hover:shadow-green-200/50 transition-all group relative">
                 <div className="relative aspect-video overflow-hidden bg-gray-100 flex items-center justify-center">
                   {product.images?.[0] ? (
                     <img src={product.images[0]} alt={product.model} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -318,7 +378,7 @@ const MyProducts = () => {
 
                   {product.status?.toLowerCase() === "repair request" ? (
                     <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-green-700 bg-green-50 border-[3px] border-green-300 rounded hover:bg-green-100 flex items-center justify-center gap-1 shadow-sm shadow-green-100/50">
+                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-300 rounded hover:bg-green-100 flex items-center justify-center gap-1 shadow-sm shadow-green-100/50">
                         <span className="material-icons text-sm">done</span> Fixed
                       </button>
                       <button onClick={() => handleResolveRepair(product.productID, "not repairable")} className="py-2 px-1 text-[11px] font-bold text-red-600 bg-red-50 border-2 border-red-200 rounded hover:bg-red-100 flex items-center justify-center gap-1 shadow-sm shadow-red-100/50">
@@ -329,37 +389,28 @@ const MyProducts = () => {
                     <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 border-2 border-emerald-400 rounded hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm shadow-emerald-200/50">
                       <span className="material-icons text-sm">check_circle</span> Complete Recycling
                     </button>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-2">
-                      <button onClick={() => setSelectedProduct(product)} className="py-2 px-1 text-[11px] font-bold text-gray-700 bg-gray-100 border-[3px] border-green-300 rounded hover:bg-gray-200 flex flex-col items-center gap-1 shadow-sm shadow-green-100/50">
-                        <span className="material-icons text-sm">info</span> Details
-                      </button>
-                      <Link to={`/request-repair/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-gray-700 bg-gray-100 border-[3px] border-green-300 rounded hover:bg-gray-200 flex flex-col items-center gap-1 shadow-sm shadow-green-100/50">
-                        <span className="material-icons text-sm">build</span> Repair
-                      </Link>
-                      <Link to={`/request-recycling/${product.productID}`} className="py-2 px-1 text-[11px] font-bold text-gray-700 bg-gray-100 border-[3px] border-green-300 rounded hover:bg-gray-200 flex flex-col items-center gap-1 shadow-sm shadow-green-100/50">
-                        <span className="material-icons text-sm">recycling</span> Recycle
-                      </Link>
-                    </div>
-                  )}
+                  ) : null}
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-sm font-bold flex items-center gap-1.5 ${product.isForSale ? 'text-orange-500' : 'text-gray-600 hover:text-green-600 transition-colors'}`}>
-                      <span className="material-icons text-xl">{product.isForSale ? 'money_off' : 'sell'}</span>
-                      {product.isForSale ? 'Listed' : 'Sell'}
+                    <button onClick={() => setSelectedProduct(product)} className="text-gray-600 hover:text-green-600 transition-all hover:scale-110" title="Details">
+                      <span className="material-icons text-[28px]">info</span>
                     </button>
                     <Link to={`/qr-screen/${product.productID}`} className="text-gray-600 hover:text-green-600 transition-colors">
                       <span className="material-icons text-2xl">qr_code_2</span>
                     </Link>
+                    <button onClick={() => handleToggleSell(product.productID, product.isForSale)} className={`text-sm font-bold flex items-center gap-1.5 ${product.isForSale ? 'text-orange-500' : 'text-gray-600 hover:text-green-600 transition-colors'}`}>
+                      <span className="material-icons text-xl">{product.isForSale ? 'money_off' : 'sell'}</span>
+                      {product.isForSale ? 'Listed' : 'Sell'}
+                    </button>
                   </div>
                 </div>
               </article>
             ))}
 
-            <Link to="/add-product" className="bg-gray-50 rounded-xl border-[3px] border-dashed border-green-400 flex flex-col items-center justify-center p-6 text-center hover:bg-green-50 hover:shadow-md hover:shadow-green-100/50 hover:border-green-400 transition-all min-h-[300px]">
+            <Link to="/add-product" className="bg-gray-50 rounded-xl border border-dashed border-green-400 flex flex-col items-center justify-center p-6 text-center hover:bg-green-50 hover:shadow-md hover:shadow-green-100/50 hover:border-green-400 transition-all min-h-[300px]">
               <span className="material-icons text-4xl text-gray-300 mb-2">add_circle_outline</span>
               <p className="text-sm font-medium text-gray-500 mb-4">Register a new product to start tracking its lifecycle.</p>
-              <button className="px-4 py-2 bg-white border-[3px] border-green-300 rounded-md text-sm font-bold text-gray-700 shadow-sm shadow-green-100/50 hover:bg-green-50 transition-colors">Add Product</button>
+              <button className="px-4 py-2 bg-white border border-green-300 rounded-md text-sm font-bold text-gray-700 shadow-sm shadow-green-100/50 hover:bg-green-50 transition-colors">Add Product</button>
             </Link>
           </div>
         </section>
@@ -392,7 +443,7 @@ const MyProducts = () => {
               <p className="text-sm text-gray-600 leading-relaxed mb-4">{selectedProduct.description || "No description available."}</p>
 
               <div className="bg-gray-50 p-4 rounded-lg flex items-center gap-4">
-                <div className="w-16 h-16 bg-white p-1 border-[3px] border-green-300 rounded shadow-sm shadow-green-100/50">
+                <div className="w-16 h-16 bg-white p-1 border border-green-300 rounded shadow-sm shadow-green-100/50">
                   {selectedProduct.qrCode ? (
                     <img src={selectedProduct.qrCode} alt="Passport QR" className="w-full h-full" />
                   ) : (
@@ -412,7 +463,7 @@ const MyProducts = () => {
               <div className="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
                 {selectedProduct.lifecycle?.slice().reverse().map((event, idx) => (
                   <div key={idx} className="relative pl-8">
-                    <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-white border-[3px] border-primary shadow-sm flex items-center justify-center">
+                    <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-white border border-primary shadow-sm flex items-center justify-center">
                       <div className="w-2 h-2 rounded-full bg-primary"></div>
                     </div>
                     <p className="text-xs font-bold text-gray-900 capitalize">{event.eventType}</p>
@@ -426,10 +477,10 @@ const MyProducts = () => {
             </div>
 
             <div className="flex gap-4 pt-4 border-t border-gray-100 sticky bottom-0 bg-white">
-              <button onClick={() => { handleToggleSell(selectedProduct.productID, selectedProduct.isForSale); setSelectedProduct(null); }} className="flex-1 py-3 bg-white border-[3px] border-green-300 text-gray-700 font-bold rounded-lg hover:bg-green-50 transition-colors shadow-sm shadow-green-100/50">
+              <button onClick={() => { handleToggleSell(selectedProduct.productID, selectedProduct.isForSale); setSelectedProduct(null); }} className="flex-1 py-3 bg-white border border-green-300 text-gray-700 font-bold rounded-lg hover:bg-green-50 transition-colors shadow-sm shadow-green-100/50">
                 {selectedProduct.isForSale ? 'Unlist' : 'List for Sale'}
               </button>
-              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-zinc-900 font-bold text-center rounded-lg border-[3px] border-green-300 hover:bg-secondary transition-colors shadow-sm shadow-green-100/50">
+              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-zinc-900 font-bold text-center rounded-lg border border-green-300 hover:bg-secondary transition-colors shadow-sm shadow-green-100/50">
                 Edit Product
               </Link>
             </div>
@@ -457,7 +508,7 @@ const MyProducts = () => {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
                   <input
                     autoFocus
-                    className="w-full pl-8 pr-4 py-3 bg-green-50/30 border-[3px] border-green-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg font-bold outline-none transition-all shadow-inner"
+                    className="w-full pl-8 pr-4 py-3 bg-green-50/30 border border-green-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary text-lg font-bold outline-none transition-all shadow-inner"
                     placeholder="0.00"
                     type="number"
                     value={sellPrice}
@@ -473,8 +524,8 @@ const MyProducts = () => {
             </div>
 
             <div className="flex gap-3">
-              <button className="flex-1 py-3 font-bold text-gray-500 hover:bg-green-50 rounded-xl transition-colors border-[3px] border-green-300 shadow-sm shadow-green-100/50" onClick={() => setShowSellModal(false)}>Cancel</button>
-              <button className="flex-1 py-3 font-bold text-zinc-900 bg-primary rounded-xl hover:bg-secondary transition-all shadow-md shadow-green-100/50 border-[3px] border-green-300" onClick={handleSellSubmit}>Confirm Listing</button>
+              <button className="flex-1 py-3 font-bold text-gray-500 hover:bg-green-50 rounded-xl transition-colors border border-green-300 shadow-sm shadow-green-100/50" onClick={() => setShowSellModal(false)}>Cancel</button>
+              <button className="flex-1 py-3 font-bold text-zinc-900 bg-primary rounded-xl hover:bg-secondary transition-all shadow-md shadow-green-100/50 border border-green-300" onClick={handleSellSubmit}>Confirm Listing</button>
             </div>
           </div>
         </div>

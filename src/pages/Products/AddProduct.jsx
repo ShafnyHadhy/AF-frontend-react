@@ -73,9 +73,9 @@ const AddProduct = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen font-display text-slate-800 dark:text-slate-100">
+    <div className="bg-background-light dark:bg-background-dark h-screen overflow-hidden flex flex-col font-display text-slate-800 dark:text-slate-100">
       {/* Navigation */}
-      <nav className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 flex items-center justify-between">
+      <nav className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 shrink-0 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
             <span className="material-icons text-zinc-900 text-sm">inventory_2</span>
@@ -87,127 +87,129 @@ const AddProduct = () => {
         </Link>
       </nav>
 
-      <div className="max-w-2xl mx-auto py-12 px-6">
-        <header className="mb-10 text-center">
-          <h1 className="text-3xl font-bold mb-2">Register New Product</h1>
+      <div className="w-full max-w-7xl mx-auto py-6 px-6 flex-1 flex flex-col min-h-0 overflow-hidden">
+        <header className="mb-6 shrink-0 text-center">
+          <h1 className="text-3xl font-bold mb-1">Register New Product</h1>
           <p className="text-zinc-500 font-bold">Provide product details and high-quality images for the lifecycle record.</p>
         </header>
 
-        <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          {/* Product Info Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Product Name <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="productName"
-                placeholder="e.g. iPhone 15, MacBook Pro"
-                onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="Brand"
-                placeholder="e.g. Apple, Samsung"
-                onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Model <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="model"
-                placeholder="e.g. A3106, M3 Chip"
-                onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Condition</label>
-              <select
-                name="condition"
-                onChange={handleChange}
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
-                required
-              >
-                <option value="new">Brand New</option>
-                <option value="good">Good / Used</option>
-                <option value="damaged">Damaged / For Parts</option>
-              </select>
-            </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Description</label>
-              <textarea
-                name="description"
-                placeholder="Describe the product history, features, or any notable details..."
-                onChange={handleChange}
-                rows="4"
-                className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
-              ></textarea>
-            </div>
-            <div className="md:col-span-2 space-y-2">
-              <label className="text-xs font-bold uppercase text-zinc-400">Price (Rs.) <span className="text-red-500">*</span></label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
+        <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-8 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex-1 min-h-0 overflow-hidden">
+          {/* Left Column: Product Info Section */}
+          <div className="flex-[2] flex flex-col gap-4 overflow-y-auto pr-4 custom-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Product Name <span className="text-red-500">*</span></label>
                 <input
                   type="text"
-                  name="price"
-                  value={formData.price}
-                  placeholder="e.g. 5000"
+                  name="productName"
+                  placeholder="e.g. iPhone 15, MacBook Pro"
                   onChange={handleChange}
-                  className="w-full bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-xl p-3 pl-12 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                   required
                 />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  name="Brand"
+                  placeholder="e.g. Apple, Samsung"
+                  onChange={handleChange}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Model <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  name="model"
+                  placeholder="e.g. A3106, M3 Chip"
+                  onChange={handleChange}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Condition</label>
+                <select
+                  name="condition"
+                  onChange={handleChange}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
+                  required
+                >
+                  <option value="new">Brand New</option>
+                  <option value="good">Good / Used</option>
+                  <option value="damaged">Damaged / For Parts</option>
+                </select>
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Description</label>
+                <textarea
+                  name="description"
+                  placeholder="Describe the product history, features, or any notable details..."
+                  onChange={handleChange}
+                  rows="3"
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                ></textarea>
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Price (Rs.) <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
+                  <input
+                    type="text"
+                    name="price"
+                    value={formData.price}
+                    placeholder="e.g. 5000"
+                    onChange={handleChange}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 pl-12 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Image Upload Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Right Column: Image Upload Section & Submit */}
+          <div className="flex-1 flex flex-col justify-between overflow-y-auto pl-4 md:border-l border-zinc-100 dark:border-zinc-800 custom-scrollbar">
+            <div className="space-y-4 mb-6">
               <label className="text-xs font-bold uppercase text-zinc-400 block">Product Images</label>
+              <div className="grid grid-cols-2 gap-4">
+                {images.map((img, index) => (
+                  <div key={index} className="relative aspect-square rounded-xl overflow-hidden border-2 border-primary group">
+                    <img src={img} alt="Product" loading="lazy" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <span className="material-icons text-xs">close</span>
+                    </button>
+                  </div>
+                ))}
+                <label className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-zinc-400 hover:text-primary">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <span className="material-icons text-3xl mb-1">add</span>
+                  <span className="text-[10px] font-bold">Add Photo</span>
+                </label>
+              </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {images.map((img, index) => (
-                <div key={index} className="relative aspect-square rounded-xl overflow-hidden border-2 border-primary group">
-                  <img src={img} alt="Product" loading="lazy" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <span className="material-icons text-xs">close</span>
-                  </button>
-                </div>
-              ))}
-              <label className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-zinc-400 hover:text-primary">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <span className="material-icons text-3xl mb-1">add</span>
-                <span className="text-[10px] font-bold">Add Photo</span>
-              </label>
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-zinc-900 py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-lg active:scale-[0.98]"
-          >
-            <span className="material-icons">check_circle</span>
-            Register Product
-          </button>
+            <button
+              type="submit"
+              className="shrink-0 w-full bg-primary hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-900 py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-lg active:scale-[0.98]"
+            >
+              <span className="material-icons">check_circle</span>
+              Register Product
+            </button>
+          </div>
         </form>
       </div>
     </div>
