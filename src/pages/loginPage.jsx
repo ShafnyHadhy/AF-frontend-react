@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [resetOTP, setResetOTP] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [resetStep, setResetStep] = useState(1); // 1: email, 2: otp+password
+  const [resetStep, setResetStep] = useState(1);
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
 
@@ -54,7 +54,7 @@ export default function LoginPage() {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "provider") {
-        navigate("/provider");
+        navigate("/user");
       } else if (user.role === "recycler") {
         navigate("/user");
       } else {

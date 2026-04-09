@@ -17,6 +17,7 @@ import QRScreen from "./pages/Products/QRScreen";
 import RequestRepair from "./pages/Products/RequestRepair";
 import RequestRecycling from "./pages/Products/RequestRecycling";
 import ManageRequestPage from "./pages/provider/manageRequest";
+import EditProfilePage from "./pages/editProfile";
 
 function App() {
   return (
