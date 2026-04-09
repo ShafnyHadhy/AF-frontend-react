@@ -6,7 +6,7 @@ import RegisterPage from "./pages/registerPage";
 import UserPage from "./pages/userPage";
 import VerifyOTPPage from "./pages/verifyOTPPage";
 import { Toaster } from "react-hot-toast";
-import ProviderPage from "./pages/providerPage";
+import ProviderPage from "./pages/providerPageDynamic";
 import MyProducts from "./pages/Products/MyProducts";
 import AddProduct from "./pages/Products/AddProduct";
 import EditProduct from "./pages/Products/EditProduct";
