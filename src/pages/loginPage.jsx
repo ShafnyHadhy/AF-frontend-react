@@ -259,17 +259,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
-      {/* Navbar - Same as Register Page */}
       <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo Section */}
+        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              R
+            <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+              <span class="material-symbols-outlined text-[20px]">eco</span>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">
-                ReConnect
+                ReVolve
               </h1>
               <p className="text-xs text-white/60">
                 Sustainable E-Waste Management
@@ -277,10 +275,13 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
             <a
-              href="#"
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
               Home
@@ -289,19 +290,19 @@ export default function LoginPage() {
               href="#"
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
-              About
+              How it Works
+            </a>
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              My Products
             </a>
             <a
               href="#"
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
               Services
-            </a>
-            <a
-              href="#"
-              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
-            >
-              Contact
             </a>
             <button
               onClick={() => navigate("/register/step1")}
@@ -332,71 +333,79 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
-        <div className="w-full max-w-[1400px]">
-          {/* Grid Layout - Left 4/12 (4/10) and Right 8/12 (6/10) */}
+        <div className="w-full max-w-[1200px]">
           <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
-            {/* Left Panel - 4/12 (4/10) */}
-            <div className="md:col-span-4 relative p-8 text-white flex flex-col justify-between">
+            <div className="md:col-span-4 relative p-6 text-white flex flex-col justify-between">
+              {" "}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
-
               <div className="relative z-10 flex flex-col h-full">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-14 w-14 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-2xl font-bold">
-                    🔐
-                  </div>
+                <div className="flex items-center gap-3 mb-5">
+                  {" "}
                   <div>
                     <p className="text-xs text-white/70">Welcome back to</p>
-                    <h2 className="text-2xl font-bold">ReConnect</h2>
+                    <div className="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[20px]">
+                          eco
+                        </span>
+                      </div>
+                      <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                          ReVolve
+                        </h1>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mt-2">
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-                    Sign in to Your
-                    <br />
-                    Account
+                <div className="mt-1">
+                  {" "}
+                  <h1 className="text-3xl md:text-2xl font-bold leading-tight">
+                    Sign in to Your Account
                   </h1>
-                  <p className="mt-4 text-sm text-white/80 leading-relaxed">
-                    Customers, service providers, recyclers and admins — all in
-                    one place. Access your dashboard and manage your activities
+                  <p className="mt-3 text-sm text-white/80 leading-relaxed">
+                    {" "}
+                    Customers, service providers and recyclers — all in one
+                    place. Access your dashboard and manage your activities
                     seamlessly.
                   </p>
                 </div>
 
-                <div className="mt-10 grid gap-4">
+                <div className="mt-6 grid gap-3">
+                  {" "}
                   <InfoCard
-                    title="👤 Customers"
+                    title="Customers"
                     desc="Request repairs, track e-waste disposal, and earn rewards."
                   />
                   <InfoCard
-                    title="🔧 Service Providers"
+                    title="Service Providers"
                     desc="Manage service requests, update availability, and grow business."
                   />
                   <InfoCard
-                    title="♻️ Recyclers"
+                    title="Recyclers"
                     desc="Handle recycling requests, manage collections, and track impact."
-                  />
-                  <InfoCard
-                    title="👑 Administrators"
-                    desc="Oversee platform operations, manage users, and generate reports."
                   />
                 </div>
 
-                <div className="mt-10 text-[11px] text-white/40 border-t border-white/10 pt-5">
-                  🔒 Secure login. Your data is protected with industry-standard
+                <div className="mt-6 text-[11px] text-white/40 border-t border-white/10 pt-4">
+                  {" "}
+                  Secure login. Your data is protected with industry-standard
                   encryption.
                 </div>
               </div>
             </div>
 
-            {/* Right Panel - 8/12 (6/10) */}
-            <div className="md:col-span-8 p-8 bg-white/5 flex items-center justify-center">
+            <div className="md:col-span-8 p-6 bg-white/5 flex items-center justify-center">
+              {" "}
               <div className="w-full max-w-xl">
-                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-8">
-                  <div className="mb-6 text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-3">
+                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-6">
+                  {" "}
+                  <div className="mb-4 text-center">
+                    {" "}
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-2">
+                      {" "}
                       <svg
-                        className="w-8 h-8 text-white"
+                        className="w-6 h-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -409,23 +418,29 @@ export default function LoginPage() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-2xl font-bold text-white">
+                    <h3 className="text-xl font-bold text-white">
+                      {" "}
                       Welcome Back
                     </h3>
-                    <p className="text-sm text-white/70 mt-1">
+                    <p className="text-xs text-white/70 mt-0.5">
+                      {" "}
                       Enter your credentials to access your account
                     </p>
                   </div>
-
                   {error && (
-                    <div className="mb-5 rounded-lg border border-red-300/30 bg-red-500/15 px-4 py-3 text-sm text-red-100">
+                    <div className="mb-4 rounded-lg border border-red-300/30 bg-red-500/15 px-3 py-2 text-xs text-red-100">
+                      {" "}
+                      {}
                       ⚠️ {error}
                     </div>
                   )}
-
-                  <div className="space-y-4">
+                  <div className="space-y-3">
+                    {" "}
+                    {}
                     <div>
-                      <label className="text-sm text-white/80 font-medium">
+                      <label className="text-xs text-white/80 font-medium">
+                        {" "}
+                        {}
                         Email Address
                       </label>
                       <input
@@ -434,12 +449,13 @@ export default function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="you@example.com"
-                        className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
+                        className="mt-1 w-full h-10 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200" // Reduced h-11 to h-10
                       />
                     </div>
-
                     <div>
-                      <label className="text-sm text-white/80 font-medium">
+                      <label className="text-xs text-white/80 font-medium">
+                        {" "}
+                        {}
                         Password
                       </label>
                       <input
@@ -448,10 +464,9 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={handleKeyDown}
                         placeholder="••••••"
-                        className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
+                        className="mt-1 w-full h-10 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200" // Reduced h-11 to h-10
                       />
                     </div>
-
                     <div className="flex items-center justify-between">
                       <label className="flex items-center gap-2 text-xs text-white/60 cursor-pointer">
                         <input
@@ -462,7 +477,7 @@ export default function LoginPage() {
                       </label>
                       <button
                         onClick={() => {
-                          setResetEmail(email); // Pre-fill with current email
+                          setResetEmail(email);
                           setShowForgotPopup(true);
                         }}
                         className="text-xs text-cyan-200 hover:text-cyan-100 transition"
@@ -470,11 +485,10 @@ export default function LoginPage() {
                         Forgot password?
                       </button>
                     </div>
-
                     <button
                       onClick={login}
                       disabled={loading}
-                      className="mt-2 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      className="mt-1 w-full h-10 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]" // Reduced mt-2 to mt-1, h-12 to h-10
                     >
                       {loading ? (
                         <span className="flex items-center justify-center gap-2">
@@ -501,32 +515,34 @@ export default function LoginPage() {
                           Signing in...
                         </span>
                       ) : (
-                        "✨ Sign In"
+                        "Sign In"
                       )}
                     </button>
-
-                    <div className="relative my-4">
+                    <div className="relative my-3">
+                      {" "}
+                      {}
                       <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-white/10"></div>
                       </div>
                       <div className="relative flex justify-center text-xs">
                         <span className="px-2 bg-transparent text-white/50">
-                          New to ReConnect?
+                          New to ReVolve?
                         </span>
                       </div>
                     </div>
-
                     <button
                       type="button"
                       onClick={() => navigate("/register/step1")}
-                      className="w-full h-11 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-200"
+                      className="w-full h-10 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-200" // Reduced h-11 to h-10
                     >
                       Create New Account
                     </button>
                   </div>
                 </div>
 
-                <p className="mt-5 text-center text-xs text-white/60">
+                <p className="mt-4 text-center text-xs text-white/60">
+                  {" "}
+                  {}
                   Don't have an account?{" "}
                   <button
                     onClick={() => navigate("/register/step1")}
@@ -536,9 +552,11 @@ export default function LoginPage() {
                   </button>
                 </p>
 
-                <p className="mt-2 text-center text-[11px] text-white/40">
-                  🔐 Same login works for all user roles (Customer, Provider,
-                  Recycler, Admin)
+                <p className="mt-1 text-center text-[11px] text-white/40">
+                  {" "}
+                  {}
+                  Same login works for all user roles (Customer, Provider,
+                  Recycler)
                 </p>
               </div>
             </div>
@@ -554,7 +572,6 @@ export default function LoginPage() {
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">🔐</span>
                   <h2 className="text-xl font-bold text-white">
                     {resetStep === 1
                       ? "Reset Password"
