@@ -67,55 +67,55 @@ const QRScreen = () => {
                 </button>
             </nav>
 
-            <main className="flex-1 flex flex-col items-center justify-center p-6 bg-gradient-to-b from-transparent to-primary/5">
-                <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-[3rem] p-10 shadow-2xl border border-zinc-100 dark:border-zinc-800 text-center relative overflow-hidden">
+            <main className="flex-1 flex flex-col items-center justify-center p-4 bg-gradient-to-b from-transparent to-primary/5">
+                <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-[2.5rem] p-6 shadow-2xl border border-zinc-100 dark:border-zinc-800 text-center relative overflow-hidden">
                     {/* Decorative Background Elements */}
                     <div className="absolute top-0 left-0 w-full h-2 bg-primary"></div>
                     <div className="absolute -right-20 -top-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
 
-                    <header className="mb-8">
-                        <h1 className="text-2xl font-black uppercase tracking-tight mb-2">{product.productName}</h1>
-                        <p className="text-zinc-500 font-bold text-lg">{product.model}</p>
-                        <div className="inline-block mt-4 px-4 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">
-                            <p className="text-[10px] text-zinc-400 font-black uppercase tracking-widest leading-none mb-1">Serial Number</p>
-                            <p className="font-mono text-sm font-bold text-primary">{product.serialNumber}</p>
+                    <header className="mb-6">
+                        <h1 className="text-xl font-black uppercase tracking-tight mb-1">{product.productName}</h1>
+                        <p className="text-zinc-500 font-bold text-sm">{product.model}</p>
+                        <div className="inline-block mt-3 px-4 py-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full border border-zinc-200 dark:border-zinc-700">
+                            <p className="text-[9px] text-zinc-400 font-black uppercase tracking-widest leading-none mb-1">Serial Number</p>
+                            <p className="font-mono text-xs font-bold text-primary">{product.serialNumber}</p>
                         </div>
                     </header>
 
                     <div className="relative group">
                         <div className="absolute inset-0 bg-primary rounded-3xl blur opacity-10 group-hover:opacity-20 transition-opacity"></div>
-                        <div className="relative bg-white p-6 rounded-[2.5rem] border-4 border-zinc-50 dark:border-zinc-800 shadow-inner inline-block">
+                        <div className="relative bg-white p-4 rounded-[2rem] border-4 border-zinc-50 dark:border-zinc-800 shadow-inner inline-block">
                             <img
                                 src={product.qrCode}
                                 alt="Product QR Code"
-                                className="w-64 h-64 md:w-80 md:h-80 object-contain mx-auto"
+                                className="w-48 h-48 md:w-56 md:h-56 object-contain mx-auto"
                             />
                         </div>
 
                         {/* Scanning Guides */}
-                        <div className="absolute top-4 left-4 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
-                        <div className="absolute top-4 right-4 w-8 h-8 border-t-4 border-r-4 border-primary rounded-tr-xl"></div>
-                        <div className="absolute bottom-4 left-4 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
-                        <div className="absolute bottom-4 right-4 w-8 h-8 border-b-4 border-r-4 border-primary rounded-br-xl"></div>
+                        <div className="absolute top-3 left-3 w-6 h-6 border-t-[3px] border-l-[3px] border-primary rounded-tl-lg"></div>
+                        <div className="absolute top-3 right-3 w-6 h-6 border-t-[3px] border-r-[3px] border-primary rounded-tr-lg"></div>
+                        <div className="absolute bottom-3 left-3 w-6 h-6 border-b-[3px] border-l-[3px] border-primary rounded-bl-lg"></div>
+                        <div className="absolute bottom-3 right-3 w-6 h-6 border-b-[3px] border-r-[3px] border-primary rounded-br-lg"></div>
                     </div>
 
-                    <div className="mt-10 space-y-4">
-                        <p className="text-sm font-bold text-zinc-500 px-6">
+                    <div className="mt-6 space-y-2">
+                        <p className="text-xs font-bold text-zinc-500 px-4">
                             Scan this code to verify authenticity and view the complete digital lifecycle timeline.
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-primary">
-                            <span className="material-icons animate-bounce">expand_more</span>
-                            <span className="text-[10px] uppercase font-black tracking-[0.2em]">Verified digital passport</span>
+                        <div className="flex items-center justify-center gap-1.5 text-primary">
+                            <span className="material-icons animate-bounce text-sm">expand_more</span>
+                            <span className="text-[9px] uppercase font-black tracking-[0.2em]">Verified digital passport</span>
                         </div>
                     </div>
                 </div>
 
-                <div className="mt-12 flex flex-col items-center gap-4">
+                <div className="mt-6 flex flex-col items-center gap-3">
                     <button
                         onClick={() => window.print()}
-                        className="flex items-center gap-3 bg-zinc-900 text-white px-8 py-4 rounded-2xl font-bold hover:scale-105 transition-all shadow-xl"
+                        className="flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-xl font-bold hover:scale-105 transition-all shadow-lg text-sm"
                     >
-                        <span className="material-icons">print</span>
+                        <span className="material-icons text-sm">print</span>
                         Print Tag Label
                     </button>
                     <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">

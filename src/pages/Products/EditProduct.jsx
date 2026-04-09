@@ -8,6 +8,7 @@ const EditProduct = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
 
+    // --- State Variables ---
     const [formData, setFormData] = useState({
         productName: "",
         Brand: "",
@@ -22,7 +23,7 @@ const EditProduct = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
 
-
+    // --- Fetch Product Data ---
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -57,6 +58,7 @@ const EditProduct = () => {
         fetchProduct();
     }, [productID, token]);
 
+    // --- Form Handlers ---
     const handleChange = (e) => {
         const { name, value } = e.target;
         // Numeric validation for price field
@@ -289,7 +291,7 @@ const EditProduct = () => {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             {images.map((img, index) => (
                                 <div key={index} className="relative aspect-square rounded-xl overflow-hidden border-2 border-primary group">
-                                    <img src={img} alt="Product" className="w-full h-full object-cover" />
+                                    <img src={img} alt="Product" loading="lazy" className="w-full h-full object-cover" />
                                     <button
                                         type="button"
                                         onClick={() => removeImage(index)}

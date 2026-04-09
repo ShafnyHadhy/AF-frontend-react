@@ -94,7 +94,7 @@ const Marketplace = () => {
                             <div key={product._id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all group border-b-4 border-b-transparent hover:border-b-primary">
                                 <div className="relative aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     {product.images?.[0] ? (
-                                        <img src={product.images[0]} alt={product.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <img src={product.images[0]} alt={product.model} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <span className="material-symbols-outlined text-6xl text-zinc-300">
                                             inventory_2
