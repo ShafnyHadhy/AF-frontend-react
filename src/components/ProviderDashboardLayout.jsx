@@ -21,7 +21,10 @@ export default function ProviderDashboardLayout({ activeTab, setActiveTab, provi
         { id: 'settings', label: 'Settings'},
     ];
 
+    const email = localStorage.getItem('email');
+
     const handleLogout = () => {
+        localStorage.removeItem('token');
         navigate('/login');
     };
 
@@ -101,7 +104,7 @@ export default function ProviderDashboardLayout({ activeTab, setActiveTab, provi
                                     <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
                                         <div className="px-4 py-2 border-b border-slate-50 mb-1">
                                             <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400">Signed in as</p>
-                                            <p className="text-sm font-semibold text-slate-900 truncate">provider@revolve.com</p>
+                                            <p className="text-xs font-semibold text-slate-900 truncate">{email}</p>
                                         </div>
                                         <button onClick={() => {setActiveTab('profile'); setIsProfileOpen(false)}} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
                                             <span className="material-symbols-outlined text-[18px]">account_circle</span> Profile

@@ -83,7 +83,7 @@ export default function ProviderDashboardPage() {
         };
     }, [activeTab]);
 
-    const providerName = 'John Smith';
+    const providerName = 'Shafny Hadhy';
 
     return (
         <ProviderDashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} providerName={providerName}>
