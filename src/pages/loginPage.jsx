@@ -9,6 +9,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Forgot Password Popup States
+  const [showForgotPopup, setShowForgotPopup] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetOTP, setResetOTP] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetStep, setResetStep] = useState(1);
+  const [resetLoading, setResetLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
+
   const navigate = useNavigate();
 
   async function login() {
@@ -44,7 +54,7 @@ export default function LoginPage() {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "provider") {
-        navigate("/provider");
+        navigate("/user");
       } else if (user.role === "recycler") {
         navigate("/user");
       } else {
@@ -74,6 +84,173 @@ export default function LoginPage() {
     }
   }
 
+  // ==================== FORGOT PASSWORD FUNCTIONS ====================
+
+  // Step 1: Request OTP
+  async function requestResetOTP() {
+    if (!resetEmail) {
+      setResetMessage("Please enter your email address");
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setResetLoading(true);
+    setResetMessage("");
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/forgot-password`,
+        { email: resetEmail },
+      );
+
+      if (response.data.success) {
+        setResetMessage("✅ OTP sent to your email! Check your inbox.");
+        toast.success("OTP sent to your email!");
+        setResetStep(2); // Move to OTP step
+      } else {
+        setResetMessage(response.data.message);
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to send OTP";
+      setResetMessage(`❌ ${message}`);
+      toast.error(message);
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  // Step 2: Verify OTP and Reset Password
+  async function resetPasswordWithOTP() {
+    // Validation
+    if (!resetOTP) {
+      setResetMessage("Please enter the OTP");
+      toast.error("Please enter the OTP");
+      return;
+    }
+
+    if (resetOTP.length !== 6) {
+      setResetMessage("OTP must be 6 digits");
+      toast.error("OTP must be 6 digits");
+      return;
+    }
+
+    if (!newPassword) {
+      setResetMessage("Please enter new password");
+      toast.error("Please enter new password");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setResetMessage("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      setResetMessage("Password must contain at least one uppercase letter");
+      toast.error("Password must contain at least one uppercase letter");
+      return;
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      setResetMessage("Password must contain at least one lowercase letter");
+      toast.error("Password must contain at least one lowercase letter");
+      return;
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      setResetMessage("Password must contain at least one number");
+      toast.error("Password must contain at least one number");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setResetMessage("Passwords do not match");
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setResetLoading(true);
+    setResetMessage("");
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/reset-password-with-otp`,
+        {
+          email: resetEmail,
+          otp: resetOTP,
+          newPassword: newPassword,
+          confirmPassword: confirmPassword,
+        },
+      );
+
+      if (response.data.success) {
+        setResetMessage("✅ Password reset successfully! You can now login.");
+        toast.success("Password reset successful!");
+
+        // Close popup after 2 seconds
+        setTimeout(() => {
+          setShowForgotPopup(false);
+          // Reset form
+          setResetEmail("");
+          setResetOTP("");
+          setNewPassword("");
+          setConfirmPassword("");
+          setResetStep(1);
+          setResetMessage("");
+        }, 2000);
+      } else {
+        setResetMessage(`❌ ${response.data.message}`);
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to reset password";
+      setResetMessage(`❌ ${message}`);
+      toast.error(message);
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  // Resend OTP
+  async function resendOTP() {
+    setResetLoading(true);
+    setResetMessage("");
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/users/resend-reset-otp`,
+        { email: resetEmail },
+      );
+
+      if (response.data.success) {
+        setResetMessage("✅ New OTP sent to your email!");
+        toast.success("New OTP sent!");
+      } else {
+        setResetMessage(response.data.message);
+      }
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to resend OTP";
+      setResetMessage(`❌ ${message}`);
+      toast.error(message);
+    } finally {
+      setResetLoading(false);
+    }
+  }
+
+  // Close popup and reset state
+  function closeForgotPopup() {
+    setShowForgotPopup(false);
+    setResetEmail("");
+    setResetOTP("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setResetStep(1);
+    setResetMessage("");
+    setResetLoading(false);
+  }
+
   function handleKeyDown(e) {
     if (e.key === "Enter") {
       login();
@@ -81,157 +258,451 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden">
-      <div className="min-h-screen w-full bg-black/45 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
-            <div className="relative p-6 md:p-8 text-white flex flex-col justify-between">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/25 via-cyan-400/10 to-transparent pointer-events-none" />
+    <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
+      {/* Navbar - Same as Register Page */}
+      <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
+        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Logo Section */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+              R
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white tracking-tight">
+                ReConnect
+              </h1>
+              <p className="text-xs text-white/60">
+                Sustainable E-Waste Management
+              </p>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-6">
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              Services
+            </a>
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              Contact
+            </a>
+            <button
+              onClick={() => navigate("/register/step1")}
+              className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
+            >
+              Register
+            </button>
+          </nav>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden text-white p-2 rounded-lg bg-white/10 border border-white/20">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
+        <div className="w-full max-w-[1400px]">
+          {/* Grid Layout - Left 4/12 (4/10) and Right 8/12 (6/10) */}
+          <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
+            {/* Left Panel - 4/12 (4/10) */}
+            <div className="md:col-span-4 relative p-8 text-white flex flex-col justify-between">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-sm font-bold">
-                    R
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="h-14 w-14 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-2xl font-bold">
+                    🔐
                   </div>
                   <div>
-                    <p className="text-xs text-white/70">Welcome to</p>
-                    <h2 className="text-xl font-bold">ReConnect Platform</h2>
+                    <p className="text-xs text-white/70">Welcome back to</p>
+                    <h2 className="text-2xl font-bold">ReConnect</h2>
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  <h1 className="text-2xl md:text-3xl font-bold leading-snug">
-                    Customers, Repairers & Recyclers — all in one place.
+                <div className="mt-2">
+                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+                    Sign in to Your
+                    <br />
+                    Account
                   </h1>
-                  <p className="mt-3 text-sm text-white/80">
-                    Find trusted repair centers, request pickups and reduce
-                    e-waste efficiently.
+                  <p className="mt-4 text-sm text-white/80 leading-relaxed">
+                    Customers, service providers, recyclers and admins — all in
+                    one place. Access your dashboard and manage your activities
+                    seamlessly.
                   </p>
                 </div>
 
-                <div className="mt-6 grid gap-2">
-                  <FeatureItemSmall
-                    title="Fast Requests"
-                    desc="Create requests in seconds."
+                <div className="mt-10 grid gap-4">
+                  <InfoCard
+                    title="👤 Customers"
+                    desc="Request repairs, track e-waste disposal, and earn rewards."
                   />
-                  <FeatureItemSmall
-                    title="Trusted Providers"
-                    desc="Verified repairers & recyclers."
+                  <InfoCard
+                    title="🔧 Service Providers"
+                    desc="Manage service requests, update availability, and grow business."
                   />
-                  <FeatureItemSmall
-                    title="Real-time Updates"
-                    desc="Track your request status."
+                  <InfoCard
+                    title="♻️ Recyclers"
+                    desc="Handle recycling requests, manage collections, and track impact."
+                  />
+                  <InfoCard
+                    title="👑 Administrators"
+                    desc="Oversee platform operations, manage users, and generate reports."
                   />
                 </div>
 
-                <div className="mt-6">
-                  <p className="text-xs text-white/70 mb-2">Login as:</p>
-                  <div className="flex flex-wrap gap-2">
-                    <RoleChip label="Customer" />
-                    <RoleChip label="Provider" />
-                    <RoleChip label="Recycler" />
-                    <RoleChip label="Admin" />
-                  </div>
-                </div>
-
-                <div className="mt-6 text-[10px] text-white/60">
-                  By continuing, you agree to our Terms & Privacy Policy.
+                <div className="mt-10 text-[11px] text-white/40 border-t border-white/10 pt-5">
+                  🔒 Secure login. Your data is protected with industry-standard
+                  encryption.
                 </div>
               </div>
             </div>
 
-            <div className="p-6 md:p-8 bg-white/5 flex items-center justify-center">
-              <div className="w-full max-w-sm">
-                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-6">
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold text-white">Sign in</h3>
-                    <p className="text-xs text-white/70 mt-1">
-                      Enter your credentials
+            {/* Right Panel - 8/12 (6/10) */}
+            <div className="md:col-span-8 p-8 bg-white/5 flex items-center justify-center">
+              <div className="w-full max-w-xl">
+                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-8">
+                  <div className="mb-6 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-3">
+                      <svg
+                        className="w-8 h-8 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white">
+                      Welcome Back
+                    </h3>
+                    <p className="text-sm text-white/70 mt-1">
+                      Enter your credentials to access your account
                     </p>
                   </div>
 
                   {error && (
-                    <div className="mb-3 rounded-lg border border-red-300/30 bg-red-500/15 px-3 py-2 text-xs text-red-100">
-                      {error}
+                    <div className="mb-5 rounded-lg border border-red-300/30 bg-red-500/15 px-4 py-3 text-sm text-red-100">
+                      ⚠️ {error}
                     </div>
                   )}
 
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs text-white/80">Email</label>
+                      <label className="text-sm text-white/80 font-medium">
+                        Email Address
+                      </label>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="mt-1 w-full h-10 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-300/70"
+                        placeholder="you@example.com"
+                        className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                       />
                     </div>
 
                     <div>
-                      <label className="text-xs text-white/80">Password</label>
+                      <label className="text-sm text-white/80 font-medium">
+                        Password
+                      </label>
                       <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="mt-1 w-full h-10 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-300/70"
+                        placeholder="••••••"
+                        className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                       />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center gap-2 text-xs text-white/60 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="rounded border-white/30 bg-white/10"
+                        />
+                        Remember me
+                      </label>
+                      <button
+                        onClick={() => {
+                          setResetEmail(email); // Pre-fill with current email
+                          setShowForgotPopup(true);
+                        }}
+                        className="text-xs text-cyan-200 hover:text-cyan-100 transition"
+                      >
+                        Forgot password?
+                      </button>
                     </div>
 
                     <button
                       onClick={login}
                       disabled={loading}
-                      className="w-full h-10 rounded-lg text-sm font-semibold text-slate-900 bg-gradient-to-r from-cyan-200 to-blue-200 hover:from-cyan-100 hover:to-blue-100 transition disabled:opacity-60"
+                      className="mt-2 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
-                      {loading ? "Signing in..." : "Login"}
+                      {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg
+                            className="animate-spin h-4 w-4 text-slate-800"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Signing in...
+                        </span>
+                      ) : (
+                        "✨ Sign In"
+                      )}
                     </button>
+
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-white/10"></div>
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="px-2 bg-transparent text-white/50">
+                          New to ReConnect?
+                        </span>
+                      </div>
+                    </div>
 
                     <button
                       type="button"
                       onClick={() => navigate("/register/step1")}
-                      className="w-full h-10 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/15 transition"
+                      className="w-full h-11 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-200"
                     >
-                      Register
+                      Create New Account
                     </button>
                   </div>
                 </div>
 
-                <p className="mt-3 text-center text-xs text-white/70">
-                  Don&apos;t have an account?{" "}
+                <p className="mt-5 text-center text-xs text-white/60">
+                  Don't have an account?{" "}
                   <button
                     onClick={() => navigate("/register/step1")}
-                    className="font-semibold text-cyan-200 hover:text-cyan-100"
+                    className="font-semibold text-cyan-200 hover:text-cyan-100 transition-all duration-200 underline decoration-cyan-300/30 hover:decoration-cyan-200"
                   >
                     Register here
                   </button>
                 </p>
 
-                <p className="mt-2 text-center text-[10px] text-white/60">
-                  Same login works for all user roles.
+                <p className="mt-2 text-center text-[11px] text-white/40">
+                  🔐 Same login works for all user roles (Customer, Provider,
+                  Recycler, Admin)
                 </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* ==================== FORGOT PASSWORD POPUP MODAL ==================== */}
+      {showForgotPopup && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full shadow-2xl border border-white/20 animate-fade-in">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🔐</span>
+                  <h2 className="text-xl font-bold text-white">
+                    {resetStep === 1
+                      ? "Reset Password"
+                      : "Enter OTP & New Password"}
+                  </h2>
+                </div>
+                <button
+                  onClick={closeForgotPopup}
+                  className="text-white/60 hover:text-white transition text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Message */}
+              {resetMessage && (
+                <div
+                  className={`mb-4 p-3 rounded-lg text-sm ${
+                    resetMessage.includes("✅")
+                      ? "bg-green-500/20 text-green-200 border border-green-500/30"
+                      : "bg-red-500/20 text-red-200 border border-red-500/30"
+                  }`}
+                >
+                  {resetMessage}
+                </div>
+              )}
+
+              {/* Step 1: Email Input */}
+              {resetStep === 1 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-white/80 font-medium block mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      placeholder="Enter your registered email"
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
+                    />
+                  </div>
+                  <button
+                    onClick={requestResetOTP}
+                    disabled={resetLoading}
+                    className="w-full h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-200 disabled:opacity-50"
+                  >
+                    {resetLoading ? "Sending..." : "Send Reset OTP"}
+                  </button>
+                </div>
+              )}
+
+              {/* Step 2: OTP + New Password */}
+              {resetStep === 2 && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-white/80 font-medium block mb-1">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      disabled
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/5 border border-white/10 text-white/60 cursor-not-allowed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-white/80 font-medium block mb-1">
+                      OTP Code
+                    </label>
+                    <input
+                      type="text"
+                      value={resetOTP}
+                      onChange={(e) => setResetOTP(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      maxLength={6}
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200 text-center text-xl tracking-widest"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-white/80 font-medium block mb-1">
+                      New Password
+                    </label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
+                    />
+                    <p className="text-xs text-white/40 mt-1">
+                      Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-sm text-white/80 font-medium block mb-1">
+                      Confirm Password
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
+                    />
+                  </div>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={resendOTP}
+                      disabled={resetLoading}
+                      className="flex-1 h-11 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/20 transition-all duration-200 disabled:opacity-50"
+                    >
+                      Resend OTP
+                    </button>
+                    <button
+                      onClick={resetPasswordWithOTP}
+                      disabled={resetLoading}
+                      className="flex-1 h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50"
+                    >
+                      {resetLoading ? "Resetting..." : "Reset Password"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Footer Note */}
+              <p className="text-center text-xs text-white/40 mt-4">
+                {resetStep === 1
+                  ? "We'll send a 6-digit OTP to your email address"
+                  : "OTP expires in 10 minutes"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function FeatureItemSmall({ title, desc }) {
+function InfoCard({ title, desc }) {
   return (
-    <div className="rounded-xl border border-white/15 bg-white/10 px-3 py-2">
-      <p className="text-sm font-semibold">{title}</p>
-      <p className="text-xs text-white/80">{desc}</p>
+    <div className="rounded-xl border border-white/15 bg-white/10 backdrop-blur-sm px-4 py-3 transition-all duration-300 hover:scale-[1.02] hover:bg-white/15 cursor-default">
+      <p className="text-sm font-semibold text-white">{title}</p>
+      <p className="text-xs text-white/80 leading-relaxed mt-0.5">{desc}</p>
     </div>
-  );
-}
-
-function RoleChip({ label }) {
-  return (
-    <span className="px-3 py-1 rounded-full text-xs font-semibold border border-white/15 bg-white/10 text-white/90">
-      {label}
-    </span>
   );
 }
