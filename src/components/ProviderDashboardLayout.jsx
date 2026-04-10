@@ -34,11 +34,12 @@ export default function ProviderDashboardLayout({
   };
 
   const handleNavigation = (itemId) => {
-    if (itemId === "profile") {
-      navigate("/user");
-    } else {
-      setActiveTab(itemId);
-    }
+    // if (itemId === "profile") {
+    //   navigate("/user");
+    // } else {
+      
+    // }
+    setActiveTab(itemId);
   };
 
   return (
@@ -75,11 +76,11 @@ export default function ProviderDashboardLayout({
                     key={item.id}
                     onClick={() => handleNavigation(item.id)}
                     className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2
-        ${
-          activeTab === item.id && item.id !== "profile"
-            ? "bg-green-50 text-green-700"
-            : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-        }`}
+                    ${
+                      activeTab === item.id && item.id !== "profile"
+                        ? "bg-green-50 text-green-700"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                    }`}
                   >
                     {item.label}
                   </button>
@@ -177,11 +178,11 @@ export default function ProviderDashboardLayout({
                 key={item.id}
                 onClick={() => handleNavigation(item.id)}
                 className={`whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all
-        ${
-          activeTab === item.id && item.id !== "profile"
-            ? "bg-[#166534] text-white shadow-md shadow-green-900/10"
-            : "bg-slate-100 text-slate-500"
-        }`}
+                ${
+                  activeTab === item.id && item.id !== "profile"
+                    ? "bg-[#166534] text-white shadow-md shadow-green-900/10"
+                    : "bg-slate-100 text-slate-500"
+                }`}
               >
                 {item.label}
               </button>
