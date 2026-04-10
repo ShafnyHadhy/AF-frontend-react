@@ -54,11 +54,11 @@ export default function LoginPage() {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "provider") {
-        navigate("/user");
+        navigate("/provider");
       } else if (user.role === "recycler") {
-        navigate("/user");
+        navigate("/provider");
       } else {
-        navigate("/user");
+        navigate("/my-products");
       }
     } catch (err) {
       const message =
@@ -261,10 +261,10 @@ export default function LoginPage() {
     <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
       {/* Navbar - Same as Register Page */}
       <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-350 mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo Section */}
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-green-400 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
               R
             </div>
             <div>
@@ -305,7 +305,7 @@ export default function LoginPage() {
             </a>
             <button
               onClick={() => navigate("/register/step1")}
-              className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
+              className="px-5 py-2 rounded-lg bg-linear-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
             >
               Register
             </button>
@@ -332,12 +332,12 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
-        <div className="w-full max-w-[1400px]">
+        <div className="w-full max-w-350">
           {/* Grid Layout - Left 4/12 (4/10) and Right 8/12 (6/10) */}
           <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
             {/* Left Panel - 4/12 (4/10) */}
             <div className="md:col-span-4 relative p-8 text-white flex flex-col justify-between">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-center gap-3 mb-8">
@@ -394,7 +394,7 @@ export default function LoginPage() {
               <div className="w-full max-w-xl">
                 <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-8">
                   <div className="mb-6 text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-3">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-3">
                       <svg
                         className="w-8 h-8 text-white"
                         fill="none"
@@ -474,7 +474,7 @@ export default function LoginPage() {
                     <button
                       onClick={login}
                       disabled={loading}
-                      className="mt-2 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      className="mt-2 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-linear-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
                       {loading ? (
                         <span className="flex items-center justify-center gap-2">
@@ -549,7 +549,7 @@ export default function LoginPage() {
       {/* ==================== FORGOT PASSWORD POPUP MODAL ==================== */}
       {showForgotPopup && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full shadow-2xl border border-white/20 animate-fade-in">
+          <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full shadow-2xl border border-white/20 animate-fade-in">
             <div className="p-6">
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
@@ -600,7 +600,7 @@ export default function LoginPage() {
                   <button
                     onClick={requestResetOTP}
                     disabled={resetLoading}
-                    className="w-full h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-200 disabled:opacity-50"
+                    className="w-full h-11 rounded-lg text-sm font-bold text-white bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-200 disabled:opacity-50"
                   >
                     {resetLoading ? "Sending..." : "Send Reset OTP"}
                   </button>
@@ -632,7 +632,7 @@ export default function LoginPage() {
                       onChange={(e) => setResetOTP(e.target.value)}
                       placeholder="Enter 6-digit OTP"
                       maxLength={6}
-                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200 text-center text-xl tracking-widest"
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200 text-center tracking-widest"
                     />
                   </div>
 
@@ -676,7 +676,7 @@ export default function LoginPage() {
                     <button
                       onClick={resetPasswordWithOTP}
                       disabled={resetLoading}
-                      className="flex-1 h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50"
+                      className="flex-1 h-11 rounded-lg text-sm font-bold text-white bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50"
                     >
                       {resetLoading ? "Resetting..." : "Reset Password"}
                     </button>
