@@ -121,11 +121,11 @@ const EditProduct = () => {
         <div className="bg-background-light dark:bg-background-dark h-screen overflow-hidden flex flex-col font-display text-slate-800 dark:text-slate-100">
             {/* Navigation */}
             <nav className="bg-white dark:bg-zinc-900 border-b border-green-300 shadow-sm shadow-green-100/50 px-6 py-3 shrink-0 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                        <span className="material-icons text-zinc-900 text-sm">inventory_2</span>
+                <div className="flex items-center gap-2.5 lg:pl-[4.125rem]">
+                    <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20">
+                        <span className="material-icons text-[20px]">eco</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight">EcoCycle Pro</span>
+                    <span className="text-xl font-bold tracking-tight text-slate-900 font-['Manrope']">ReVolve</span>
                 </div>
                 <Link to="/my-products" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     <span className="material-icons">close</span>
