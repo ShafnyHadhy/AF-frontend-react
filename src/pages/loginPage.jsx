@@ -54,11 +54,11 @@ export default function LoginPage() {
       if (user.role === "admin") {
         navigate("/admin");
       } else if (user.role === "provider") {
-        navigate("/user");
+        navigate("/provider");
       } else if (user.role === "recycler") {
-        navigate("/user");
+        navigate("/provider");
       } else {
-        navigate("/user");
+        navigate("/my-products");
       }
     } catch (err) {
       const message =
@@ -306,7 +306,7 @@ export default function LoginPage() {
             </a>
             <button
               onClick={() => navigate("/register/step1")}
-              className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
+              className="px-5 py-2 rounded-lg bg-linear-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
             >
               Register
             </button>
@@ -567,7 +567,7 @@ export default function LoginPage() {
       {/* ==================== FORGOT PASSWORD POPUP MODAL ==================== */}
       {showForgotPopup && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full shadow-2xl border border-white/20 animate-fade-in">
+          <div className="bg-linear-to-br from-gray-900 to-gray-800 rounded-2xl max-w-md w-full shadow-2xl border border-white/20 animate-fade-in">
             <div className="p-6">
               {/* Header */}
               <div className="flex justify-between items-center mb-4">
@@ -617,7 +617,7 @@ export default function LoginPage() {
                   <button
                     onClick={requestResetOTP}
                     disabled={resetLoading}
-                    className="w-full h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-200 disabled:opacity-50"
+                    className="w-full h-11 rounded-lg text-sm font-bold text-white bg-linear-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-all duration-200 disabled:opacity-50"
                   >
                     {resetLoading ? "Sending..." : "Send Reset OTP"}
                   </button>
@@ -649,7 +649,7 @@ export default function LoginPage() {
                       onChange={(e) => setResetOTP(e.target.value)}
                       placeholder="Enter 6-digit OTP"
                       maxLength={6}
-                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200 text-center text-xl tracking-widest"
+                      className="w-full h-11 rounded-lg px-3 text-sm bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200 text-center tracking-widest"
                     />
                   </div>
 
@@ -693,7 +693,7 @@ export default function LoginPage() {
                     <button
                       onClick={resetPasswordWithOTP}
                       disabled={resetLoading}
-                      className="flex-1 h-11 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50"
+                      className="flex-1 h-11 rounded-lg text-sm font-bold text-white bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50"
                     >
                       {resetLoading ? "Resetting..." : "Reset Password"}
                     </button>

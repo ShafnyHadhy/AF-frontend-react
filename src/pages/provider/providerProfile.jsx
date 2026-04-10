@@ -26,14 +26,25 @@ export default function ProviderProfile() {
   useEffect(() => {
     const token = localStorage.getItem('token');
 
+    if (!token) {
+      toast.error('Please login again.');
+      return;
+    }
+
     axios.get(import.meta.env.VITE_API_URL + '/api/providers/me', {
       headers: {
         Authorization: `Bearer ${token}`,
       }
     })
     .then((response) => {
-      // API returns an array, so get the first item
-      const profileData = response.data[0];
+      // API may return an array or a single object
+      const profileData = Array.isArray(response.data) ? response.data[0] : response.data;
+
+      if (!profileData) {
+        setProfile(null);
+        toast('No provider profile found yet.');
+        return;
+      }
       
       setProfile(profileData);
       setBusinessName(profileData.businessName || '');

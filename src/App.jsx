@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import AdminPage from "./pages/adminPage";
+import AdminLayout from './pages/AdminLayout'
 import HomePage from "./pages/homePage";
 import LoginPage from "./pages/loginPage";
 import RegisterPage from "./pages/registerPage";
 import UserPage from "./pages/userPage";
 import VerifyOTPPage from "./pages/verifyOTPPage";
 import { Toaster } from "react-hot-toast";
-import ProviderPage from "./pages/providerPage";
+import ProviderPage from "./pages/providerPageDynamic";
 import MyProducts from "./pages/Products/MyProducts";
 import AddProduct from "./pages/Products/AddProduct";
 import EditProduct from "./pages/Products/EditProduct";
@@ -30,7 +30,7 @@ function App() {
           <Route path="/user" element={<UserPage />} />
           <Route path="/verify-otp" element={<VerifyOTPPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/*" element={<AdminPage />} />
+          <Route path="/admin/*" element={<AdminLayout />} />
           <Route path="/provider/*" element={<ProviderPage />} />
           <Route
             path="/provider/manage-request/:id"
