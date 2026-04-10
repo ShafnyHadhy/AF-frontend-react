@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import RepairRecycleForm from "../../components/RepairRecycleForm";
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
@@ -15,6 +16,7 @@ const MyProducts = () => {
   const [showSellModal, setShowSellModal] = useState(false);
   const [sellPrice, setSellPrice] = useState("");
   const [sellingProductId, setSellingProductId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -278,10 +280,14 @@ const MyProducts = () => {
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300" onClick={() => toast.success('Select a product to request repair or recycling.')}>
+              <button 
+                onClick={() => setIsFormOpen(true)}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300 z-40"
+              >
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
+              {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
             </div>
           </section>
 

@@ -35,7 +35,7 @@ export default function AdminDashboard() {
 
   const generatePDF = async () => {
     try {
-      const res = await axios.get('http://localhost:5001/api/admin/report', {
+      const res = await axios.get(import.meta.env.VITE_API_URL + '/api/admin/report', {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const data = res.data;

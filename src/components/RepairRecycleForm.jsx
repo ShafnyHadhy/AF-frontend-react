@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import ItemDropdown from './ItemDropdown';
 import LocationMap from './LocationMap';
 import { X, Send, Recycle, Hammer, Package } from 'lucide-react';
@@ -7,6 +8,8 @@ import toast from 'react-hot-toast';
 
 export default function RepairRecycleForm({ onClose }) {
     const [type, setType] = useState('repair'); // 'repair' or 'recycle'
+    const [isLocating, setIsLocating] = useState(false);
+    const [locationError, setLocationError] = useState('');
     const [formData, setFormData] = useState({
         productName: '',
         description: '',
@@ -19,18 +22,77 @@ export default function RepairRecycleForm({ onClose }) {
     const [selectedProvider, setSelectedProvider] = useState(null);
 
     useEffect(() => {
-        if (type === 'repair') {
-            axios.get(import.meta.env.VITE_API_URL + '/api/users').then(res => {
-                setProviders(res.data.filter(u => u.role === 'provider'));
-            });
+        if (type === 'repair' && formData.location) {
+            const { lat, lng } = formData.location;
+            axios
+                .get(`${import.meta.env.VITE_API_URL}/api/providers/nearby`, {
+                    params: {
+                        lat,
+                        lng,
+                        radius: 100,
+                    },
+                })
+                .then((res) => {
+                    const list = Array.isArray(res.data) ? res.data : res.data?.providers || [];
+                    setProviders(list);
+                    console.log("Nearby providers:", list);
+                    setSelectedProvider((current) => {
+                        const stillValid = list.some((p) => (p._id || p.id || p.email || '') === current);
+                        return stillValid ? current : null;
+                    });
+                })
+                .catch((error) => {
+                    console.error("Failed to load providers", error);
+                    setProviders([]);
+                });
+        } else if (type === 'repair') {
+            setProviders([]);
+            setSelectedProvider(null);
         }
-    }, [type]);
+    }, [type, formData.location]);
+
+    const useMyLocation = () => {
+        if (!navigator.geolocation) {
+            setLocationError('Geolocation is not supported by this browser.');
+            return;
+        }
+
+        setIsLocating(true);
+        setLocationError('');
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const nextLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+
+                setFormData((prev) => ({
+                    ...prev,
+                    location: nextLocation,
+                }));
+                setIsLocating(false);
+            },
+            (error) => {
+                setIsLocating(false);
+                setLocationError(error.message || 'Unable to get your location.');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0,
+            }
+        );
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!formData.location) {
             return toast.error("Please select a location on the map");
+        }
+        if (type === 'repair' && !selectedProvider) {
+            return toast.error("Please select a nearby provider");
         }
         if (!formData.category) {
             return toast.error("Please select an item category");
@@ -40,8 +102,12 @@ export default function RepairRecycleForm({ onClose }) {
             const endpoint = type === 'repair' ? '/api/repairs' : '/api/recycling';
             const payload = { ...formData, provider: selectedProvider };
 
+            console.log("Submitting request with payload:", payload);
+
+            const token = localStorage.getItem('token');
+
             await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, payload, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} request submitted!`);
@@ -51,9 +117,9 @@ export default function RepairRecycleForm({ onClose }) {
         }
     };
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+    return createPortal(
+        <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-100">
                     <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
@@ -65,7 +131,7 @@ export default function RepairRecycleForm({ onClose }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 max-h-[80vh] overflow-y-auto space-y-6">
+                <form onSubmit={handleSubmit} className="p-6 max-h-[85vh] overflow-y-auto space-y-6">
                     {/* Toggle */}
                     <div className="flex p-1 bg-gray-100 rounded-2xl w-fit mx-auto">
                         <button
@@ -84,8 +150,8 @@ export default function RepairRecycleForm({ onClose }) {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div className="space-y-4 lg:col-span-5">
                             <ItemDropdown onSelect={(item) => setFormData({ ...formData, category: item.name, image: item.image })} />
 
                             <div className="space-y-2">
@@ -120,10 +186,32 @@ export default function RepairRecycleForm({ onClose }) {
                             </div>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 lg:col-span-7">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-700">Select Location</label>
-                                <LocationMap onLocationSelect={(loc) => setFormData({ ...formData, location: loc })} />
+                                <button
+                                    type="button"
+                                    onClick={useMyLocation}
+                                    disabled={isLocating}
+                                    className="w-full mb-2 px-4 py-3 rounded-xl border border-green-300 bg-green-50 text-green-700 font-semibold hover:bg-green-100 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    {isLocating ? 'Locating...' : 'Use my location'}
+                                </button>
+                                <LocationMap
+                                    onLocationSelect={(loc) => setFormData({ ...formData, location: loc })}
+                                    selectedLocation={formData.location}
+                                    providers={providers}
+                                    onProviderSelect={setSelectedProvider}
+                                    selectedProvider={selectedProvider}
+                                />
+                                {formData.location && (
+                                    <p className="text-xs text-green-600 mt-2">
+                                        Location selected: {formData.location.lat.toFixed(5)}, {formData.location.lng.toFixed(5)}
+                                    </p>
+                                )}
+                                {locationError && (
+                                    <p className="text-xs text-red-500 mt-2">{locationError}</p>
+                                )}
                                 <p className="text-xs text-gray-400">Click on the map to set your pickup/repair point</p>
                             </div>
 
@@ -140,17 +228,64 @@ export default function RepairRecycleForm({ onClose }) {
                             </div>
 
                             {type === 'repair' && (
-                                <div className="space-y-2">
+                                <div className="space-y-3">
                                     <label className="text-sm font-semibold text-gray-700">Service Provider</label>
-                                    <select
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                                        onChange={(e) => setSelectedProvider(e.target.value)}
-                                    >
-                                        <option value="">Any available provider</option>
-                                        {providers.map(p => (
-                                            <option key={p._id} value={p._id}>{p.firstName} {p.lastName}</option>
-                                        ))}
-                                    </select>
+                                    <p className="text-xs text-gray-500">Select one nearby provider from the map or the larger list below.</p>
+
+                                    <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 flex items-center justify-between gap-3">
+                                        <div>
+                                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Selected provider</p>
+                                            <p className="text-sm font-bold text-slate-900">
+                                                {selectedProvider
+                                                    ? (providers.find((p, index) => (p._id || p.id || p.email || `provider-${index}`) === selectedProvider)?.businessName || 'Provider selected')
+                                                    : 'No provider selected'}
+                                            </p>
+                                        </div>
+                                        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${selectedProvider ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'}`}>
+                                            {selectedProvider ? 'Chosen' : 'Required'}
+                                        </span>
+                                    </div>
+
+                                    <div className="space-y-2 max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSelectedProvider(null)}
+                                            className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${selectedProvider ? 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50' : 'border-green-300 bg-green-50 text-green-800 shadow-sm'}`}
+                                        >
+                                            <div className="font-semibold text-base">No provider selected</div>
+                                            <div className="text-xs text-gray-500 mt-1">Use if the backend should auto-assign later</div>
+                                        </button>
+
+                                        {providers.map((p, index) => {
+                                            const providerId = p._id || p.id || p.email || `provider-${index}`;
+                                            const isSelected = selectedProvider === providerId;
+
+                                            return (
+                                                <button
+                                                    key={providerId}
+                                                    type="button"
+                                                    onClick={() => setSelectedProvider(providerId)}
+                                                    className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${isSelected ? 'border-blue-500 bg-blue-50 text-gray-900 shadow-md ring-1 ring-blue-200' : 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50'}`}
+                                                >
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div>
+                                                            <div className="font-semibold text-gray-900 text-base">
+                                                                {p.firstName} {p.lastName}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500 mt-0.5">
+                                                                {p.businessName || 'Nearby service provider'}
+                                                            </div>
+                                                        </div>
+                                                        {typeof p.distanceKm === 'number' && (
+                                                            <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-green-700 border border-green-200 shadow-sm">
+                                                                {p.distanceKm} km
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -158,7 +293,8 @@ export default function RepairRecycleForm({ onClose }) {
 
                     <button
                         type="submit"
-                        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 group"
+                        disabled={type === 'repair' && !selectedProvider}
+                        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         Submit {type.toUpperCase()} Request
@@ -166,5 +302,6 @@ export default function RepairRecycleForm({ onClose }) {
                 </form>
             </div>
         </div>
+        , document.body
     );
 }
