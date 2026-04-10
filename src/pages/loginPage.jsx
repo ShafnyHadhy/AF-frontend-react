@@ -55,6 +55,8 @@ export default function LoginPage() {
         navigate("/admin");
       } else if (user.role === "provider") {
         navigate("/provider");
+      } else if (user.role === "customer") {
+        navigate("/customer");
       } else if (user.role === "recycler") {
         navigate("/provider");
       } else {

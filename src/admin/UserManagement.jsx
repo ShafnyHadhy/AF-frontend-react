@@ -66,7 +66,8 @@ export default function AdminPage() {
   }
 
   function getAdminUsersBaseUrl() {
-    return `${import.meta.env.VITE_API_URL}/api/users/admin/users`;
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+    return `${baseUrl}/api/users/admin/users`;
   }
 
   async function checkAuth() {
@@ -195,10 +196,21 @@ export default function AdminPage() {
   }
 
   async function fetchUserById(userId) {
-    const response = await axios.get(`${getAdminUsersBaseUrl()}/${userId}`, {
-      headers: getAuthHeaders(),
-    });
-    return response.data.user;
+    try {
+      const url = `${getAdminUsersBaseUrl()}/${userId}`;
+      console.log("Fetching user from:", url);
+
+      const response = await axios.get(url, {
+        headers: getAuthHeaders(),
+      });
+
+      console.log("User data response:", response.data);
+      return response.data.user;
+    } catch (error) {
+      console.error("Fetch user by ID error:", error);
+      console.error("Error response:", error.response?.data);
+      throw error;
+    }
   }
 
   async function openUserDetails(user) {
