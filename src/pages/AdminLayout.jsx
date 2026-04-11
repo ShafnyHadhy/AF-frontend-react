@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink, Routes, Route } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCog, Settings, Activity, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, UserCog, Settings, Activity, FileText, Package } from 'lucide-react';
 import AdminDashboard from '../admin/AdminDashboard';
 import UserManagement from '../admin/UserManagement';
 import ProviderManagement from '../admin/ProviderManagement';
 import ReportGeneration from '../admin/ReportGeneration';
 import ActivityLogPage from '../admin/ActivityLogPage';
 import SettingsPage from '../admin/SettingsPage';
+import RequestManagement from '../admin/RequestManagement';
 
 export default function AdminLayout() {
     const navItems = [
@@ -14,6 +15,7 @@ export default function AdminLayout() {
         { name: 'Users', path: '/admin/users', icon: Users },
         { name: 'Providers', path: '/admin/providers', icon: UserCog },
         { name: 'Reports', path: '/admin/reports', icon: FileText },
+        { name: 'Requests', path: '/admin/requests', icon: Package },
         { name: 'Activity Log', path: '/admin/logs', icon: Activity },
         { name: 'Settings', path: '/admin/settings', icon: Settings },
     ];
@@ -33,8 +35,8 @@ export default function AdminLayout() {
                             to={item.path}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive
-                                    ? 'bg-primary text-white shadow-md shadow-primary/20'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-primary'
+                                    ? 'bg-accent text-white shadow-md shadow-accent/20'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-accent'
                                 }`
                             }
                         >
@@ -52,6 +54,7 @@ export default function AdminLayout() {
                     <Route path="/users" element={<UserManagement />} />
                     <Route path="/providers" element={<ProviderManagement />} />
                     <Route path="/reports" element={<ReportGeneration />} />
+                    <Route path="/requests" element={<RequestManagement />} />
                     <Route path="/logs" element={<ActivityLogPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                 </Routes>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ItemDropdown from './ItemDropdown';
 import LocationMap from './LocationMap';
-import { X, Send, Recycle, Hammer, Package } from 'lucide-react';
+import { X, Send, Recycle, Hammer, Package, Info } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -224,7 +224,10 @@ export default function RepairRecycleForm({ onClose }) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <div className="space-y-4 lg:col-span-5">
-                            <ItemDropdown onSelect={(item) => setFormData({ ...formData, category: item.name, image: item.image })} />
+                            <ItemDropdown 
+                                onSelect={(item) => setFormData({ ...formData, category: item.name, image: item.image })} 
+                                hidePreview={!!formData.productName}
+                            />
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
@@ -233,7 +236,15 @@ export default function RepairRecycleForm({ onClose }) {
                                         required
                                         disabled={!formData.category}
                                         value={formData.productName}
-                                        onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+                                        onChange={(e) => {
+                                            const name = e.target.value;
+                                            const product = userProducts.find(p => p.productName === name);
+                                            setFormData({ 
+                                                ...formData, 
+                                                productName: name, 
+                                                image: product?.images?.[0] || formData.image 
+                                            });
+                                        }}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                                     >
                                         <option value="" disabled>Select from your existing {formData.category || 'products'}</option>
@@ -245,6 +256,31 @@ export default function RepairRecycleForm({ onClose }) {
                                         }
                                     </select>
                                 </div>
+
+                                {formData.productName && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Selected Product Photo</p>
+                                        <div className="relative h-48 w-full rounded-2xl overflow-hidden shadow-sm border-2 border-green-100 bg-gray-50 flex items-center justify-center">
+                                            {formData.image && (formData.image.startsWith('http') || formData.image.startsWith('data:image')) ? (
+                                                <img
+                                                    src={formData.image}
+                                                    alt={formData.productName}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-gray-400 gap-3">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                                        <Package className="w-6 h-6 opacity-30" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="block text-[10px] font-bold uppercase tracking-tight">No Registration Photo</span>
+                                                        <span className="block text-[9px] opacity-60">Using category default</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -315,25 +351,32 @@ export default function RepairRecycleForm({ onClose }) {
                                                 Select one nearby {type === 'repair' ? 'repair center' : 'recycler'} from the map or the larger list below.
                                             </p>
 
-                                    <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 flex items-center justify-between gap-3">
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Selected provider</p>
-                                            <p className="text-sm font-bold text-slate-900">
-                                                {selectedProvider
-                                                    ? (providers.find((p, index) => (p._id || p.id || p.email || `provider-${index}`) === selectedProvider)?.businessName || 'Provider selected')
-                                                    : 'No provider selected'}
-                                            </p>
+                                    <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-4 flex items-center justify-between gap-3 shadow-sm ring-1 ring-blue-100">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                                                <Info className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Active Selection</p>
+                                                <p className="text-sm font-black text-slate-900 leading-tight">
+                                                    {selectedProvider ? (() => {
+                                                        const p = providers.find((p, index) => (p._id || p.id || p.email || `provider-${index}`) === selectedProvider);
+                                                        if (!p) return 'Provider selected';
+                                                        return `${p.businessName || 'Unnamed Business'} (${p.firstName} ${p.lastName})`;
+                                                    })() : 'No provider selected'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${selectedProvider ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'}`}>
-                                            {selectedProvider ? 'Chosen' : 'Required'}
+                                        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border transition-all ${selectedProvider ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-400 border-slate-200'}`}>
+                                            {selectedProvider ? 'SELECTED' : 'REQUIRED'}
                                         </span>
                                     </div>
 
-                                    <div className="space-y-2 max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+                                    <div className="space-y-2 max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-inner">
                                         <button
                                             type="button"
                                             onClick={() => setSelectedProvider(null)}
-                                            className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${selectedProvider ? 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50' : 'border-green-300 bg-green-50 text-green-800 shadow-sm'}`}
+                                            className={`w-full rounded-xl px-4 py-3 text-left transition-all border-2 ${!selectedProvider ? 'border-primary bg-primary/5 text-primary shadow-sm' : 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50'}`}
                                         >
                                             <div className="font-semibold text-base">No provider selected</div>
                                             <div className="text-xs text-gray-500 mt-1">Choose one to continue</div>
@@ -348,21 +391,28 @@ export default function RepairRecycleForm({ onClose }) {
                                                     key={providerId}
                                                     type="button"
                                                     onClick={() => setSelectedProvider(providerId)}
-                                                    className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${isSelected ? 'border-blue-500 bg-blue-50 text-gray-900 shadow-md ring-1 ring-blue-200' : 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50'}`}
+                                                    className={`w-full rounded-xl px-4 py-4 text-left transition-all border-2 ${isSelected ? 'border-blue-500 bg-blue-50/50 text-gray-900 shadow-md ring-2 ring-blue-500/10' : 'border-gray-100 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-50'}`}
                                                 >
                                                     <div className="flex items-start justify-between gap-4">
-                                                        <div>
-                                                            <div className="font-semibold text-gray-900 text-base">
-                                                                {p.firstName} {p.lastName}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                                                {p.firstName?.charAt(0)}{p.lastName?.charAt(0)}
                                                             </div>
-                                                            <div className="text-sm text-gray-500 mt-0.5">
-                                                                {p.businessName || 'Nearby service provider'}
+                                                            <div>
+                                                                <div className={`font-bold text-sm transition-colors ${isSelected ? 'text-blue-700' : 'text-gray-900'}`}>
+                                                                    {p.businessName || 'Nearby Service'}
+                                                                </div>
+                                                                <div className="text-[10px] text-gray-500 font-medium">
+                                                                    {p.firstName} {p.lastName} • {p.district || p.city || 'Local Area'}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         {typeof p.distanceKm === 'number' && (
-                                                            <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-green-700 border border-green-200 shadow-sm">
-                                                                {p.distanceKm} km
-                                                            </span>
+                                                            <div className="text-right">
+                                                                <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600 border border-blue-100">
+                                                                    {p.distanceKm} km
+                                                                </span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </button>

@@ -343,7 +343,6 @@ const MyProducts = () => {
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
-              {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
             </div>
           </section>
 
