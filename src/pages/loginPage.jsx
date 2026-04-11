@@ -108,7 +108,7 @@ export default function LoginPage() {
       if (response.data.success) {
         setResetMessage("✅ OTP sent to your email! Check your inbox.");
         toast.success("OTP sent to your email!");
-        setResetStep(2); // Move to OTP step
+        setResetStep(2);
       } else {
         setResetMessage(response.data.message);
       }
@@ -121,7 +121,7 @@ export default function LoginPage() {
     }
   }
 
-  // Step 2: Verify OTP and Reset Password
+  // Verify OTP and Reset Password
   async function resetPasswordWithOTP() {
     // Validation
     if (!resetOTP) {
@@ -626,7 +626,7 @@ export default function LoginPage() {
                 </div>
               )}
 
-              {/* Step 2: OTP + New Password */}
+              {/* OTP + New Password */}
               {resetStep === 2 && (
                 <div className="space-y-4">
                   <div>
