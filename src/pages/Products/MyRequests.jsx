@@ -142,10 +142,10 @@ const MyRequests = () => {
                                 <span className="material-icons text-sm">arrow_back</span>
                                 Dashboard
                             </button>
-                            <h1 className="text-5xl font-black tracking-tighter leading-none">
+                            <h1 className="text-4xl font-bold tracking-tight leading-none">
                                 Request <span className="text-emerald-400">Library</span>
                             </h1>
-                            <p className="text-emerald-100/60 max-w-sm text-sm font-medium leading-relaxed">
+                            <p className="text-emerald-100/50 max-w-sm text-xs font-medium leading-relaxed">
                                 Seamlessly track your repair and recycling lifecycle. We ensure your items are handled with care.
                             </p>
                         </div>
@@ -157,9 +157,9 @@ const MyRequests = () => {
                                 { label: 'Active', value: stats.accepted, color: 'text-blue-400' },
                                 { label: 'Settled', value: stats.completed, color: 'text-emerald-400' }
                             ].map((stat) => (
-                                <div key={stat.label} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 text-center shadow-2xl">
-                                    <span className={`block text-2xl font-black ${stat.color} mb-1`}>{stat.value}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{stat.label}</span>
+                                <div key={stat.label} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center">
+                                    <span className={`block text-xl font-bold ${stat.color} mb-0.5`}>{stat.value}</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-widest text-white/30">{stat.label}</span>
                                 </div>
                             ))}
                         </div>
@@ -174,8 +174,8 @@ const MyRequests = () => {
                         <span className="material-icons absolute left-6 top-1/2 -translate-y-1/2 text-emerald-600/50">search</span>
                         <input 
                             type="text"
-                            placeholder="Find specific requests by product name or category..."
-                            className="w-full pl-16 pr-8 py-5 bg-slate-50 border-none rounded-[1.75rem] text-sm font-semibold placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/10 transition-all outline-none"
+                            placeholder="Find specific requests..."
+                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none rounded-2xl text-xs font-semibold placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/10 transition-all outline-none"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -186,9 +186,9 @@ const MyRequests = () => {
                             <button
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
-                                className={`px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.15em] transition-all whitespace-nowrap ${
+                                className={`px-5 py-3 rounded-xl text-[9px] font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                                     activeFilter === filter 
-                                    ? "bg-emerald-600 text-white shadow-xl shadow-emerald-600/30" 
+                                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" 
                                     : "bg-white text-slate-500 hover:bg-slate-50 border border-slate-100"
                                 }`}
                             >
