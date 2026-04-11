@@ -157,12 +157,12 @@ const EditProduct = () => {
     return (
         <div className="bg-background-light dark:bg-background-dark h-screen overflow-hidden flex flex-col font-display text-slate-800 dark:text-slate-100">
             {/* Navigation */}
-            <nav className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 shrink-0 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                        <span className="material-icons text-zinc-900 text-sm">inventory_2</span>
+            <nav className="bg-white dark:bg-zinc-900 border-b border-green-300 shadow-sm shadow-green-100/50 px-6 py-3 shrink-0 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 lg:pl-[4.125rem]">
+                    <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20">
+                        <span className="material-icons text-[20px]">eco</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight">EcoCycle Pro</span>
+                    <span className="text-xl font-bold tracking-tight text-slate-900 font-['Manrope']">ReVolve</span>
                 </div>
                 <Link to="/my-products" className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-all">
                     <span className="material-icons">close</span>
@@ -175,31 +175,31 @@ const EditProduct = () => {
                     <p className="text-zinc-500 font-bold">Update product details and manage images.</p>
                 </header>
 
-                <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex-1 min-h-0 overflow-hidden">
+                <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-green-300 shadow-md shadow-green-100/50 flex-1 min-h-0 overflow-hidden">
                     {/* Column 1: Product Info Section */}
-                    <div className="flex-[1.5] flex flex-col gap-4 overflow-y-auto pr-4 custom-scrollbar lg:border-r border-zinc-100 dark:border-zinc-800">
+                    <div className="flex-[1.5] flex flex-col gap-4 overflow-y-auto pr-4 custom-scrollbar lg:border-r border-green-200">
                         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-zinc-400">Product Name <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-bold uppercase text-gray-900">Product Name <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     name="productName"
                                     value={formData.productName}
                                     placeholder="e.g. iPhone 15, MacBook Pro"
                                     onChange={handleChange}
-                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-zinc-400">Brand <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-bold uppercase text-gray-900">Brand <span className="text-red-500">*</span></label>
                                 <input
                                     type="text"
                                     name="Brand"
                                     value={formData.Brand}
                                     placeholder="e.g. Apple, Samsung"
                                     onChange={handleChange}
-                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                     required
                                 />
                             </div>
@@ -259,17 +259,17 @@ const EditProduct = () => {
                                     value={formData.model}
                                     placeholder="e.g. A3106, M3 Chip"
                                     onChange={handleChange}
-                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                    className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                     required
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase text-zinc-400">Condition</label>
+                                <label className="text-xs font-bold uppercase text-gray-900">Condition</label>
                                 <select
                                     name="condition"
                                     value={formData.condition}
                                     onChange={handleChange}
-                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
+                                    className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-bold"
                                     required
                                 >
                                     <option value="new">Brand New</option>
@@ -278,27 +278,27 @@ const EditProduct = () => {
                                 </select>
                             </div>
                             <div className="xl:col-span-2 space-y-2">
-                                <label className="text-xs font-bold uppercase text-zinc-400">Description</label>
+                                <label className="text-xs font-bold uppercase text-gray-900">Description</label>
                                 <textarea
                                     name="description"
                                     value={formData.description}
                                     placeholder="Describe the product history, features, or any notable details..."
                                     onChange={handleChange}
                                     rows="3"
-                                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                                    className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
                                 ></textarea>
                             </div>
                             <div className="xl:col-span-2 space-y-2">
-                                <label className="text-xs font-bold uppercase text-zinc-400">Price (Rs.) <span className="text-red-500">*</span></label>
+                                <label className="text-xs font-bold uppercase text-gray-900">Price (Rs.) <span className="text-red-500">*</span></label>
                                 <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 font-bold">Rs.</span>
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 font-bold">Rs.</span>
                                     <input
                                         type="text"
                                         name="price"
                                         value={formData.price}
                                         placeholder="e.g. 5000"
                                         onChange={handleChange}
-                                        className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 pl-12 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                        className="w-full bg-green-50/30 border border-green-300 rounded-xl p-3 pl-12 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                                         required
                                     />
                                 </div>
@@ -307,15 +307,15 @@ const EditProduct = () => {
                     </div>
 
                     {/* Column 2: Lifecycle Management Section */}
-                    <div className="flex-1 flex flex-col gap-6 overflow-y-auto px-0 lg:px-4 custom-scrollbar lg:border-r border-zinc-100 dark:border-zinc-800">
+                    <div className="flex-1 flex flex-col gap-6 overflow-y-auto px-0 lg:px-4 custom-scrollbar lg:border-r border-green-200">
                         <div className="flex items-center gap-2">
-                            <span className="material-icons text-primary">analytics</span>
-                            <h2 className="text-lg font-bold">Lifecycle Management</h2>
+                            <span className="material-icons text-gray-900">analytics</span>
+                            <h2 className="text-lg font-bold text-gray-900">Lifecycle Management</h2>
                         </div>
 
                         <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4">
                             <div className="flex flex-col gap-3">
-                                <label className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                                <label className="text-xs font-black uppercase tracking-widest text-gray-900 flex items-center gap-2">
                                     <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                                     Set Current Lifecycle Stage
                                 </label>
@@ -340,11 +340,11 @@ const EditProduct = () => {
 
                         {/* Lifecycle History Preview */}
                         <div className="space-y-4">
-                            <label className="text-xs font-bold uppercase text-zinc-400 flex items-center gap-2">
+                            <label className="text-xs font-bold uppercase text-gray-900 flex items-center gap-2">
                                 <span className="material-icons text-sm">history</span>
                                 Current Lifecycle Events
                             </label>
-                            <div className="bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-4 border border-zinc-100 dark:border-zinc-800">
+                            <div className="bg-green-50/30 rounded-2xl p-4 border border-green-200">
                                 <div className="space-y-3">
                                     {product?.lifecycle?.length > 0 ? (
                                         product.lifecycle.slice().reverse().map((event, i) => (
@@ -373,7 +373,7 @@ const EditProduct = () => {
                     {/* Column 3: Image Upload Section & Buttons */}
                     <div className="flex-[1.2] flex flex-col justify-between overflow-y-auto pl-0 lg:pl-4 custom-scrollbar">
                         <div className="space-y-4 mb-6">
-                            <label className="text-xs font-bold uppercase text-zinc-400 block">Product Images</label>
+                            <label className="text-xs font-bold uppercase text-gray-900 block">Product Images</label>
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                                 {images.map((img, index) => (
                                     <div key={index} className="relative aspect-square rounded-xl overflow-hidden border-2 border-primary group">
@@ -387,7 +387,7 @@ const EditProduct = () => {
                                         </button>
                                     </div>
                                 ))}
-                                <label className="aspect-square rounded-xl border-2 border-dashed border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-zinc-400 hover:text-primary">
+                                <label className="aspect-square rounded-xl border-2 border-dashed border-green-300 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-green-50 transition-all text-zinc-400 hover:text-gray-900">
                                     <input
                                         type="file"
                                         multiple
@@ -404,13 +404,13 @@ const EditProduct = () => {
                         <div className="flex gap-3 shrink-0">
                             <Link
                                 to="/my-products"
-                                className="flex-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 py-3 rounded-xl font-bold transition-all text-center flex items-center justify-center text-sm"
+                                className="flex-1 bg-white border border-green-300 hover:bg-green-50 text-zinc-600 py-3 rounded-xl font-bold transition-all text-center flex items-center justify-center text-sm shadow-sm shadow-green-100/50"
                             >
                                 Cancel
                             </Link>
                             <button
                                 type="submit"
-                                className="flex-[2] bg-primary hover:bg-gray-200 dark:hover:bg-zinc-700 text-zinc-900 py-3 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-sm active:scale-[0.98]"
+                                className="flex-[2] bg-primary hover:bg-gray-300 text-gray-900 hover:text-gray-900 py-3 rounded-xl font-bold transition-all shadow-md shadow-green-100/50 border border-green-300 flex items-center justify-center gap-2 text-sm active:scale-[0.98]"
                             >
                                 <span className="material-icons text-sm">save</span>
                                 Save Changes

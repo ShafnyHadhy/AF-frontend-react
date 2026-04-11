@@ -1,19 +1,59 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
+import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { FiUser, FiMapPin, FiInfo, FiTag, FiClock, FiArrowLeft, FiImage } from "react-icons/fi";
 import ProviderDashboardLayout from "../../components/ProviderDashboardLayout";
 
 export default function ManageRequestPage() {
 
     const { id } = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
     const [request, setRequest] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const [requestType, setRequestType] = useState(location.state?.requestType || '');
 
-    const availableStatuses = ['Pending', 'Accepted', 'Scheduled', 'In Progress', 'Completed', 'Cancelled'];
+    const repairStatuses = ['Pending', 'Accepted', 'Scheduled', 'In Progress', 'Completed', 'Cancelled'];
+    const recycleStatuses = ['Pending', 'Scheduled', 'Collected', 'Recycled', 'Cancelled'];
+    const availableStatuses = requestType === 'recycle' ? recycleStatuses : repairStatuses;
+
+    const requestTypeLabel = requestType === 'recycle' ? 'recycling' : 'repair';
+    const requestTypeTitle = requestType === 'recycle' ? 'Recycle Request Details' : 'Request Details';
+    const descriptionLabel = requestType === 'recycle' ? 'Recycling Details' : 'Issue Description';
+    const manageLabel = requestType === 'recycle' ? 'Manage the recycling process and updates' : 'Manage the repair process and updates';
+    const customerLabel = requestType === 'recycle' ? 'Requestor Details' : 'Customer Details';
+
+    const getRequestEndpoint = async (token) => {
+        if (requestType === 'repair') {
+            const response = await axios.get(import.meta.env.VITE_API_URL + `/api/repairs/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return { data: response.data, type: 'repair' };
+        }
+
+        if (requestType === 'recycle') {
+            const response = await axios.get(import.meta.env.VITE_API_URL + `/api/recycling`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const list = Array.isArray(response.data) ? response.data : [];
+            return { data: list.find((item) => item._id === id || item.id === id) || null, type: 'recycle' };
+        }
+
+        try {
+            const response = await axios.get(import.meta.env.VITE_API_URL + `/api/repairs/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            return { data: response.data, type: 'repair' };
+        } catch (repairError) {
+            const response = await axios.get(import.meta.env.VITE_API_URL + `/api/recycling`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const list = Array.isArray(response.data) ? response.data : [];
+            return { data: list.find((item) => item._id === id || item.id === id) || null, type: 'recycle' };
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -23,20 +63,29 @@ export default function ManageRequestPage() {
             return;
         }
 
-        axios.get(import.meta.env.VITE_API_URL + `/api/repairs/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(response => {
-            console.log(response.data);
-            setRequest(response.data);
-            setIsLoading(false);
-        })
-        .catch(error => {
-            console.error('Error fetching request details:', error);
-            setIsLoading(false);
-        });
+        let cancelled = false;
 
-    }, [id]);
+        (async () => {
+            try {
+                setIsLoading(true);
+                const result = await getRequestEndpoint(token);
+                if (cancelled) return;
+
+                setRequest(result.data);
+                setRequestType(result.type);
+            } catch (error) {
+                console.error('Error fetching request details:', error);
+                if (!cancelled) setRequest(null);
+            } finally {
+                if (!cancelled) setIsLoading(false);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+
+    }, [id, requestType]);
 
     if (isLoading) {
         return (
@@ -61,6 +110,8 @@ export default function ManageRequestPage() {
             case 'Accepted': return 'bg-green-100 text-green-800 border-green-200';
             case 'Scheduled': return 'bg-blue-100 text-blue-800 border-blue-200';
             case 'In Progress': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'Collected': return 'bg-sky-100 text-sky-800 border-sky-200';
+            case 'Recycled': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
             case 'Completed': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
             case 'Cancelled': return 'bg-red-100 text-red-800 border-red-200';
             default: return 'bg-slate-100 text-slate-800 border-slate-200';
@@ -77,19 +128,19 @@ export default function ManageRequestPage() {
             setIsUpdating(true);
             setIsDropdownOpen(false);
             const token = localStorage.getItem('token');
+            const endpoint = requestType === 'recycle' ? `/api/recycling/${id}/status` : `/api/repairs/${id}/status`;
             const response = await axios.patch(
-                import.meta.env.VITE_API_URL + `/api/repairs/${id}/status`,
+                import.meta.env.VITE_API_URL + endpoint,
                 { status: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Update local state and lifecycle array implicitly or fetch from response if full object returned
             if (response.data) {
-                setRequest(prev => ({
+                setRequest(prev => prev ? ({
                     ...prev,
                     status: newStatus,
                     lifecycle: [...(prev.lifecycle || []), { status: newStatus, timestamp: new Date().toISOString(), note: `Status updated to ${newStatus}` }]
-                }));
+                }) : prev);
             }
         } catch (error) {
             console.error('Error updating status:', error);
@@ -116,8 +167,8 @@ export default function ManageRequestPage() {
                         <FiArrowLeft className="text-slate-600" />
                     </button>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Request Details</h1>
-                        <p className="text-sm text-slate-500">Manage the repair process and updates</p>
+                        <h1 className="text-2xl font-bold text-slate-900">{requestTypeTitle}</h1>
+                        <p className="text-sm text-slate-500">{manageLabel}</p>
                     </div>
                 </div>
 
@@ -146,7 +197,7 @@ export default function ManageRequestPage() {
                             </div>
                             
                             <div className="p-6">
-                                <h3 className="text-sm font-semibold text-slate-900 mb-3">Issue Description</h3>
+                                <h3 className="text-sm font-semibold text-slate-900 mb-3">{descriptionLabel}</h3>
                                 <p className="text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100">
                                     {request.description}
                                 </p>
@@ -168,7 +219,7 @@ export default function ManageRequestPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                                 <h3 className="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2 border-b border-slate-100 pb-3">
-                                    <FiUser className="text-green-600" /> Customer Details
+                                    <FiUser className="text-green-600" /> {customerLabel}
                                 </h3>
                                 <div className="space-y-3">
                                     <div>
@@ -241,7 +292,7 @@ export default function ManageRequestPage() {
                                 )}
 
                                 <button className="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-sm font-medium rounded-xl transition-colors">
-                                    Message Customer
+                                    {requestType === 'recycle' ? 'Contact Requestor' : 'Message Customer'}
                                 </button>
                             </div>
                         </div>

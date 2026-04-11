@@ -239,17 +239,15 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
-      {/* Navbar - Matching content style */}
       <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
-          {/* Logo Section */}
+        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-green-400 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              R
+            <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+              <span class="material-symbols-outlined text-[20px]">eco</span>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">
-                ReConnect
+                ReVolve
               </h1>
               <p className="text-xs text-white/60">
                 Sustainable E-Waste Management
@@ -257,10 +255,13 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Navigation Links */}
           <nav className="hidden md:flex items-center gap-6">
             <a
-              href="#"
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("/");
+              }}
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
               Home
@@ -269,19 +270,19 @@ export default function RegisterPage() {
               href="#"
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
-              About
+              How it Works
+            </a>
+            <a
+              href="#"
+              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
+            >
+              My Products
             </a>
             <a
               href="#"
               className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
             >
               Services
-            </a>
-            <a
-              href="#"
-              className="text-white/80 hover:text-white text-sm transition duration-200 hover:scale-105"
-            >
-              Contact
             </a>
             <button
               onClick={() => navigate("/login")}
@@ -312,18 +313,13 @@ export default function RegisterPage() {
 
       {/* Main Content */}
       <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
-        <div className="w-full max-w-[1400px]">
-          {/* Grid Layout - Left 4/12 (4/10) and Right 8/12 (6/10) */}
+        <div className="w-full max-w-[1200px]">
           <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
-            {/* Left Panel - 4/12 (4/10) */}
             <div className="md:col-span-4 relative p-8 text-white flex flex-col justify-between">
               <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="h-14 w-14 rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-2xl font-bold">
-                    🌱
-                  </div>
                   <div>
                     <p className="text-xs text-white/70">Join the movement</p>
                     <h2 className="text-2xl font-bold">Create Account</h2>
@@ -331,7 +327,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="mt-2">
-                  <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+                  <h1 className="text-2xl md:text-2xl font-bold leading-tight">
                     Register & Start Your
                     <br />
                     Green Journey Today
@@ -339,33 +335,32 @@ export default function RegisterPage() {
                   <p className="mt-4 text-sm text-white/80 leading-relaxed">
                     Choose your role and help us build a sustainable future.
                     Whether you're a customer, service provider, or recycler,
-                    ReConnect brings everyone together.
+                    ReVolve brings everyone together.
                   </p>
                 </div>
 
                 <div className="mt-10 grid gap-4">
                   <InfoCard
-                    title="👤 Customer"
+                    title="Customer"
                     desc="Request repairs, track e-waste disposal, and earn rewards."
                   />
                   <InfoCard
-                    title="🔧 Service Provider"
+                    title="Service Provider"
                     desc="Join as a repair center, offer services, and grow your business."
                   />
                   <InfoCard
-                    title="♻️ Recycler"
+                    title="Recycler"
                     desc="Register as an authorized e-waste recycler and make an impact."
                   />
                 </div>
 
                 <div className="mt-10 text-[11px] text-white/40 border-t border-white/10 pt-5">
-                  🔐 After registration, verify your email using the OTP sent to
+                  After registration, verify your email using the OTP sent to
                   your inbox
                 </div>
               </div>
             </div>
 
-            {/* Right Panel - 8/12 (6/10) */}
             <div className="md:col-span-8 p-8 bg-white/5 flex items-center justify-center">
               <div className="w-full max-w-2xl">
                 <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl shadow-xl p-8">
@@ -457,29 +452,28 @@ export default function RegisterPage() {
                           className="text-gray-900 bg-white"
                           value="customer"
                         >
-                          👤 Customer
+                          Customer
                         </option>
                         <option
                           className="text-gray-900 bg-white"
                           value="provider"
                         >
-                          🔧 Service Provider
+                          Service Provider
                         </option>
                         <option
                           className="text-gray-900 bg-white"
                           value="recycler"
                         >
-                          ♻️ Recycler
+                          Recycler
                         </option>
                       </select>
                     </div>
 
-                    {/* Provider Details */}
                     {formData.role === "provider" && (
                       <>
                         <div className="md:col-span-2 mt-3">
                           <p className="text-base font-semibold text-cyan-200 border-l-3 border-cyan-300 pl-3">
-                            🏢 Provider Company Details
+                            Provider Company Details
                           </p>
                         </div>
 
@@ -618,7 +612,7 @@ export default function RegisterPage() {
                       <>
                         <div className="md:col-span-2 mt-3">
                           <p className="text-base font-semibold text-cyan-200 border-l-3 border-cyan-300 pl-3">
-                            ♻️ Recycler Company Details
+                            Recycler Company Details
                           </p>
                         </div>
 
@@ -675,7 +669,7 @@ export default function RegisterPage() {
                             name="recyclerDetails.recyclingTypes"
                             value={formData.recyclerDetails.recyclingTypes}
                             onChange={handleChange}
-                            placeholder="Plastic, Metal, E-waste, Glass"
+                            placeholder="Laptop, Mobile, TV, CCTV"
                             className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                           />
                         </div>
@@ -719,11 +713,11 @@ export default function RegisterPage() {
                               onChange={handleChange}
                               className="w-4 h-4 rounded border-white/30 bg-white/10 text-cyan-400 focus:ring-cyan-400 transition-all duration-200"
                             />
-                            🚚 Pickup Service Available
+                            Pickup Service Available
                           </label>
                         </div>
 
-                        <div className="md:col-span-2">
+                        {/* <div className="md:col-span-2">
                           <label className="text-sm text-white/80">
                             Certifications (comma separated)
                           </label>
@@ -735,7 +729,7 @@ export default function RegisterPage() {
                             placeholder="ISO 14001, CE Certificate"
                             className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                           />
-                        </div>
+                        </div> */}
 
                         <div className="md:col-span-2">
                           <label className="text-sm text-white/80">
@@ -815,7 +809,7 @@ export default function RegisterPage() {
                         Creating account...
                       </span>
                     ) : (
-                      "✨ Register Now"
+                      "Register Now"
                     )}
                   </button>
 
