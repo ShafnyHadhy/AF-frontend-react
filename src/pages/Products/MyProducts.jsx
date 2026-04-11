@@ -218,17 +218,17 @@ const MyProducts = () => {
   // --- PDF GENERATOR ---
   const handleGeneratePDF = () => {
     const doc = new jsPDF();
-    
+
     // Add Company Logo Text (ReVolve)
     doc.setFontSize(22);
     doc.setTextColor(22, 101, 52); // Tailwind bg-[#166534]
     doc.text("ReVolve", 14, 20);
-    
+
     // Title
     doc.setFontSize(16);
     doc.setTextColor(30, 41, 59); // zinc-800
     doc.text("Product Catalog Report", 14, 30);
-    
+
     // Metadata: DateTime
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -336,14 +336,14 @@ const MyProducts = () => {
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button 
+              <button
                 onClick={() => setIsFormOpen(true)}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300 z-40"
               >
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
-              <button 
+              <button
                 onClick={() => navigate("/my-requests")}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-xs font-bold hover:bg-green-100 transition-all shadow-sm shadow-green-100/50 border border-green-300"
               >
