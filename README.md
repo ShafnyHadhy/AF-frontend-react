@@ -35,7 +35,7 @@ ReVolve is the frontend of the **Service Provider Management System**, built wit
 
 ### 2. Clone the Project
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/ShafnyHadhy/AF-backend-express.git
 cd AF-frontend
 ```
 
