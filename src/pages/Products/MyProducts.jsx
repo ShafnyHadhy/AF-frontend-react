@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
+import RepairRecycleForm from "../../components/RepairRecycleForm";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
@@ -15,6 +16,7 @@ const MyProducts = () => {
   const [showSellModal, setShowSellModal] = useState(false);
   const [sellPrice, setSellPrice] = useState("");
   const [sellingProductId, setSellingProductId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -278,7 +280,7 @@ const MyProducts = () => {
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300" onClick={() => toast.success('Select a product to request repair or recycling.')}>
+              <button className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300" onClick={() => setIsFormOpen(true)}>
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
@@ -493,7 +495,6 @@ const MyProducts = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 animate-in fade-in duration-300" onClick={() => setSelectedProduct(null)}></div>
       )}
 
-      {/* Sell Modal */}
       {showSellModal && (
         <div className="fixed inset-0 flex items-center justify-center z-[70] animate-in fade-in duration-300 p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSellModal(false)}></div>
@@ -530,6 +531,9 @@ const MyProducts = () => {
           </div>
         </div>
       )}
+
+      {/* Repair / Recycle Modal */}
+      {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
     </div>
   );
 };
