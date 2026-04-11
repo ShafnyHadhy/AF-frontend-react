@@ -9,11 +9,10 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [uploading, setUploading] = useState(false); // Uploading state එක add කරන්න
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  // Handle scroll effect for header shadow
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll);
@@ -93,7 +92,7 @@ export default function UserPage() {
       return;
     }
 
-    // Preview එක පෙන්වන්න
+    // Preview
     const imageUrl = URL.createObjectURL(file);
     setPreviewImage(imageUrl);
     setUploading(true);

@@ -669,7 +669,7 @@ export default function RegisterPage() {
                             name="recyclerDetails.recyclingTypes"
                             value={formData.recyclerDetails.recyclingTypes}
                             onChange={handleChange}
-                            placeholder="Plastic, Metal, E-waste, Glass"
+                            placeholder="Laptop, Mobile, TV, CCTV"
                             className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                           />
                         </div>
@@ -717,7 +717,7 @@ export default function RegisterPage() {
                           </label>
                         </div>
 
-                        <div className="md:col-span-2">
+                        {/* <div className="md:col-span-2">
                           <label className="text-sm text-white/80">
                             Certifications (comma separated)
                           </label>
@@ -729,7 +729,7 @@ export default function RegisterPage() {
                             placeholder="ISO 14001, CE Certificate"
                             className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
                           />
-                        </div>
+                        </div> */}
 
                         <div className="md:col-span-2">
                           <label className="text-sm text-white/80">

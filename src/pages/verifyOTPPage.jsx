@@ -11,6 +11,7 @@ export default function VerifyOTPPage() {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [error, setError] = useState("");
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("verifyEmail");
@@ -18,6 +19,14 @@ export default function VerifyOTPPage() {
       setEmail(savedEmail);
     }
   }, []);
+
+  // Countdown timer for resend button
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   async function handleVerifyOTP() {
     try {
@@ -69,19 +78,41 @@ export default function VerifyOTPPage() {
 
       setResending(true);
 
+      console.log("Sending resend OTP request for:", email);
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/users/resend-otp`,
         {
           email,
         },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
       );
 
+      console.log("Resend response:", response.data);
+
       if (response.data.success) {
-        toast.success("OTP resent successfully");
+        toast.success("OTP resent successfully! Check your email.");
+        setCountdown(60); // Disable resend button for 60 seconds
+
+        // If dev OTP is provided, show it in console
+        if (response.data.devOTP) {
+          console.log("📱 Development OTP:", response.data.devOTP);
+        }
+      } else {
+        toast.error(response.data.message || "Failed to resend OTP");
       }
     } catch (err) {
+      console.error("Resend OTP error:", err);
+      console.error("Error response:", err.response?.data);
+
       const message =
-        err?.response?.data?.message || err?.message || "Failed to resend OTP";
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to resend OTP. Please try again.";
 
       setError(message);
       toast.error(message);
@@ -131,7 +162,7 @@ export default function VerifyOTPPage() {
                 </div>
 
                 <div className="mt-6 text-[10px] text-white/60">
-                  OTP expires quickly, so verify as soon as possible.
+                  OTP expires in 3 minutes, so verify as soon as possible.
                 </div>
               </div>
             </div>
@@ -187,10 +218,14 @@ export default function VerifyOTPPage() {
                     <button
                       type="button"
                       onClick={handleResendOTP}
-                      disabled={resending}
-                      className="w-full h-10 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/15 transition disabled:opacity-60"
+                      disabled={resending || countdown > 0}
+                      className="w-full h-10 rounded-lg text-sm font-semibold text-white border border-white/20 bg-white/10 hover:bg-white/15 transition disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {resending ? "Sending..." : "Resend OTP"}
+                      {resending
+                        ? "Sending..."
+                        : countdown > 0
+                          ? `Resend OTP (${countdown}s)`
+                          : "Resend OTP"}
                     </button>
 
                     <button
