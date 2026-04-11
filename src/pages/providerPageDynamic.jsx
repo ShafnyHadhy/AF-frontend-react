@@ -46,30 +46,63 @@ export default function ProviderDashboardPage() {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [providerType, setProviderType] = useState('');
+    const [providerName, setProviderName] = useState('Provider');
 
     useEffect(() => {
         if (location.state?.activeTab) setActiveTab(location.state.activeTab);
     }, [location.state?.activeTab]);
 
     useEffect(() => {
-        if (activeTab !== 'overview') return;
+        const loadProfile = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/providers/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                const profile = Array.isArray(res.data) ? res.data[0] : res.data;
+
+                setProviderType(profile?.providerType || '');
+                setProviderName(profile?.businessName || profile?.contactPerson || 'Provider');
+            } catch (err) {
+                console.error('Failed to load provider profile', err);
+                setProviderType('');
+                setProviderName('Provider');
+            }
+        };
+
+        loadProfile();
+    }, []);
+
+    useEffect(() => {
+        if (activeTab !== 'overview' || !providerType) {
+            return;
+        }
 
         const token = localStorage.getItem('token');
         if (!token) return;
 
         let cancelled = false;
 
+        const endpoint = providerType === 'repair_center' ? '/api/repairs' : '/api/recycling';
+
         const fetchRequests = async () => {
             try {
                 setLoading(true);
                 setError('');
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/repairs`, {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}${endpoint}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                if (!cancelled) setRequests(Array.isArray(response.data) ? response.data : []);
+
+                const payload = Array.isArray(response.data) ? response.data : response.data?.requests || [];
+                if (!cancelled) setRequests(payload);
             } catch (err) {
+                console.error('Failed to load dashboard requests', err);
                 if (!cancelled) {
-                    setError('Unable to load dashboard data.');
+                    setError(`Unable to load ${providerType === 'repair_center' ? 'repair' : 'recycling'} dashboard data.`);
                     setRequests([]);
                 }
             } finally {
@@ -81,14 +114,12 @@ export default function ProviderDashboardPage() {
         return () => {
             cancelled = true;
         };
-    }, [activeTab]);
-
-    const providerName = 'Shafny Hadhy';
+    }, [activeTab, providerType]);
 
     return (
         <ProviderDashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} providerName={providerName}>
             {activeTab === 'overview' && (
-                <DashboardOverview providerName={providerName} requests={requests} isLoading={loading} error={error} />
+                <DashboardOverview providerName={providerName} providerType={providerType} requests={requests} isLoading={loading} error={error} />
             )}
             {activeTab === 'inbox' && <InboxRequests />}
             {activeTab === 'profile' && <ProviderProfile />}
@@ -98,18 +129,26 @@ export default function ProviderDashboardPage() {
     );
 }
 
-function DashboardOverview({ providerName, requests = [], isLoading, error }) {
+function DashboardOverview({ providerName, providerType, requests = [], isLoading, error }) {
     const normalized = Array.isArray(requests) ? requests : [];
     const now = new Date();
+
+    const isRepairCenter = providerType === 'repair_center';
+    const dashboardLabel = isRepairCenter ? 'Repair' : 'Recycle';
+    const activeStatuses = isRepairCenter
+        ? ['Pending', 'Accepted', 'Scheduled', 'In Progress']
+        : ['Pending', 'Scheduled', 'Collected'];
+    const completedStatuses = isRepairCenter ? ['Completed'] : ['Recycled'];
 
     const total = normalized.length;
     const pending = normalized.filter((r) => r.status === 'Pending').length;
     const accepted = normalized.filter((r) => r.status === 'Accepted').length;
     const scheduled = normalized.filter((r) => r.status === 'Scheduled').length;
     const inProgress = normalized.filter((r) => r.status === 'In Progress').length;
-    const completed = normalized.filter((r) => r.status === 'Completed').length;
+    const collected = normalized.filter((r) => r.status === 'Collected').length;
+    const completed = normalized.filter((r) => completedStatuses.includes(r.status)).length;
     const cancelled = normalized.filter((r) => r.status === 'Cancelled').length;
-    const active = normalized.filter((r) => ACTIVE_STATUSES.includes(r.status)).length;
+    const active = normalized.filter((r) => activeStatuses.includes(r.status)).length;
     const today = normalized.filter((r) => r.createdAt && sameDay(new Date(r.createdAt), now)).length;
     const thisMonth = normalized.filter((r) => r.createdAt && sameMonth(new Date(r.createdAt), now)).length;
     const completionRate = total ? Math.round((completed / total) * 100) : 0;
@@ -136,9 +175,9 @@ function DashboardOverview({ providerName, requests = [], isLoading, error }) {
         .slice(0, 3);
 
     const statCards = [
-        { title: 'Total Requests', value: String(total).padStart(2, '0'), trend: `${thisMonth} this month`, icon: FiActivity, accent: 'from-green-500 to-emerald-600' },
+        { title: `Total ${dashboardLabel} Requests`, value: String(total).padStart(2, '0'), trend: `${thisMonth} this month`, icon: FiActivity, accent: 'from-green-500 to-emerald-600' },
         { title: 'Pending Requests', value: String(pending), trend: `${today} created today`, icon: FiClock, accent: 'from-amber-500 to-orange-500' },
-        { title: 'Active Queue', value: String(active), trend: `${accepted + scheduled + inProgress} progressing`, icon: FiTrendingUp, accent: 'from-green-600 to-lime-600' },
+        { title: 'Active Queue', value: String(active), trend: isRepairCenter ? `${accepted + scheduled + inProgress} progressing` : `${scheduled + collected} progressing`, icon: FiTrendingUp, accent: 'from-green-600 to-lime-600' },
         { title: 'Completion Rate', value: `${completionRate}%`, trend: `${completed} completed`, icon: FiCheckCircle, accent: 'from-emerald-500 to-teal-500' },
     ];
 
@@ -200,7 +239,9 @@ function DashboardOverview({ providerName, requests = [], isLoading, error }) {
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-600">Workflow</p>
                             <h3 className="text-lg font-semibold text-slate-900">Recent activity</h3>
-                            <p className="text-sm text-slate-500">Latest repair progress and request updates.</p>
+                            <p className="text-sm text-slate-500">
+                                Latest {dashboardLabel.toLowerCase()} progress and request updates.
+                            </p>
                         </div>
                         <button className="inline-flex items-center gap-2 rounded-full border border-green-100 bg-green-50 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-100 transition-colors">
                             View all <FiArrowUpRight />
@@ -237,10 +278,10 @@ function DashboardOverview({ providerName, requests = [], isLoading, error }) {
                     )}
                 </div>
 
-                <div className="rounded-2xl border border-green-100 bg-white p-6 shadow-sm">
+                        <div className="rounded-2xl border border-green-100 bg-white p-6 shadow-sm">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green-600">Performance</p>
                     <h3 className="text-lg font-semibold text-slate-900 mb-2">Operational summary</h3>
-                    <p className="text-sm text-slate-500 mb-5">Live metrics built from the request data you already have.</p>
+                    <p className="text-sm text-slate-500 mb-5">Live metrics built from the {dashboardLabel.toLowerCase()} request data you already have.</p>
 
                     <div className="space-y-4">
                         <div className="rounded-2xl border border-green-100 bg-slate-50 p-4">
@@ -286,8 +327,8 @@ function DashboardOverview({ providerName, requests = [], isLoading, error }) {
                             <p className="mt-2 text-sm text-amber-700">Needs response today</p>
                         </div>
                         <div className="rounded-2xl border border-green-100 bg-green-50 p-4">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-green-700">Accepted</p>
-                            <p className="mt-2 text-3xl font-bold text-slate-900">{accepted + scheduled + inProgress}</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-green-700">In progress</p>
+                            <p className="mt-2 text-3xl font-bold text-slate-900">{isRepairCenter ? accepted + scheduled + inProgress : scheduled + collected}</p>
                             <p className="mt-2 text-sm text-green-700">In your active queue</p>
                         </div>
                         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">

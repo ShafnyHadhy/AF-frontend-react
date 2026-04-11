@@ -14,6 +14,7 @@ export default function ProviderProfile() {
   const [providerType, setProviderType] = useState('');
   const [bio, setBio] = useState('');
   const [services, setServices] = useState(['Electronics Repair', 'Battery Recycling']);
+  const [serviceInput, setServiceInput] = useState('');
   const [contactPerson, setContactPerson] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -99,9 +100,6 @@ export default function ProviderProfile() {
 
     const providerCode = profile?.providerCode; 
 
-    console.log('Provider profile code:', providerCode);
-    console.log('Updated profile data:', updatedData);
-
     try {
 
       await axios.put(import.meta.env.VITE_API_URL + `/api/providers/${providerCode}`, updatedData, {
@@ -133,10 +131,29 @@ export default function ProviderProfile() {
     setDistrict(profile.district || '');
     setServiceRadiusKm(profile.serviceRadiusKm || 10);
     setServices(profile.categories || ['Electronics Repair', 'Battery Recycling']);
+    setServiceInput('');
     setLocation({
       lat: profile.location?.coordinates?.[1] || 6.9271,
       lng: profile.location?.coordinates?.[0] || 79.8612,
     });
+  };
+
+  const addService = () => {
+    const next = serviceInput.trim();
+    if (!next) return;
+
+    const exists = services.some((service) => service.toLowerCase() === next.toLowerCase());
+    if (exists) {
+      setServiceInput('');
+      return;
+    }
+
+    setServices((prev) => [...prev, next]);
+    setServiceInput('');
+  };
+
+  const removeService = (indexToRemove) => {
+    setServices((prev) => prev.filter((_, index) => index !== indexToRemove));
   };
 
   return (
@@ -216,14 +233,40 @@ export default function ProviderProfile() {
                   <label className="text-xs font-semibold text-slate-700">Services Provided</label>
                   <div className="flex flex-wrap gap-2 p-2 bg-slate-50 rounded-lg min-h-10 border border-slate-200">
                     {services.map((service, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold gap-1">
+                      <span key={`${service}-${index}`} className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold gap-1">
                         {service}
-                        <span className="material-symbols-outlined text-[8px] cursor-pointer hover:text-green-900">close</span>
+                        <button
+                          type="button"
+                          onClick={() => removeService(index)}
+                          className="material-symbols-outlined text-[8px] cursor-pointer hover:text-green-900"
+                          aria-label={`Remove ${service}`}
+                        >
+                          close
+                        </button>
                       </span>
                     ))}
-                    <button className="inline-flex items-center px-2 py-1 bg-slate-200 text-slate-700 rounded-full text-xs font-semibold hover:bg-slate-300 transition-colors">
-                      <span className="material-symbols-outlined text-[8px]">add</span> Add
-                    </button>
+                    <div className="w-full flex gap-2 mt-1">
+                      <input
+                        type="text"
+                        value={serviceInput}
+                        onChange={(e) => setServiceInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            addService();
+                          }
+                        }}
+                        placeholder="Add a service and press Enter"
+                        className="flex-1 h-9 px-3 rounded-full bg-white border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-green-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={addService}
+                        className="inline-flex items-center px-3 py-1.5 bg-slate-200 text-slate-700 rounded-full text-xs font-semibold hover:bg-slate-300 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[8px]">add</span> Add
+                      </button>
+                    </div>
                   </div>
                 </div>
 

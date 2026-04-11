@@ -15,6 +15,13 @@ export default function InboxRequests() {
     const [chatThreads, setChatThreads] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const [activeFilter, setActiveFilter] = useState('All');
+    const [providerType, setProviderType] = useState('');
+
+    const isRepairCenter = providerType === 'repair_center';
+    const requestLabel = isRepairCenter ? 'Repair Requests' : 'Recycle Requests';
+    const requestEndpoint = isRepairCenter ? '/api/repairs' : '/api/recycling';
+    const statusLabel = isRepairCenter ? 'repair' : 'recycling';
+    const requestTypeState = isRepairCenter ? 'repair' : 'recycle';
 
     useEffect(() => {
 
@@ -24,42 +31,68 @@ export default function InboxRequests() {
             window.location.href = '/login';
         }
 
-        axios.get(import.meta.env.VITE_API_URL + '/api/repairs', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+        let cancelled = false;
+
+        const loadInbox = async () => {
+            try {
+                setIsLoading(true);
+
+                const profileResponse = await axios.get(import.meta.env.VITE_API_URL + '/api/providers/me', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const profile = Array.isArray(profileResponse.data) ? profileResponse.data[0] : profileResponse.data;
+                const nextProviderType = profile?.providerType || '';
+                if (cancelled) return;
+
+                setProviderType(nextProviderType);
+
+                const endpoint = nextProviderType === 'recycler' ? '/api/recycling' : '/api/repairs';
+                const response = await axios.get(import.meta.env.VITE_API_URL + endpoint, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const list = Array.isArray(response.data) ? response.data : [];
+                if (cancelled) return;
+
+                setRequests(list);
+                setSelectedRequest(list[0] || null);
+
+                const initialThreads = {};
+                list.forEach((request) => {
+                    initialThreads[request._id] = [
+                        {
+                            id: `${request._id}-provider-1`,
+                            sender: 'provider',
+                            text: nextProviderType === 'recycler'
+                                ? 'Hello, I reviewed your recycling request. Could you share any extra details or photos?'
+                                : 'Hello, I reviewed your request. Could you share a few photos of the device?',
+                            time: '10:24 AM',
+                        },
+                        {
+                            id: `${request._id}-customer-1`,
+                            sender: 'customer',
+                            text: nextProviderType === 'recycler'
+                                ? 'Sure, I will send the recycling details shortly.'
+                                : 'Sure, I will send the photos shortly.',
+                            time: '10:26 AM',
+                        },
+                    ];
+                });
+
+                setChatThreads(initialThreads);
+            } catch (error) {
+                console.error('Error fetching inbox requests:', error);
+            } finally {
+                if (!cancelled) setIsLoading(false);
             }
-        ).then((response) => {
+        };
 
-            console.log('Repair Requests:', response.data);
-            setRequests(response.data);
-            setSelectedRequest(response.data[0] || null);
-            const initialThreads = {};
-            response.data.forEach((request) => {
-                initialThreads[request._id] = [
-                    {
-                        id: `${request._id}-provider-1`,
-                        sender: 'provider',
-                        text: 'Hello, I reviewed your request. Could you share a few photos of the device?',
-                        time: '10:24 AM',
-                    },
-                    {
-                        id: `${request._id}-customer-1`,
-                        sender: 'customer',
-                        text: 'Sure, I will send the photos shortly.',
-                        time: '10:26 AM',
-                    },
-                ];
-            });
-            setChatThreads(initialThreads);
-            setIsLoading(false);
+        loadInbox();
 
-        }).catch((error) => {
-
-            console.error('Error fetching repair requests:', error);
-            setIsLoading(false);
-
-        });
+        return () => {
+            cancelled = true;
+        };
 
     }, []);
 
@@ -74,12 +107,17 @@ export default function InboxRequests() {
         try {
             setIsUpdating(true);
             const token = localStorage.getItem('token');
+            const endpoint = isRepairCenter ? '/api/repairs' : '/api/recycling';
 
             const response = await axios.patch(
-                `${import.meta.env.VITE_API_URL}/api/repairs/${selectedRequest._id}/status`,
+                `${import.meta.env.VITE_API_URL}${endpoint}/${selectedRequest._id}/status`,
                 {
                     status,
-                    note: status === 'Accepted' ? 'Accepted by provider' : 'Declined by provider',
+                    note: status === 'Accepted'
+                        ? 'Accepted by provider'
+                        : status === 'Cancelled'
+                            ? 'Declined by provider'
+                            : `Status updated to ${status}`,
                 },
                 {
                     headers: {
@@ -121,7 +159,9 @@ export default function InboxRequests() {
     const filteredRequests = requests.filter( request => {
         if (activeFilter === 'All') return true;
         if (activeFilter === 'Accepted') {
-            return ['Accepted', 'Scheduled', 'In Progress', 'Completed'].includes(request.status);
+            return isRepairCenter
+                ? ['Accepted', 'Scheduled', 'In Progress', 'Completed'].includes(request.status)
+                : ['Scheduled', 'Collected', 'Recycled'].includes(request.status);
         }
         return request.status === activeFilter;
     });
@@ -134,7 +174,7 @@ export default function InboxRequests() {
                 <div className="lg:col-span-4">
                     <div className="sticky top-24 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-bold text-slate-900">Inbox Requests</h2>
+                            <h2 className="text-lg font-bold text-slate-900">{requestLabel}</h2>
                             <span className="text-xs text-slate-500">{requests.length} items</span>
                         </div>
                         <div>
@@ -208,6 +248,7 @@ export default function InboxRequests() {
                                             <Link 
                                                 className="text-xs text-slate-600 hover:underline px-2"
                                                 to={`/provider/manage-request/${request._id}`}
+                                                state={{ requestType: requestTypeState }}
                                             >
                                                 View More
                                             </Link>
@@ -225,7 +266,7 @@ export default function InboxRequests() {
 
                         {!selectedRequest ? (
                             <div className="w-full min-h-128 bg-white rounded-2xl p-6 shadow-soft border border-green-100 flex items-center justify-center">
-                                <p className="text-sm text-slate-500">Select a request to view chat and details.</p>
+                                <p className="text-sm text-slate-500">Select a {statusLabel} request to view chat and details.</p>
                             </div>
                         ) : (
                             <div className="w-full min-h-128 bg-white rounded-2xl shadow-soft border border-green-300 flex flex-col overflow-hidden">
