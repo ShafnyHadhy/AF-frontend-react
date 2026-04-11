@@ -262,10 +262,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
       <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-300 mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
-              <span class="material-symbols-outlined text-[20px]">eco</span>
+            <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-[20px]">eco</span>
             </div>
             <div>
               <h1 className="text-xl font-bold text-white tracking-tight">
