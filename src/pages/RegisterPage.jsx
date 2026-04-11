@@ -717,20 +717,6 @@ export default function RegisterPage() {
                           </label>
                         </div>
 
-                        {/* <div className="md:col-span-2">
-                          <label className="text-sm text-white/80">
-                            Certifications (comma separated)
-                          </label>
-                          <input
-                            type="text"
-                            name="recyclerDetails.certifications"
-                            value={formData.recyclerDetails.certifications}
-                            onChange={handleChange}
-                            placeholder="ISO 14001, CE Certificate"
-                            className="mt-1.5 w-full h-11 rounded-lg px-3 text-sm bg-white/15 border border-white/15 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-300/70 transition-all duration-200"
-                          />
-                        </div> */}
-
                         <div className="md:col-span-2">
                           <label className="text-sm text-white/80">
                             Service Area (comma separated)
