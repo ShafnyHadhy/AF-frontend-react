@@ -23,9 +23,21 @@ export default function AdminLayout() {
     return (
         <div className="flex h-screen bg-gray-50 overflow-hidden">
             {/* Sidebar */}
-            <aside className="w-64 bg-white shadow-md z-10 flex flex-col pt-20">
-                <div className="px-6 py-4 border-b border-gray-100">
-                    <h2 className="text-xl font-bold text-primary">Admin Control</h2>
+            <aside className="w-72 bg-white shadow-xl z-20 flex flex-col border-r border-gray-100">
+                <div className="p-8 space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-accent flex items-center justify-center text-white shadow-lg shadow-accent/20 transition-transform hover:scale-110">
+                            <span className="material-icons text-xl">eco</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black tracking-tighter text-slate-900 font-['Manrope'] leading-tight">
+                                ReVolve
+                            </span>
+                            <span className="text-[10px] font-bold text-accent uppercase tracking-widest">
+                                Command Hub
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
                     {navItems.map((item) => (

@@ -50,24 +50,35 @@ const CATALOG_DATA = {
     }
 };
 
-export default function RepairRecycleForm({ onClose }) {
-    const [type, setType] = useState('repair'); // 'repair' or 'recycle'
+export default function RepairRecycleForm({ onClose, editData, onSuccess }) {
+    const isEdit = !!editData;
+    const [type, setType] = useState(editData?.type || 'repair'); // 'repair' or 'recycle'
     const [isLocating, setIsLocating] = useState(false);
     const [locationError, setLocationError] = useState('');
     const [formData, setFormData] = useState({
-        productName: '',
-        description: '',
-        quantity: 1,
-        image: '',
-        location: null,
-        category: ''
+        productName: editData?.productName || '',
+        description: editData?.description || '',
+        quantity: editData?.quantity || 1,
+        image: editData?.image || '',
+        location: editData?.location || null,
+        category: editData?.category || ''
     });
     const [userProducts, setUserProducts] = useState([]);
     const [selectedProductId, setSelectedProductId] = useState('');
     const [providers, setProviders] = useState([]);
-    const [selectedProvider, setSelectedProvider] = useState(null);
-  
-    // load user products once
+    const [selectedProvider, setSelectedProvider] = useState(
+        editData?.provider?._id || (typeof editData?.provider === 'string' ? editData.provider : null)
+    );
+
+    // Prevents clearing productName on initial load in edit mode
+    const [isInitialMount, setIsInitialMount] = useState(true);
+    useEffect(() => {
+        if (isInitialMount) {
+            setIsInitialMount(false);
+            return;
+        }
+        setFormData(prev => ({ ...prev, productName: '' }));
+    }, [formData.category]);
     useEffect(() => {
         axios
             .get(`${import.meta.env.VITE_API_URL}/api/products`, {
@@ -150,9 +161,6 @@ export default function RepairRecycleForm({ onClose }) {
         );
     };
 
-    useEffect(() => {
-        setFormData(prev => ({ ...prev, productName: '' }));
-    }, [formData.category]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -174,15 +182,23 @@ export default function RepairRecycleForm({ onClose }) {
             const endpoint = type === 'repair' ? '/api/repairs' : '/api/recycling';
             const payload = { ...formData, provider: selectedProvider };
 
-            console.log("Submitting request with payload:", payload);
+            console.log(isEdit ? "Updating" : "Submitting", "request with payload:", payload);
 
             const token = localStorage.getItem('token');
 
-            await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} request submitted!`);
+            if (isEdit) {
+                await axios.patch(`${import.meta.env.VITE_API_URL}${endpoint}/${editData._id}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} request updated!`);
+            } else {
+                await axios.post(`${import.meta.env.VITE_API_URL}${endpoint}`, payload, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} request submitted!`);
+            }
+            
+            if (onSuccess) onSuccess();
             onClose();
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong");
@@ -196,27 +212,30 @@ export default function RepairRecycleForm({ onClose }) {
                 <div className="flex items-center justify-between p-6 border-b border-gray-100">
                     <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                         {type === 'repair' ? <Hammer className="text-blue-600" /> : <Recycle className="text-green-500" />}
-                        Create {type.charAt(0).toUpperCase() + type.slice(1)} Request
+                        {isEdit ? 'Update' : 'Create'} {type.charAt(0).toUpperCase() + type.slice(1)} Request
                     </h2>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                         <X className="w-6 h-6 text-gray-400" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 max-h-[85vh] overflow-y-auto space-y-6">
+                <form onSubmit={handleSubmit} className="flex flex-col max-h-[90vh]">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-6">
                     {/* Toggle */}
                     <div className="flex p-1 bg-gray-100 rounded-2xl w-fit mx-auto">
                         <button
                             type="button"
+                            disabled={isEdit}
                             onClick={() => setType('repair')}
-                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${type === 'repair' ? 'bg-white shadow-md text-blue-600' : 'text-gray-500'}`}
+                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${type === 'repair' ? 'bg-white shadow-md text-blue-600' : 'text-gray-500'} ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             Repair
                         </button>
                         <button
                             type="button"
+                            disabled={isEdit}
                             onClick={() => setType('recycle')}
-                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${type === 'recycle' ? 'bg-white shadow-md text-green-600' : 'text-gray-500'}`}
+                            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${type === 'recycle' ? 'bg-white shadow-md text-green-600' : 'text-gray-500'} ${isEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             Recycle
                         </button>
@@ -424,14 +443,19 @@ export default function RepairRecycleForm({ onClose }) {
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={!selectedProvider}
-                        className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                        Submit {type.toUpperCase()} Request
-                    </button>
+                    </div>
+                    
+                    {/* Fixed Footer */}
+                    <div className="p-6 border-t border-gray-100 bg-gray-50/50 backdrop-blur-md">
+                        <button
+                            type="submit"
+                            disabled={type === 'repair' && !selectedProvider}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
+                        >
+                            <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            {isEdit ? 'Update' : 'Submit'} {type.toUpperCase()} Request
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
