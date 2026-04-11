@@ -14,6 +14,7 @@ import ProviderProfile from './provider/providerProfile';
 import InboxRequests from './provider/inboxRequest';
 import Settings from './provider/providerSettings';
 import EarningsReports from './provider/earningView';
+import { useProvider } from '../context/ProviderContext';
 
 const ACTIVE_STATUSES = ['Pending', 'Accepted', 'Scheduled', 'In Progress'];
 
@@ -41,12 +42,14 @@ const formatRelativeTime = (value) => {
 };
 
 export default function ProviderDashboardPage() {
+
+    const { providerType, profile, loading, error } = useProvider();
     const location = useLocation();
+
     const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'overview');
     const [requests, setRequests] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [providerType, setProviderType] = useState('');
+    const [dashboardLoading, setDashboardLoading] = useState(false);
+    const [dashboardError, setDashboardError] = useState('');
     const [providerName, setProviderName] = useState('Provider');
 
     useEffect(() => {
@@ -54,28 +57,32 @@ export default function ProviderDashboardPage() {
     }, [location.state?.activeTab]);
 
     useEffect(() => {
-        const loadProfile = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) return;
+        setProviderName(profile?.businessName || profile?.contactPerson || 'Provider');
+    }, [profile]);
 
-            try {
-                const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/providers/me`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+    // useEffect(() => {
+    //     const loadProfile = async () => {
+    //         const token = localStorage.getItem('token');
+    //         if (!token) return;
 
-                const profile = Array.isArray(res.data) ? res.data[0] : res.data;
+    //         try {
+    //             const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/providers/me`, {
+    //                 headers: { Authorization: `Bearer ${token}` },
+    //             });
 
-                setProviderType(profile?.providerType || '');
-                setProviderName(profile?.businessName || profile?.contactPerson || 'Provider');
-            } catch (err) {
-                console.error('Failed to load provider profile', err);
-                setProviderType('');
-                setProviderName('Provider');
-            }
-        };
+    //             const profile = Array.isArray(res.data) ? res.data[0] : res.data;
 
-        loadProfile();
-    }, []);
+    //             setProviderType(profile?.providerType || '');
+    //             setProviderName(profile?.businessName || profile?.contactPerson || 'Provider');
+    //         } catch (err) {
+    //             console.error('Failed to load provider profile', err);
+    //             setProviderType('');
+    //             setProviderName('Provider');
+    //         }
+    //     };
+
+    //     loadProfile();
+    // }, []);
 
     useEffect(() => {
         if (activeTab !== 'overview' || !providerType) {
@@ -91,8 +98,8 @@ export default function ProviderDashboardPage() {
 
         const fetchRequests = async () => {
             try {
-                setLoading(true);
-                setError('');
+                setDashboardLoading(true);
+                setDashboardError('');
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}${endpoint}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -102,24 +109,27 @@ export default function ProviderDashboardPage() {
             } catch (err) {
                 console.error('Failed to load dashboard requests', err);
                 if (!cancelled) {
-                    setError(`Unable to load ${providerType === 'repair_center' ? 'repair' : 'recycling'} dashboard data.`);
+                    setDashboardError(`Unable to load ${providerType === 'repair_center' ? 'repair' : 'recycling'} dashboard data.`);
                     setRequests([]);
                 }
             } finally {
-                if (!cancelled) setLoading(false);
+                if (!cancelled) setDashboardLoading(false);
             }
         };
 
         fetchRequests();
         return () => {
-            cancelled = true;
+            cancelled = true; 
         };
-    }, [activeTab, providerType]);
+    }, [activeTab, providerType]); 
+
+    if (loading) return <div>Loading provider data...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <ProviderDashboardLayout activeTab={activeTab} setActiveTab={setActiveTab} providerName={providerName}>
             {activeTab === 'overview' && (
-                <DashboardOverview providerName={providerName} providerType={providerType} requests={requests} isLoading={loading} error={error} />
+                <DashboardOverview providerName={providerName} providerType={providerType} requests={requests} isLoading={dashboardLoading} error={dashboardError} />
             )}
             {activeTab === 'inbox' && <InboxRequests />}
             {activeTab === 'profile' && <ProviderProfile />}
