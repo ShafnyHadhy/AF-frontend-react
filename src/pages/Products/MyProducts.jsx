@@ -4,8 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
 import RepairRecycleForm from "../../components/RepairRecycleForm";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
 
 // ── Lifecycle event config ──────────────────────────────────────────────────
 const LIFECYCLE_EVENTS = [
@@ -487,56 +485,6 @@ const MyProducts = () => {
     });
   }, [products, activeFilter, searchQuery]);
 
-  // --- PDF GENERATOR ---
-  const handleGeneratePDF = () => {
-    const doc = new jsPDF();
-
-    // Add Company Logo Text (ReVolve)
-    doc.setFontSize(22);
-    doc.setTextColor(22, 101, 52); // Tailwind bg-[#166534]
-    doc.text("ReVolve", 14, 20);
-
-    // Title
-    doc.setFontSize(16);
-    doc.setTextColor(30, 41, 59); // zinc-800
-    doc.text("Product Catalog Report", 14, 30);
-
-    // Metadata: DateTime
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    const now = new Date();
-    doc.text(`Generated on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`, 14, 38);
-    doc.text(`Report Period: ${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`, 14, 43);
-
-    // Table Data
-    const tableColumn = ["Product ID", "Name", "Brand", "Condition", "Status", "Price (Rs.)"];
-    const tableRows = [];
-
-    filteredProducts.forEach(product => {
-      const productData = [
-        product.productID,
-        product.productName,
-        product.Brand,
-        product.condition,
-        product.status || "Unknown",
-        product.price ? `Rs. ${product.price}` : "0"
-      ];
-      tableRows.push(productData);
-    });
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 50,
-      theme: 'striped',
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [22, 101, 52] }
-    });
-
-    doc.save(`ReVolve_Products_${now.toISOString().split('T')[0]}.pdf`);
-    toast.success("Catalog Report Downloaded!");
-  };
-
   // --- MAIN RENDER ---
   if (loading) {
     return (
@@ -666,10 +614,6 @@ const MyProducts = () => {
               <p className="text-sm text-gray-500">Manage and track your sustainable assets</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={handleGeneratePDF} className="px-4 py-2 bg-white text-gray-900 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-100 transition-all shadow-md shadow-green-100/50 border border-green-300">
-                <span className="material-icons text-sm text-gray-900">picture_as_pdf</span>
-                Download Report
-              </button>
               <Link to="/add-product" className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-200 transition-all shadow-md shadow-green-100/50 border border-green-300">
                 <span className="material-icons text-sm">add</span>
                 Register
