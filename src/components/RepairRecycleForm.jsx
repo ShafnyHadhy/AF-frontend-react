@@ -83,33 +83,37 @@ export default function RepairRecycleForm({ onClose }) {
     }, []);
 
     useEffect(() => {
-        if (type === 'repair' && formData.location) {
-            const { lat, lng } = formData.location;
-            axios
-                .get(`${import.meta.env.VITE_API_URL}/api/providers/nearby`, {
-                    params: {
-                        lat,
-                        lng,
-                        radius: 100,
-                    },
-                })
-                .then((res) => {
-                    const list = Array.isArray(res.data) ? res.data : res.data?.providers || [];
-                    setProviders(list);
-                    console.log("Nearby providers:", list);
-                    setSelectedProvider((current) => {
-                        const stillValid = list.some((p) => (p._id || p.id || p.email || '') === current);
-                        return stillValid ? current : null;
-                    });
-                })
-                .catch((error) => {
-                    console.error("Failed to load providers", error);
-                    setProviders([]);
-                });
-        } else if (type === 'repair') {
+        if (!formData.location) {
             setProviders([]);
             setSelectedProvider(null);
+            return;
         }
+
+        const { lat, lng } = formData.location;
+        const providerType = type === 'repair' ? 'repair_center' : 'recycler';
+
+        axios
+            .get(`${import.meta.env.VITE_API_URL}/api/providers/nearby`, {
+                params: {
+                    lat,
+                    lng,
+                    radius: 100,
+                    type: providerType,
+                },
+            })
+            .then((res) => {
+                const list = Array.isArray(res.data) ? res.data : res.data?.providers || [];
+                setProviders(list);
+                setSelectedProvider((current) => {
+                    const stillValid = list.some((p) => (p._id || p.id || p.email || '') === current);
+                    return stillValid ? current : null;
+                });
+            })
+            .catch((error) => {
+                console.error("Failed to load providers", error);
+                setProviders([]);
+                setSelectedProvider(null);
+            });
     }, [type, formData.location]);
 
     const useMyLocation = () => {
@@ -156,7 +160,7 @@ export default function RepairRecycleForm({ onClose }) {
         if (!formData.location) {
             return toast.error("Please select a location on the map");
         }
-        if (type === 'repair' && !selectedProvider) {
+        if (!selectedProvider) {
             return toast.error("Please select a nearby provider");
         }
         if (!formData.category) {
@@ -340,10 +344,12 @@ export default function RepairRecycleForm({ onClose }) {
                                 />
                             </div>
 
-                            {type === 'repair' && (
+                            {true && (
                                 <div className="space-y-3">
-                                    <label className="text-sm font-semibold text-gray-700">Service Provider</label>
-                                    <p className="text-xs text-gray-500">Select one nearby provider from the map or the larger list below.</p>
+                                            <label className="text-sm font-semibold text-gray-700">Service Provider</label>
+                                            <p className="text-xs text-gray-500">
+                                                Select one nearby {type === 'repair' ? 'repair center' : 'recycler'} from the map or the larger list below.
+                                            </p>
 
                                     <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-4 flex items-center justify-between gap-3 shadow-sm ring-1 ring-blue-100">
                                         <div className="flex items-center gap-3">
@@ -372,7 +378,8 @@ export default function RepairRecycleForm({ onClose }) {
                                             onClick={() => setSelectedProvider(null)}
                                             className={`w-full rounded-xl px-4 py-3 text-left transition-all border-2 ${!selectedProvider ? 'border-primary bg-primary/5 text-primary shadow-sm' : 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50'}`}
                                         >
-                                            <div className="font-bold text-sm">Clear Selection / Auto-assign</div>
+                                            <div className="font-semibold text-base">No provider selected</div>
+                                            <div className="text-xs text-gray-500 mt-1">Choose one to continue</div>
                                         </button>
 
                                         {providers.map((p, index) => {
@@ -419,7 +426,7 @@ export default function RepairRecycleForm({ onClose }) {
 
                     <button
                         type="submit"
-                        disabled={type === 'repair' && !selectedProvider}
+                        disabled={!selectedProvider}
                         className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all flex items-center justify-center gap-2 group disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
