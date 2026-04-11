@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import ItemDropdown from './ItemDropdown';
 import LocationMap from './LocationMap';
-import { X, Send, Recycle, Hammer, Package } from 'lucide-react';
+import { X, Send, Recycle, Hammer, Package, Info } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -220,7 +220,10 @@ export default function RepairRecycleForm({ onClose }) {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         <div className="space-y-4 lg:col-span-5">
-                            <ItemDropdown onSelect={(item) => setFormData({ ...formData, category: item.name, image: item.image })} />
+                            <ItemDropdown 
+                                onSelect={(item) => setFormData({ ...formData, category: item.name, image: item.image })} 
+                                hidePreview={!!formData.productName}
+                            />
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
@@ -229,7 +232,15 @@ export default function RepairRecycleForm({ onClose }) {
                                         required
                                         disabled={!formData.category}
                                         value={formData.productName}
-                                        onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+                                        onChange={(e) => {
+                                            const name = e.target.value;
+                                            const product = userProducts.find(p => p.productName === name);
+                                            setFormData({ 
+                                                ...formData, 
+                                                productName: name, 
+                                                image: product?.images?.[0] || formData.image 
+                                            });
+                                        }}
                                         className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-gray-900 bg-white disabled:bg-gray-100 disabled:text-gray-400"
                                     >
                                         <option value="" disabled>Select from your existing {formData.category || 'products'}</option>
@@ -241,6 +252,31 @@ export default function RepairRecycleForm({ onClose }) {
                                         }
                                     </select>
                                 </div>
+
+                                {formData.productName && (
+                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Selected Product Photo</p>
+                                        <div className="relative h-48 w-full rounded-2xl overflow-hidden shadow-sm border-2 border-green-100 bg-gray-50 flex items-center justify-center">
+                                            {formData.image && (formData.image.startsWith('http') || formData.image.startsWith('data:image')) ? (
+                                                <img
+                                                    src={formData.image}
+                                                    alt={formData.productName}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-gray-400 gap-3">
+                                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                                        <Package className="w-6 h-6 opacity-30" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="block text-[10px] font-bold uppercase tracking-tight">No Registration Photo</span>
+                                                        <span className="block text-[9px] opacity-60">Using category default</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
