@@ -706,15 +706,7 @@ const MyProducts = () => {
                   </div>
                   <p className="text-[10px] text-gray-500 mb-4">{product.Brand || "Unknown Brand"} • {product.model || "Unknown Model"} • SN: {(product.productID || "N/A").slice(-8).toUpperCase()}</p>
 
-                  <div className="mb-4">
-                    <div className="flex justify-between text-[10px] font-medium text-gray-500 mb-1">
-                      <span>Lifecycle Progress</span>
-                      <span>{getProgressWidth(product)}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
-                    </div>
-                  </div>
+                  {/* Progress bar removed as requested */}
 
                   {/* Provider manages repair/recycle status - no manual buttons here */}
 
