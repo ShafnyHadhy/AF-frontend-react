@@ -1,16 +1,78 @@
-# React + Vite
+# Electronic Product Lifecycle Tracker - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend dashboard for the Electronic Product Lifecycle Tracker, built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Dynamic Dashboards**: Custom views for Customers, Providers, and Admins.
+- **Maps Integration**: Location-aware service provider discovery using Leaflet and Google Maps API.
+- **Real-time Filtering**: Advanced search and categorization for product inventory.
+- **Analytics Visualization**: Interactive charts using Recharts for admin insights.
+- **Product Lifecycle Forms**: Streamlined forms for adding, editing, and requesting repairs/recycling.
+- **Responsive Design**: Mobile-first UI using Tailwind CSS.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Setup Instructions
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js (v18+)
+- Backend server running (default: http://localhost:5001)
+
+### Installation
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd backend/AF-frontend-react
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Configure Environment Variables:
+   Create a `.env` file in the root of `AF-frontend-react`:
+   ```env
+   VITE_API_BASE_URL=http://localhost:5001/api
+   VITE_GOOGLE_MAPS_API_KEY=your_google_maps_key
+   ```
+
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Access the application:
+   Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## Build for Production
+
+To create a production build:
+```bash
+npm run build
+```
+The optimized files will be available in the `dist/` directory.
+
+---
+
+## Technical Stack
+
+- **Framework**: React 19
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Data Fetching**: Axios
+- **State Management**: React Context / Hooks
+- **Charts**: Recharts
+- **Maps**: Leaflet & React-Leaflet
+- **Icons**: Lucide-React & React-Icons
+
+---
+
+## Documentation
+
+- **[Testing Instruction Report](../../TESTING_REPORT.md)**
+- **[Deployment Report](../../DEPLOYMENT_REPORT.md)**
