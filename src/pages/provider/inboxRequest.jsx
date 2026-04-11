@@ -5,6 +5,7 @@ import { RiProgress3Line } from "react-icons/ri";
 import { FiSend } from "react-icons/fi";
 import { TbProgressCheck, TbProgressX, TbProgressHelp, TbProgressBolt } from "react-icons/tb";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 export default function InboxRequests() {
 
@@ -16,6 +17,7 @@ export default function InboxRequests() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [activeFilter, setActiveFilter] = useState('All');
     const [providerType, setProviderType] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const isRepairCenter = providerType === 'repair_center';
     const requestLabel = isRepairCenter ? 'Repair Requests' : 'Recycle Requests';
@@ -128,8 +130,10 @@ export default function InboxRequests() {
 
             setRequests((prev) => prev.map((request) => (request._id === response.data._id ? response.data : request)));
             setSelectedRequest(response.data);
+            toast.success(`Request ${status === 'Accepted' ? 'accepted' : 'declined'} successfully!`);
         } catch (error) {
             console.error(`Failed to update request status to ${status}:`, error);
+            toast.error(`Failed to update status: ${error.response?.data?.message || error.message}`);
         } finally {
             setIsUpdating(false);
         }
@@ -157,6 +161,17 @@ export default function InboxRequests() {
     };
 
     const filteredRequests = requests.filter( request => {
+        const searchText = searchQuery.trim().toLowerCase();
+        const matchesSearch = !searchText || [
+            request.productName,
+            request.description,
+            request.user?.firstName,
+            request.user?.lastName,
+            request.status,
+        ].some((field) => String(field || '').toLowerCase().includes(searchText));
+
+        if (!matchesSearch) return false;
+
         if (activeFilter === 'All') return true;
         if (activeFilter === 'Accepted') {
             return isRepairCenter
@@ -178,6 +193,15 @@ export default function InboxRequests() {
                             <span className="text-xs text-slate-500">{requests.length} items</span>
                         </div>
                         <div>
+                            <div className="mb-3">
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Search requests..."
+                                    className="w-full h-9 px-3 rounded-full bg-white border border-slate-200 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                />
+                            </div>
                             <button 
                                 className="px-3 py-1.5 rounded-full bg-slate-200 text-slate-700 text-xs font-medium hover:bg-slate-300"
                                 onClick={() => setActiveFilter('All')}
