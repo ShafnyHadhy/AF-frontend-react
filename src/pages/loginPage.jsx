@@ -346,8 +346,8 @@ export default function LoginPage() {
                   <div>
                     <p className="text-xs text-white/70">Welcome back to</p>
                     <div className="flex items-center gap-3">
-                      <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
-                        <span class="material-symbols-outlined text-[20px]">
+                      <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+                        <span className="material-symbols-outlined text-[20px]">
                           eco
                         </span>
                       </div>
