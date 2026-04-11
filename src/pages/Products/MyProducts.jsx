@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
 import { jsPDF } from "jspdf";
@@ -19,6 +19,49 @@ const MyProducts = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  // Read logged-in user from localStorage
+  const currentUser = (() => {
+    try { return JSON.parse(localStorage.getItem("user")) || {}; }
+    catch { return {}; }
+  })();
+  const displayName = currentUser.name || currentUser.username || currentUser.email || "User";
+  const userRole = currentUser.role ? (currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)) : "Eco Manager";
+
+  const handleLogout = () => {
+    toast(
+      (t) => (
+        <div className="flex flex-col gap-3">
+          <p className="font-bold text-gray-900">Logout of ReVolve?</p>
+          <p className="text-sm text-gray-500">You will be redirected to the login page.</p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => { toast.dismiss(t.id); }}
+              className="flex-1 py-1.5 rounded-lg border border-gray-300 text-gray-600 text-sm font-semibold hover:bg-gray-100 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                toast.dismiss(t.id);
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                localStorage.removeItem("email");
+                localStorage.removeItem("role");
+                toast.success("Logged out successfully!");
+                navigate("/login");
+              }}
+              className="flex-1 py-1.5 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-all"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      ),
+      { duration: Infinity, style: { padding: "16px", minWidth: "260px" } }
+    );
+  };
 
   // --- API HANDLERS ---
   useEffect(() => {
@@ -258,17 +301,30 @@ const MyProducts = () => {
             </div>
           </div>
 
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-3">
             <button className="p-2 text-gray-500 hover:text-primary transition-colors relative">
               <span className="material-icons">notifications</span>
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-semibold text-gray-900">John Doe</p>
-                <p className="text-[10px] text-gray-500">Eco Manager</p>
+                <p className="text-xs font-semibold text-gray-900">{displayName}</p>
+                <p className="text-[10px] text-gray-500">{userRole}</p>
               </div>
-              <img alt="User" className="w-10 h-10 rounded-full border border-gray-200 shadow-sm" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" />
+              <Link to="/edit-profile" title="View Profile">
+                <img
+                  alt={displayName}
+                  className="w-10 h-10 rounded-full border-2 border-green-300 shadow-sm hover:scale-105 hover:border-green-500 transition-all cursor-pointer"
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(displayName)}`}
+                />
+              </Link>
+              <button
+                onClick={handleLogout}
+                title="Logout"
+                className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-full transition-all border border-transparent hover:border-red-200"
+              >
+                <span className="material-icons text-[20px]">logout</span>
+              </button>
             </div>
           </nav>
         </div>
