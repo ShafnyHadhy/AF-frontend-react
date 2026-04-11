@@ -343,6 +343,13 @@ const MyProducts = () => {
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
+              <button 
+                onClick={() => navigate("/my-requests")}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-xs font-bold hover:bg-green-100 transition-all shadow-sm shadow-green-100/50 border border-green-300"
+              >
+                <span className="material-icons text-[14px]">assignment</span>
+                View My Requests
+              </button>
             </div>
           </section>
 
@@ -447,10 +454,41 @@ const MyProducts = () => {
                       </button>
                     </div>
                   ) : product.status?.toLowerCase() === "recycling request" ? (
-                    <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 border-2 border-emerald-400 rounded hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm shadow-emerald-200/50">
-                      <span className="material-icons text-sm">check_circle</span> Complete Recycling
-                    </button>
-                  ) : null}
+                    <>
+                      <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 border-2 border-emerald-400 rounded hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm shadow-emerald-200/50 mb-3">
+                        <span className="material-icons text-sm">check_circle</span> Complete Recycling
+                      </button>
+                      <div className="flex gap-2 mb-3">
+                        <Link 
+                          to={`/edit-product/${product.productID}`} 
+                          className="flex-1 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-1.5 border border-emerald-100/50"
+                        >
+                          <span className="material-icons text-xs">edit</span>
+                          Edit
+                        </Link>
+                        <DeleteProduct 
+                          productID={product.productID} 
+                          onDeleteSuccess={(id) => setProducts(products.filter(p => p.productID !== id))}
+                          className="flex-1 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center gap-1.5 border border-rose-100/50"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex gap-2 mb-3">
+                      <Link 
+                        to={`/edit-product/${product.productID}`} 
+                        className="flex-1 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-emerald-600 hover:text-white transition-all flex items-center justify-center gap-1.5 border border-emerald-100/50"
+                      >
+                        <span className="material-icons text-xs">edit</span>
+                        Edit
+                      </Link>
+                      <DeleteProduct 
+                        productID={product.productID} 
+                        onDeleteSuccess={(id) => setProducts(products.filter(p => p.productID !== id))}
+                        className="flex-1 py-1.5 bg-rose-50 text-rose-700 rounded-lg text-[10px] font-semibold uppercase tracking-wider hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center gap-1.5 border border-rose-100/50"
+                      />
+                    </div>
+                  )}
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
                     <button onClick={() => setSelectedProduct(product)} className="text-gray-600 hover:text-green-600 transition-all hover:scale-110" title="Details">
