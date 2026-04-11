@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
 import { FiUser, FiMapPin, FiInfo, FiTag, FiClock, FiArrowLeft, FiImage } from "react-icons/fi";
 import ProviderDashboardLayout from "../../components/ProviderDashboardLayout";
+import toast from "react-hot-toast";
 
 export default function ManageRequestPage() {
 
@@ -142,9 +143,12 @@ export default function ManageRequestPage() {
                     lifecycle: [...(prev.lifecycle || []), { status: newStatus, timestamp: new Date().toISOString(), note: `Status updated to ${newStatus}` }]
                 }) : prev);
             }
+
+            toast.success(`Status updated to ${newStatus} successfully!`);
+            
         } catch (error) {
             console.error('Error updating status:', error);
-            alert('Failed to update status. Please try again.');
+            toast.error('Failed to update status. Please try again.');
         } finally {
             setIsUpdating(false);
         }

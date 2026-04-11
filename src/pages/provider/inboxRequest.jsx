@@ -5,6 +5,7 @@ import { RiProgress3Line } from "react-icons/ri";
 import { FiSend } from "react-icons/fi";
 import { TbProgressCheck, TbProgressX, TbProgressHelp, TbProgressBolt } from "react-icons/tb";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import toast from "react-hot-toast";
 
 export default function InboxRequests() {
 
@@ -129,8 +130,10 @@ export default function InboxRequests() {
 
             setRequests((prev) => prev.map((request) => (request._id === response.data._id ? response.data : request)));
             setSelectedRequest(response.data);
+            toast.success(`Request ${status === 'Accepted' ? 'accepted' : 'declined'} successfully!`);
         } catch (error) {
             console.error(`Failed to update request status to ${status}:`, error);
+            toast.error(`Failed to update status: ${error.response?.data?.message || error.message}`);
         } finally {
             setIsUpdating(false);
         }
