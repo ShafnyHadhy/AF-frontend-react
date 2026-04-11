@@ -6,7 +6,6 @@ import DeleteProduct from "./DeleteProduct";
 import RepairRecycleForm from "../../components/RepairRecycleForm";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import RepairRecycleForm from "../../components/RepairRecycleForm";
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
@@ -344,7 +343,6 @@ const MyProducts = () => {
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
-              {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
             </div>
           </section>
 

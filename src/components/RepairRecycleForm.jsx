@@ -309,28 +309,34 @@ export default function RepairRecycleForm({ onClose }) {
                                     <label className="text-sm font-semibold text-gray-700">Service Provider</label>
                                     <p className="text-xs text-gray-500">Select one nearby provider from the map or the larger list below.</p>
 
-                                    <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 flex items-center justify-between gap-3">
-                                        <div>
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">Selected provider</p>
-                                            <p className="text-sm font-bold text-slate-900">
-                                                {selectedProvider
-                                                    ? (providers.find((p, index) => (p._id || p.id || p.email || `provider-${index}`) === selectedProvider)?.businessName || 'Provider selected')
-                                                    : 'No provider selected'}
-                                            </p>
+                                    <div className="rounded-xl border border-blue-200 bg-blue-50/80 px-4 py-4 flex items-center justify-between gap-3 shadow-sm ring-1 ring-blue-100">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                                                <Info className="w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Active Selection</p>
+                                                <p className="text-sm font-black text-slate-900 leading-tight">
+                                                    {selectedProvider ? (() => {
+                                                        const p = providers.find((p, index) => (p._id || p.id || p.email || `provider-${index}`) === selectedProvider);
+                                                        if (!p) return 'Provider selected';
+                                                        return `${p.businessName || 'Unnamed Business'} (${p.firstName} ${p.lastName})`;
+                                                    })() : 'No provider selected'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <span className={`text-xs font-bold px-3 py-1 rounded-full border ${selectedProvider ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'}`}>
-                                            {selectedProvider ? 'Chosen' : 'Required'}
+                                        <span className={`text-[10px] font-bold px-3 py-1 rounded-full border transition-all ${selectedProvider ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-400 border-slate-200'}`}>
+                                            {selectedProvider ? 'SELECTED' : 'REQUIRED'}
                                         </span>
                                     </div>
 
-                                    <div className="space-y-2 max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
+                                    <div className="space-y-2 max-h-72 overflow-y-auto rounded-xl border border-gray-200 bg-white p-3 shadow-inner">
                                         <button
                                             type="button"
                                             onClick={() => setSelectedProvider(null)}
-                                            className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${selectedProvider ? 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50' : 'border-green-300 bg-green-50 text-green-800 shadow-sm'}`}
+                                            className={`w-full rounded-xl px-4 py-3 text-left transition-all border-2 ${!selectedProvider ? 'border-primary bg-primary/5 text-primary shadow-sm' : 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50'}`}
                                         >
-                                            <div className="font-semibold text-base">No provider selected</div>
-                                            <div className="text-xs text-gray-500 mt-1">Use if the backend should auto-assign later</div>
+                                            <div className="font-bold text-sm">Clear Selection / Auto-assign</div>
                                         </button>
 
                                         {providers.map((p, index) => {
@@ -342,21 +348,28 @@ export default function RepairRecycleForm({ onClose }) {
                                                     key={providerId}
                                                     type="button"
                                                     onClick={() => setSelectedProvider(providerId)}
-                                                    className={`w-full rounded-xl px-4 py-4 text-left transition-all border ${isSelected ? 'border-blue-500 bg-blue-50 text-gray-900 shadow-md ring-1 ring-blue-200' : 'border-gray-200 bg-white text-gray-800 hover:bg-gray-50'}`}
+                                                    className={`w-full rounded-xl px-4 py-4 text-left transition-all border-2 ${isSelected ? 'border-blue-500 bg-blue-50/50 text-gray-900 shadow-md ring-2 ring-blue-500/10' : 'border-gray-100 bg-white text-gray-800 hover:border-gray-300 hover:bg-gray-50'}`}
                                                 >
                                                     <div className="flex items-start justify-between gap-4">
-                                                        <div>
-                                                            <div className="font-semibold text-gray-900 text-base">
-                                                                {p.firstName} {p.lastName}
+                                                        <div className="flex items-center gap-3">
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs ${isSelected ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
+                                                                {p.firstName?.charAt(0)}{p.lastName?.charAt(0)}
                                                             </div>
-                                                            <div className="text-sm text-gray-500 mt-0.5">
-                                                                {p.businessName || 'Nearby service provider'}
+                                                            <div>
+                                                                <div className={`font-bold text-sm transition-colors ${isSelected ? 'text-blue-700' : 'text-gray-900'}`}>
+                                                                    {p.businessName || 'Nearby Service'}
+                                                                </div>
+                                                                <div className="text-[10px] text-gray-500 font-medium">
+                                                                    {p.firstName} {p.lastName} • {p.district || p.city || 'Local Area'}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         {typeof p.distanceKm === 'number' && (
-                                                            <span className="shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-green-700 border border-green-200 shadow-sm">
-                                                                {p.distanceKm} km
-                                                            </span>
+                                                            <div className="text-right">
+                                                                <span className="shrink-0 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600 border border-blue-100">
+                                                                    {p.distanceKm} km
+                                                                </span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </button>
