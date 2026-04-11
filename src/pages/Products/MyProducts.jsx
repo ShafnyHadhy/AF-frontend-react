@@ -6,7 +6,6 @@ import DeleteProduct from "./DeleteProduct";
 import RepairRecycleForm from "../../components/RepairRecycleForm";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import RepairRecycleForm from "../../components/RepairRecycleForm";
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
