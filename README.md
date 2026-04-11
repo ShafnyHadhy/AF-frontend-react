@@ -76,3 +76,80 @@ The optimized files will be available in the `dist/` directory.
 
 - **[Testing Instruction Report](../../TESTING_REPORT.md)**
 - **[Deployment Report](../../DEPLOYMENT_REPORT.md)**
+
+---
+
+## Deployment Details
+
+### Frontend Deployment – Vercel
+
+#### Deployment Steps
+1. Push the frontend code to GitHub.
+2. Import the repository into Vercel.
+3. Set the following environment variables in Vercel:
+	- `VITE_API_URL` → your Railway backend URL
+	- `VITE_GOOGLE_MAPS_API_KEY` → your Google Maps API key
+4. Set the build command to:
+	```bash
+	npm run build
+	```
+5. Set the output directory to:
+	```bash
+	dist
+	```
+6. Deploy the project.
+
+### Backend Deployment – Railway
+
+#### Deployment Steps
+1. Push the backend code to GitHub.
+2. Import the backend repository into Railway.
+3. Add the backend environment variables:
+	- `PORT`
+	- `MONGO_URI`
+	- `JWT_SECRET_KEY`
+	- `SENDGRID_API_KEY`
+	- `EMAIL_FROM`
+4. Set the start command to your backend start script.
+5. Deploy the backend service.
+
+---
+
+## Testing Instruction Summary
+
+### Frontend Testing
+This frontend project currently focuses on build and lint validation.
+
+#### Recommended Commands
+```bash
+npm run lint
+npm run build
+```
+
+### Backend Testing
+Backend tests are maintained in the `AF-backend-express` folder.
+
+#### Unit and Integration Tests
+```bash
+cd ../AF-backend-express
+npm test
+```
+
+#### Run a Specific Test File
+```bash
+npm test -- tests/integration/health.test.js
+```
+
+---
+
+## Project Structure
+
+```text
+src/
+  components/
+  pages/
+  assets/
+  App.jsx
+  main.jsx
+```
+
