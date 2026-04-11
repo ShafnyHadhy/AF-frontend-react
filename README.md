@@ -189,3 +189,4 @@ src/
 - The frontend communicates with the backend through REST API endpoints.
 - All authenticated requests should include a valid JWT token.
 - Update `VITE_API_URL` when switching between local development and deployed environments.
+>>>>>>> bda79a50fd9fc228bdd2cf84f76a45ff985353b2
