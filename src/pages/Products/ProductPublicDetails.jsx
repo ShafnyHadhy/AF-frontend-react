@@ -4,16 +4,14 @@ import { useParams, Link } from "react-router-dom";
 
 // ── Lifecycle event config ──────────────────────────────────────────────────
 const LIFECYCLE_EVENTS = [
-    { value: "under repair",        color: "bg-amber-50 border-amber-300 text-amber-700",   icon: "build",          label: "Under Repair" },
-    { value: "repair request",      color: "bg-amber-50 border-amber-300 text-amber-700",   icon: "build",          label: "Repair Request" },
-    { value: "repair finished",     color: "bg-green-50 border-green-300 text-green-700",   icon: "check_circle",   label: "Repair Finished" },
-    { value: "active",              color: "bg-sky-50 border-sky-300 text-sky-700",         icon: "play_circle",    label: "Active Use" },
     { value: "registered",          color: "bg-gray-50 border-gray-300 text-gray-600",      icon: "inventory_2",    label: "Registered" },
-    { value: "send to recycle",     color: "bg-teal-50 border-teal-300 text-teal-700",      icon: "recycling",      label: "Send to Recycle" },
+    { value: "repair request",      color: "bg-amber-50 border-amber-300 text-amber-700",   icon: "build",          label: "Repair Request" },
+    { value: "repaired",            color: "bg-green-50 border-green-300 text-green-700",   icon: "check_circle",   label: "Repaired" },
     { value: "recycling request",   color: "bg-teal-50 border-teal-300 text-teal-700",      icon: "recycling",      label: "Recycling Request" },
-    { value: "recycling finished",  color: "bg-emerald-50 border-emerald-300 text-emerald-700", icon: "eco",        label: "Recycling Finished" },
     { value: "recycled",            color: "bg-emerald-50 border-emerald-300 text-emerald-700", icon: "eco",        label: "Recycled" },
-    { value: "marketplace listing", color: "bg-blue-50 border-blue-300 text-blue-700",      icon: "storefront",     label: "Sent to Marketplace" },
+    { value: "listed on marketplace", color: "bg-blue-50 border-blue-300 text-blue-700",      icon: "storefront",     label: "Listed on Marketplace" },
+    { value: "marketplace listing", color: "bg-blue-50 border-blue-300 text-blue-700",      icon: "storefront",     label: "Listed on Marketplace" },
+    { value: "active",              color: "bg-sky-50 border-sky-300 text-sky-700",         icon: "play_circle",    label: "Active Use" },
     { value: "sold",                color: "bg-violet-50 border-violet-300 text-violet-700", icon: "sell",          label: "Sold" },
     { value: "damaged",             color: "bg-red-50 border-red-300 text-red-700",         icon: "warning",        label: "Damaged" },
     { value: "in transit",          color: "bg-purple-50 border-purple-300 text-purple-700", icon: "local_shipping", label: "In Transit" },

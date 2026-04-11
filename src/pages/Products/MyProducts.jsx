@@ -9,13 +9,15 @@ import "jspdf-autotable";
 
 // ── Lifecycle event config ──────────────────────────────────────────────────
 const LIFECYCLE_EVENTS = [
-  { value: "under repair",        label: "🔧 Under Repair",           color: "bg-amber-100 text-amber-700 border-amber-300",   icon: "build" },
-  { value: "repair finished",     label: "✅ Repair Finished",        color: "bg-green-100 text-green-700 border-green-300",   icon: "check_circle" },
-  { value: "send to recycle",     label: "♻️ Send to Recycle",        color: "bg-teal-100 text-teal-700 border-teal-300",     icon: "recycling" },
-  { value: "recycling finished",  label: "🌿 Recycling Finished",     color: "bg-emerald-100 text-emerald-700 border-emerald-300", icon: "eco" },
-  { value: "marketplace listing", label: "🏪 Send to Marketplace",    color: "bg-blue-100 text-blue-700 border-blue-300",     icon: "storefront" },
-  { value: "damaged",             label: "⚠️ Damaged",                color: "bg-red-100 text-red-700 border-red-300",        icon: "warning" },
+  { value: "registered",          label: "📝 Registered",             color: "bg-gray-100 text-gray-700 border-gray-300",     icon: "inventory_2" },
+  { value: "repair request",      label: "🔧 Repair Requested",       color: "bg-amber-100 text-amber-700 border-amber-300",   icon: "build" },
+  { value: "repaired",            label: "✅ Repaired",               color: "bg-green-100 text-green-700 border-green-300",   icon: "check_circle" },
+  { value: "recycling request",   label: "♻️ Recycling Requested",    color: "bg-teal-100 text-teal-700 border-teal-300",     icon: "recycling" },
+  { value: "recycled",            label: "🌿 Recycled",               color: "bg-emerald-100 text-emerald-700 border-emerald-300", icon: "eco" },
+  { value: "listed on marketplace", label: "🏪 Listed for Sale",      color: "bg-blue-100 text-blue-700 border-blue-300",     icon: "storefront" },
+  { value: "marketplace listing", label: "🏪 Listed for Sale",        color: "bg-blue-100 text-blue-700 border-blue-300",     icon: "storefront" },
   { value: "active",              label: "▶️ Back to Active Use",     color: "bg-sky-100 text-sky-700 border-sky-300",        icon: "play_circle" },
+  { value: "damaged",             label: "⚠️ Damaged",                color: "bg-red-100 text-red-700 border-red-300",        icon: "warning" },
   { value: "in transit",          label: "🚚 In Transit",             color: "bg-purple-100 text-purple-700 border-purple-300", icon: "local_shipping" },
 ];
 
@@ -440,6 +442,7 @@ const MyProducts = () => {
       case "distributed":
         return "bg-green-100 text-green-700 border-green-200";
       case "repair request":
+      case "under repair":
         return "bg-amber-100 text-amber-700 border-amber-200";
       case "recycling request":
         return "bg-emerald-100 text-emerald-700 border-emerald-200";
@@ -452,12 +455,12 @@ const MyProducts = () => {
 
   const getProgressWidth = (product) => {
     if (!product.lifecycle || product.lifecycle.length === 0) return "0%";
-    const stages = ["registered", "manufacturing", "in transit", "distributed", "active", "repair request", "recycled", "sold"];
+    const stages = ["registered", "manufacturing", "distributed", "active", "repair request", "under repair", "recycling request", "recycled", "sold"];
     const currentStage = product.status?.toLowerCase();
     if (currentStage === "recycled" || currentStage === "sold") return "100%";
     const index = stages.indexOf(currentStage);
     if (index === -1) return "50%";
-    return `${Math.min(100, ((index + 1) / 5) * 100)}%`;
+    return `${Math.min(100, ((index + 1) / stages.length) * 100)}%`;
   };
 
   // Helper to filter and search products (Memoized for performance to reduce load)
@@ -628,8 +631,8 @@ const MyProducts = () => {
               {[
                 { label: "All Products", id: "All", icon: "inventory_2" },
                 { label: "Active Use", id: "Active", icon: "verified" },
-                { label: "In Transit", id: "In Transit", icon: "local_shipping" },
-                { label: "End of Life", id: "End of Life", icon: "history_edu" },
+                { label: "Under Repair", id: "under repair", icon: "build" },
+                { label: "Under Recycle", id: "recycling request", icon: "recycling" },
                 { label: "Marketplace", id: "Listed for Sale", icon: "sell" },
               ].map((item) => (
                 <li key={item.id}>
@@ -713,20 +716,8 @@ const MyProducts = () => {
                     </div>
                   </div>
 
-                  {product.status?.toLowerCase() === "repair request" ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-300 rounded hover:bg-green-100 flex items-center justify-center gap-1 shadow-sm shadow-green-100/50">
-                        <span className="material-icons text-sm">done</span> Fixed
-                      </button>
-                      <button onClick={() => handleResolveRepair(product.productID, "not repairable")} className="py-2 px-1 text-[11px] font-bold text-red-600 bg-red-50 border-2 border-red-200 rounded hover:bg-red-100 flex items-center justify-center gap-1 shadow-sm shadow-red-100/50">
-                        <span className="material-icons text-sm">block</span> Junk
-                      </button>
-                    </div>
-                  ) : product.status?.toLowerCase() === "recycling request" ? (
-                    <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 border-2 border-emerald-400 rounded hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm shadow-emerald-200/50 mb-3">
-                      <span className="material-icons text-sm">check_circle</span> Complete Recycling
-                    </button>
-                  ) : null}
+                  {/* Provider manages repair/recycle status - no manual buttons here */}
+
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
                     <button onClick={() => setSelectedProduct(product)} className="text-gray-600 hover:text-green-600 transition-all hover:scale-110" title="Details">
@@ -812,7 +803,15 @@ const MyProducts = () => {
       )}
 
       {/* Repair / Recycle Modal */}
-      {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
+      {isFormOpen && (
+        <RepairRecycleForm 
+          onClose={() => setIsFormOpen(false)} 
+          onSuccess={() => {
+            // Re-fetch products to show the updated status immediately
+            window.location.reload(); 
+          }}
+        />
+      )}
     </div>
   );
 };
