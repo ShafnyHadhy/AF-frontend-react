@@ -76,7 +76,7 @@ const RequestRepair = () => {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Please describe the issue you're experiencing..."
-                                className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-100 dark:border-zinc-800 rounded-xl p-4 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all min-h-[150px]"
+                                className="w-full bg-zinc-50 dark:bg-zinc-800 border-2 border-zinc-100 dark:border-zinc-800 rounded-xl p-4 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none transition-all min-h-37.5"
                                 required
                             ></textarea>
                         </div>
