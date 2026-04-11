@@ -32,7 +32,7 @@ const items = [
     { name: 'Other', id: 'other', icon: PlusCircle, image: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=200' }
 ];
 
-export default function ItemDropdown({ onSelect }) {
+export default function ItemDropdown({ onSelect, hidePreview }) {
     const [selected, setSelected] = useState(null);
     const [otherValue, setOtherValue] = useState('');
 
@@ -86,17 +86,17 @@ export default function ItemDropdown({ onSelect }) {
                 </div>
             )}
 
-            {selected && (
+            {selected && !hidePreview && (
                 <div className="mt-4 animate-in fade-in zoom-in-95 duration-300">
-                    <p className="text-sm font-medium text-gray-500 mb-2">Selected Item Preview:</p>
-                    <div className="relative h-32 w-full rounded-2xl overflow-hidden shadow-md border-4 border-white">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Category Preview</p>
+                    <div className="relative h-24 w-full rounded-2xl overflow-hidden shadow-sm border-2 border-white">
                         <img
                             src={selected.image}
                             alt={selected.name}
                             className="w-full h-full object-cover"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                            <span className="text-white font-bold text-sm">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-bottom p-3">
+                            <span className="text-white font-bold text-xs mt-auto">
                                 {selected.id === 'other' ? (otherValue || 'Other') : selected.name}
                             </span>
                         </div>

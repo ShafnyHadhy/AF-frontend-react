@@ -16,6 +16,7 @@ import Analytics from "./pages/Products/Analytics";
 import QRScreen from "./pages/Products/QRScreen";
 import RequestRepair from "./pages/Products/RequestRepair";
 import RequestRecycling from "./pages/Products/RequestRecycling";
+import MyRequests from "./pages/Products/MyRequests";
 import ManageRequestPage from "./pages/provider/manageRequest";
 import EditProfilePage from "./pages/editProfile";
 
@@ -55,6 +56,7 @@ function App() {
             element={<RequestRecycling />}
           />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/my-requests" element={<MyRequests />} />
           <Route path="/*" element={<HomePage />} />
         </Routes>
       </div>
