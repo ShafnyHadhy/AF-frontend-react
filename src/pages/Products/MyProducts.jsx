@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
+import RepairRecycleForm from "../../components/RepairRecycleForm";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import RepairRecycleForm from "../../components/RepairRecycleForm";
@@ -555,7 +556,6 @@ const MyProducts = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 animate-in fade-in duration-300" onClick={() => setSelectedProduct(null)}></div>
       )}
 
-      {/* Sell Modal */}
       {showSellModal && (
         <div className="fixed inset-0 flex items-center justify-center z-[70] animate-in fade-in duration-300 p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSellModal(false)}></div>
@@ -592,6 +592,9 @@ const MyProducts = () => {
           </div>
         </div>
       )}
+
+      {/* Repair / Recycle Modal */}
+      {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
     </div>
   );
 };

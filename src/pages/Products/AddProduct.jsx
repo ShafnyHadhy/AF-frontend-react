@@ -12,12 +12,15 @@ const AddProduct = () => {
     productName: "",
     Brand: "",
     model: "",
+    category: "",
     condition: "good",
     description: "",
     price: "",
   });
 
   const [images, setImages] = useState([]);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryValue, setCustomCategoryValue] = useState("");
 
   // --- Form Handlers ---
   const handleChange = (e) => {
@@ -29,6 +32,23 @@ const AddProduct = () => {
       }
     }
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCategoryChange = (e) => {
+    const val = e.target.value;
+    if (val === "Other") {
+      setIsCustomCategory(true);
+      setFormData({ ...formData, category: customCategoryValue || "Other" });
+    } else {
+      setIsCustomCategory(false);
+      setFormData({ ...formData, category: val });
+    }
+  };
+
+  const handleCustomCategoryInput = (e) => {
+    const val = e.target.value;
+    setCustomCategoryValue(val);
+    setFormData({ ...formData, category: val || "Other" });
   };
 
   const handleImageUpload = (e) => {
@@ -120,7 +140,55 @@ const AddProduct = () => {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase text-gray-900">Model <span className="text-red-500">*</span></label>
+                <label className="text-xs font-bold uppercase text-zinc-400">Category <span className="text-red-500">*</span></label>
+                <select
+                  name="category_select"
+                  onChange={handleCategoryChange}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-bold"
+                  required
+                >
+                  <option value="" disabled selected={!formData.category}>Select Category</option>
+                  <option value="Accessories">Accessories</option>
+                  <option value="Air Conditioner">Air Conditioner</option>
+                  <option value="Camera">Camera</option>
+                  <option value="CCTV">CCTV</option>
+                  <option value="Drone">Drone</option>
+                  <option value="Electric Bike">Electric Bike</option>
+                  <option value="EV Charger">EV Charger</option>
+                  <option value="Fan">Fan</option>
+                  <option value="Gaming Console">Gaming Console</option>
+                  <option value="Headphones">Headphones</option>
+                  <option value="Laptop">Laptop</option>
+                  <option value="Oven">Oven / Microwave</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Printer">Printer</option>
+                  <option value="Radio">Radio</option>
+                  <option value="Refrigerator">Refrigerator</option>
+                  <option value="Speaker">Speaker</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="TV">TV</option>
+                  <option value="Washing Machine">Washing Machine</option>
+                  <option value="Watch">Watch</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              {isCustomCategory && (
+                <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                  <label className="text-xs font-bold uppercase text-zinc-400 text-primary">Specify Category <span className="text-red-500">*</span></label>
+                  <input
+                    type="text"
+                    placeholder="Enter custom category name..."
+                    value={customCategoryValue}
+                    onChange={handleCustomCategoryInput}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-primary/30 rounded-xl p-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-semibold"
+                    required
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-zinc-400">Model <span className="text-red-500">*</span></label>
                 <input
                   type="text"
                   name="model"
