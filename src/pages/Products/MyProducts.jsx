@@ -4,8 +4,277 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import DeleteProduct from "./DeleteProduct";
 import RepairRecycleForm from "../../components/RepairRecycleForm";
-import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+
+// ── Lifecycle event config ──────────────────────────────────────────────────
+const LIFECYCLE_EVENTS = [
+  { value: "registered", label: " Registered", color: "bg-gray-100 text-gray-700 border-gray-300", icon: "inventory_2" },
+  { value: "repair request", label: " Repair Requested", color: "bg-amber-100 text-amber-700 border-amber-300", icon: "build" },
+  { value: "repaired", label: " Repaired", color: "bg-green-100 text-green-700 border-green-300", icon: "check_circle" },
+  { value: "recycling request", label: " Recycling Requested", color: "bg-teal-100 text-teal-700 border-teal-300", icon: "recycling" },
+  { value: "recycled", label: " Recycled", color: "bg-emerald-100 text-emerald-700 border-emerald-300", icon: "eco" },
+  { value: "listed on marketplace", label: " Listed for Sale", color: "bg-blue-100 text-blue-700 border-blue-300", icon: "storefront" },
+  { value: "marketplace listing", label: " Listed for Sale", color: "bg-blue-100 text-blue-700 border-blue-300", icon: "storefront" },
+  { value: "active", label: " Back to Active Use", color: "bg-sky-100 text-sky-700 border-sky-300", icon: "play_circle" },
+  { value: "damaged", label: " Damaged", color: "bg-red-100 text-red-700 border-red-300", icon: "warning" },
+  { value: "in transit", label: " In Transit", color: "bg-purple-100 text-purple-700 border-purple-300", icon: "local_shipping" },
+];
+
+const getEventConfig = (eventType) => {
+  const et = (eventType || "").toLowerCase();
+  return LIFECYCLE_EVENTS.find(e => e.value === et) || {
+    color: "bg-gray-100 text-gray-700 border-gray-300",
+    icon: "history",
+  };
+};
+
+// ── DrawerContent component ─────────────────────────────────────────────────
+const DrawerContent = ({ product, token, onClose, onUpdate, handleToggleSell }) => {
+  const [addingEvent, setAddingEvent] = useState(false);
+  const [savingEvent, setSavingEvent] = useState(false);
+  const [newEventType, setNewEventType] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newLocation, setNewLocation] = useState("");
+
+  const handleAddEvent = async () => {
+    if (!newEventType) { toast.error("Please select an activity type"); return; }
+    setSavingEvent(true);
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/products/${product.productID}/lifecycle`,
+        {
+          eventType: newEventType,
+          description: newDescription || `Product marked as: ${newEventType}`,
+          location: newLocation,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Lifecycle activity recorded!");
+      onUpdate(res.data.product);
+      setAddingEvent(false);
+      setNewEventType("");
+      setNewDescription("");
+      setNewLocation("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to record activity");
+    } finally {
+      setSavingEvent(false);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">Product Details</h3>
+          <p className="text-xs text-gray-400">Lifecycle & Activity Tracker</p>
+        </div>
+        <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+          <span className="material-icons">close</span>
+        </button>
+      </div>
+
+      {/* Product Image */}
+      <div className="aspect-video bg-gray-100 rounded-xl mb-5 overflow-hidden flex items-center justify-center">
+        {product.images?.[0] ? (
+          <img src={product.images[0]} alt="Detail View" loading="lazy" className="w-full h-full object-cover" />
+        ) : (
+          <span className="material-icons text-6xl text-gray-300">inventory_2</span>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="mb-5">
+        <div className="flex justify-between items-start mb-1">
+          <h4 className="text-lg font-bold text-gray-900">{product.productName}</h4>
+          <span className="font-bold text-primary">Rs. {product.price || 0}</span>
+        </div>
+        <p className="text-xs text-gray-500 mb-1">{product.Brand} • {product.model}</p>
+        <p className="text-sm text-gray-600 leading-relaxed mb-3">{product.description || "No description available."}</p>
+
+        {/* Status badge */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xs font-bold text-gray-400 uppercase">Current Status:</span>
+          <span className={`px-2 py-0.5 text-[11px] font-bold rounded border capitalize ${getEventConfig(product.status).color}`}>
+            {product.status || "registered"}
+          </span>
+        </div>
+
+        {/* QR passport */}
+        <div className="bg-gray-50 p-3 rounded-lg flex items-center gap-4 border border-green-100">
+          <div className="w-14 h-14 bg-white p-1 border border-green-300 rounded shadow-sm">
+            {product.qrCode ? (
+              <img src={product.qrCode} alt="Passport QR" className="w-full h-full" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center"><span className="material-icons text-gray-300 text-sm">qr_code</span></div>
+            )}
+          </div>
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase">Serial Passport</p>
+            <p className="text-xs font-mono font-bold truncate max-w-[200px]">{(product.productID || "N/A").toUpperCase()}</p>
+            <p className="text-[10px] text-green-600 font-medium">Verified by EcoCycle v2.4</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Add Lifecycle Activity ─────────────────────────────────────── */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Track Activity</h4>
+          {!addingEvent && (
+            <button
+              onClick={() => setAddingEvent(true)}
+              className="flex items-center gap-1 text-xs font-bold text-green-700 bg-green-50 border border-green-300 px-3 py-1 rounded-full hover:bg-green-100 transition-all"
+            >
+              <span className="material-icons text-sm">add</span> Add Event
+            </button>
+          )}
+        </div>
+
+        {addingEvent && (
+          <div className="bg-green-50/50 border border-green-200 rounded-xl p-4 space-y-3 animate-in slide-in-from-top duration-200">
+            <p className="text-xs font-bold text-green-800 mb-1">New Lifecycle Activity</p>
+
+            {/* Event type dropdown */}
+            <div>
+              <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Activity Type *</label>
+              <select
+                value={newEventType}
+                onChange={e => setNewEventType(e.target.value)}
+                className="w-full border border-green-300 rounded-lg px-3 py-2 text-sm font-semibold bg-white focus:ring-2 focus:ring-green-300 outline-none"
+              >
+                <option value="">— Select activity —</option>
+                {LIFECYCLE_EVENTS.map(ev => (
+                  <option key={ev.value} value={ev.value}>{ev.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Notes (optional)</label>
+              <textarea
+                rows={2}
+                value={newDescription}
+                onChange={e => setNewDescription(e.target.value)}
+                placeholder="e.g. Screen cracked, sent to service center..."
+                className="w-full border border-green-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-green-300 outline-none resize-none"
+              />
+            </div>
+
+            {/* Location */}
+            <div>
+              <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Location (optional)</label>
+              <input
+                type="text"
+                value={newLocation}
+                onChange={e => setNewLocation(e.target.value)}
+                placeholder="e.g. Colombo Repair Hub"
+                className="w-full border border-green-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-green-300 outline-none"
+              />
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => { setAddingEvent(false); setNewEventType(""); setNewDescription(""); setNewLocation(""); }}
+                className="flex-1 py-2 text-sm font-bold text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddEvent}
+                disabled={savingEvent}
+                className="flex-1 py-2 text-sm font-bold text-white bg-[#166534] rounded-lg hover:bg-green-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-1"
+              >
+                {savingEvent ? <span className="material-icons animate-spin text-sm">refresh</span> : <span className="material-icons text-sm">save</span>}
+                {savingEvent ? "Saving..." : "Save Activity"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── Lifecycle Timeline ──────────────────────────────────────────── */}
+      <div className="mb-24">
+        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-5">Lifecycle History ({product.lifecycle?.length || 0} events)</h4>
+
+        {(!product.lifecycle || product.lifecycle.length === 0) ? (
+          <div className="text-center py-8 text-gray-400">
+            <span className="material-icons text-3xl mb-2">timeline</span>
+            <p className="text-xs font-medium">No lifecycle events yet.</p>
+          </div>
+        ) : (
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-[19px] top-3 bottom-3 w-0.5 bg-gradient-to-b from-green-200 via-green-100 to-transparent"></div>
+
+            <div className="space-y-5">
+              {product.lifecycle.slice().reverse().map((event, idx) => {
+                const cfg = getEventConfig(event.eventType);
+                return (
+                  <div key={idx} className="relative flex gap-4 pl-1">
+                    {/* Icon bubble */}
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-full border-2 flex items-center justify-center shadow-sm z-10 bg-white ${cfg.color}`}>
+                      <span className="material-icons text-[16px]">{cfg.icon}</span>
+                    </div>
+
+                    {/* Content card */}
+                    <div className="flex-1 bg-white border border-green-100 rounded-xl p-3 shadow-sm">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-bold text-gray-900 capitalize">{event.eventType}</span>
+                        <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full border uppercase ${cfg.color}`}>
+                          {idx === 0 ? "Latest" : `#${product.lifecycle.length - idx}`}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-gray-600 italic mb-1.5">"{event.description}"</p>
+                      <div className="flex items-center gap-3 text-[10px] text-gray-400">
+                        <span className="flex items-center gap-0.5">
+                          <span className="material-icons text-[11px]">calendar_today</span>
+                          {new Date(event.date).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+                        </span>
+                        {event.location && (
+                          <span className="flex items-center gap-0.5">
+                            <span className="material-icons text-[11px]">location_on</span>
+                            {event.location}
+                          </span>
+                        )}
+                        {event.performedBy && (
+                          <span className="flex items-center gap-0.5">
+                            <span className="material-icons text-[11px]">person</span>
+                            {event.performedBy}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer actions */}
+      <div className="flex gap-3 pt-4 border-t border-gray-100 sticky bottom-0 bg-white pb-2">
+        <button
+          onClick={() => { handleToggleSell(product.productID, product.isForSale); onClose(); }}
+          className="flex-1 py-2.5 bg-white border border-green-300 text-gray-700 font-bold rounded-lg hover:bg-green-50 transition-colors shadow-sm text-sm"
+        >
+          {product.isForSale ? "Unlist from Market" : "List for Sale"}
+        </button>
+        <Link
+          to={`/edit-product/${product.productID}`}
+          className="flex-1 py-2.5 bg-[#166534] text-white font-bold text-center rounded-lg hover:bg-green-800 transition-colors shadow-sm text-sm"
+        >
+          Edit Product
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+
 
 const MyProducts = () => {
   const [products, setProducts] = useState([]);
@@ -171,6 +440,7 @@ const MyProducts = () => {
       case "distributed":
         return "bg-green-100 text-green-700 border-green-200";
       case "repair request":
+      case "under repair":
         return "bg-amber-100 text-amber-700 border-amber-200";
       case "recycling request":
         return "bg-emerald-100 text-emerald-700 border-emerald-200";
@@ -183,12 +453,12 @@ const MyProducts = () => {
 
   const getProgressWidth = (product) => {
     if (!product.lifecycle || product.lifecycle.length === 0) return "0%";
-    const stages = ["registered", "manufacturing", "in transit", "distributed", "active", "repair request", "recycled", "sold"];
+    const stages = ["registered", "manufacturing", "distributed", "active", "repair request", "under repair", "recycling request", "recycled", "sold"];
     const currentStage = product.status?.toLowerCase();
     if (currentStage === "recycled" || currentStage === "sold") return "100%";
     const index = stages.indexOf(currentStage);
     if (index === -1) return "50%";
-    return `${Math.min(100, ((index + 1) / 5) * 100)}%`;
+    return `${Math.min(100, ((index + 1) / stages.length) * 100)}%`;
   };
 
   // Helper to filter and search products (Memoized for performance to reduce load)
@@ -214,56 +484,6 @@ const MyProducts = () => {
       return matchesCategory && matchesSearch;
     });
   }, [products, activeFilter, searchQuery]);
-
-  // --- PDF GENERATOR ---
-  const handleGeneratePDF = () => {
-    const doc = new jsPDF();
-    
-    // Add Company Logo Text (ReVolve)
-    doc.setFontSize(22);
-    doc.setTextColor(22, 101, 52); // Tailwind bg-[#166534]
-    doc.text("ReVolve", 14, 20);
-    
-    // Title
-    doc.setFontSize(16);
-    doc.setTextColor(30, 41, 59); // zinc-800
-    doc.text("Product Catalog Report", 14, 30);
-    
-    // Metadata: DateTime
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    const now = new Date();
-    doc.text(`Generated on: ${now.toLocaleDateString()} at ${now.toLocaleTimeString()}`, 14, 38);
-    doc.text(`Report Period: ${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`, 14, 43);
-
-    // Table Data
-    const tableColumn = ["Product ID", "Name", "Brand", "Condition", "Status", "Price (Rs.)"];
-    const tableRows = [];
-
-    filteredProducts.forEach(product => {
-      const productData = [
-        product.productID,
-        product.productName,
-        product.Brand,
-        product.condition,
-        product.status || "Unknown",
-        product.price ? `Rs. ${product.price}` : "0"
-      ];
-      tableRows.push(productData);
-    });
-
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 50,
-      theme: 'striped',
-      styles: { fontSize: 9 },
-      headStyles: { fillColor: [22, 101, 52] }
-    });
-
-    doc.save(`ReVolve_Products_${now.toISOString().split('T')[0]}.pdf`);
-    toast.success("Catalog Report Downloaded!");
-  };
 
   // --- MAIN RENDER ---
   if (loading) {
@@ -336,14 +556,20 @@ const MyProducts = () => {
           <section>
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Sustainability</h3>
             <div className="space-y-2">
-              <button 
+              <button
                 onClick={() => setIsFormOpen(true)}
                 className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-800 rounded-md text-xs font-bold hover:bg-gray-200 transition-all shadow-sm shadow-green-100/50 border border-green-300 z-40"
               >
                 <span className="material-icons text-[14px]">home_repair_service</span>
                 Repair / Recycle Request
               </button>
-              {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
+              <button
+                onClick={() => navigate("/my-requests")}
+                className="w-full flex items-center justify-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-md text-xs font-bold hover:bg-green-100 transition-all shadow-sm shadow-green-100/50 border border-green-300"
+              >
+                <span className="material-icons text-[14px]">assignment</span>
+                View My Requests
+              </button>
             </div>
           </section>
 
@@ -353,8 +579,8 @@ const MyProducts = () => {
               {[
                 { label: "All Products", id: "All", icon: "inventory_2" },
                 { label: "Active Use", id: "Active", icon: "verified" },
-                { label: "In Transit", id: "In Transit", icon: "local_shipping" },
-                { label: "End of Life", id: "End of Life", icon: "history_edu" },
+                { label: "Under Repair", id: "under repair", icon: "build" },
+                { label: "Under Recycle", id: "recycling request", icon: "recycling" },
                 { label: "Marketplace", id: "Listed for Sale", icon: "sell" },
               ].map((item) => (
                 <li key={item.id}>
@@ -388,10 +614,6 @@ const MyProducts = () => {
               <p className="text-sm text-gray-500">Manage and track your sustainable assets</p>
             </div>
             <div className="flex gap-3">
-              <button onClick={handleGeneratePDF} className="px-4 py-2 bg-white text-gray-900 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-100 transition-all shadow-md shadow-green-100/50 border border-green-300">
-                <span className="material-icons text-sm text-gray-900">picture_as_pdf</span>
-                Download Report
-              </button>
               <Link to="/add-product" className="px-4 py-2 bg-gray-100 text-gray-800 rounded-lg font-bold flex items-center gap-2 hover:bg-gray-200 transition-all shadow-md shadow-green-100/50 border border-green-300">
                 <span className="material-icons text-sm">add</span>
                 Register
@@ -428,30 +650,10 @@ const MyProducts = () => {
                   </div>
                   <p className="text-[10px] text-gray-500 mb-4">{product.Brand || "Unknown Brand"} • {product.model || "Unknown Model"} • SN: {(product.productID || "N/A").slice(-8).toUpperCase()}</p>
 
-                  <div className="mb-4">
-                    <div className="flex justify-between text-[10px] font-medium text-gray-500 mb-1">
-                      <span>Lifecycle Progress</span>
-                      <span>{getProgressWidth(product)}</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="bg-primary h-full transition-all duration-500" style={{ width: getProgressWidth(product) }}></div>
-                    </div>
-                  </div>
+                  {/* Progress bar removed as requested */}
 
-                  {product.status?.toLowerCase() === "repair request" ? (
-                    <div className="grid grid-cols-2 gap-2">
-                      <button onClick={() => handleResolveRepair(product.productID, "repaired")} className="py-2 px-1 text-[11px] font-bold text-green-700 bg-green-50 border border-green-300 rounded hover:bg-green-100 flex items-center justify-center gap-1 shadow-sm shadow-green-100/50">
-                        <span className="material-icons text-sm">done</span> Fixed
-                      </button>
-                      <button onClick={() => handleResolveRepair(product.productID, "not repairable")} className="py-2 px-1 text-[11px] font-bold text-red-600 bg-red-50 border-2 border-red-200 rounded hover:bg-red-100 flex items-center justify-center gap-1 shadow-sm shadow-red-100/50">
-                        <span className="material-icons text-sm">block</span> Junk
-                      </button>
-                    </div>
-                  ) : product.status?.toLowerCase() === "recycling request" ? (
-                    <button onClick={() => handleCompleteRecycling(product.productID)} className="w-full py-2 px-3 text-[11px] font-bold text-white bg-emerald-600 border-2 border-emerald-400 rounded hover:bg-emerald-700 flex items-center justify-center gap-2 shadow-sm shadow-emerald-200/50">
-                      <span className="material-icons text-sm">check_circle</span> Complete Recycling
-                    </button>
-                  ) : null}
+                  {/* Provider manages repair/recycle status - no manual buttons here */}
+
 
                   <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
                     <button onClick={() => setSelectedProduct(product)} className="text-gray-600 hover:text-green-600 transition-all hover:scale-110" title="Details">
@@ -479,74 +681,18 @@ const MyProducts = () => {
       </main>
 
       {/* Product Detail Drawer */}
-      <div className={`fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-[0_0_40px_rgba(34,197,94,0.15)] transform transition-transform duration-300 ease-in-out z-[60] overflow-y-auto ${selectedProduct ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-[0_0_40px_rgba(34,197,94,0.15)] transform transition-transform duration-300 ease-in-out z-[60] overflow-y-auto ${selectedProduct ? 'translate-x-0' : 'translate-x-full'}`}>
         {selectedProduct && (
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold">Product Details</h3>
-              <button onClick={() => setSelectedProduct(null)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <span className="material-icons">close</span>
-              </button>
-            </div>
-
-            <div className="aspect-video bg-gray-100 rounded-xl mb-6 overflow-hidden flex items-center justify-center">
-              {selectedProduct.images?.[0] ? (
-                <img src={selectedProduct.images[0]} alt="Detail View" loading="lazy" className="w-full h-full object-cover" />
-              ) : (
-                <span className="material-icons text-6xl text-gray-300">inventory_2</span>
-              )}
-            </div>
-
-            <div className="mb-8">
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="text-lg font-bold text-gray-900">{selectedProduct.productName}</h4>
-                <span className="font-bold text-primary">Rs. {selectedProduct.price || 0}</span>
-              </div>
-              <p className="text-sm text-gray-600 leading-relaxed mb-4">{selectedProduct.description || "No description available."}</p>
-
-              <div className="bg-gray-50 p-4 rounded-lg flex items-center gap-4">
-                <div className="w-16 h-16 bg-white p-1 border border-green-300 rounded shadow-sm shadow-green-100/50">
-                  {selectedProduct.qrCode ? (
-                    <img src={selectedProduct.qrCode} alt="Passport QR" className="w-full h-full" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center"><span className="material-icons text-gray-300">qr_code</span></div>
-                  )}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase">Serial Passport</p>
-                  <p className="text-sm font-mono font-bold truncate max-w-[200px]">{(selectedProduct.productID || "N/A").toUpperCase()}</p>
-                  <p className="text-xs text-green-600 font-medium">Verified by EcoCycle v2.4</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-8">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Lifecycle History</h4>
-              <div className="space-y-6 relative before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100">
-                {selectedProduct.lifecycle?.slice().reverse().map((event, idx) => (
-                  <div key={idx} className="relative pl-8">
-                    <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-white border border-primary shadow-sm flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-primary"></div>
-                    </div>
-                    <p className="text-xs font-bold text-gray-900 capitalize">{event.eventType}</p>
-                    <p className="text-[10px] text-gray-500 mb-1">
-                      {new Date(event.date).toLocaleDateString()} • {event.location || "System"}
-                    </p>
-                    <p className="text-xs text-gray-600 italic">"{event.description}"</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-4 border-t border-gray-100 sticky bottom-0 bg-white">
-              <button onClick={() => { handleToggleSell(selectedProduct.productID, selectedProduct.isForSale); setSelectedProduct(null); }} className="flex-1 py-3 bg-white border border-green-300 text-gray-700 font-bold rounded-lg hover:bg-green-50 transition-colors shadow-sm shadow-green-100/50">
-                {selectedProduct.isForSale ? 'Unlist' : 'List for Sale'}
-              </button>
-              <Link to={`/edit-product/${selectedProduct.productID}`} className="flex-1 py-3 bg-primary text-zinc-900 font-bold text-center rounded-lg border border-green-300 hover:bg-secondary transition-colors shadow-sm shadow-green-100/50">
-                Edit Product
-              </Link>
-            </div>
-          </div>
+          <DrawerContent
+            product={selectedProduct}
+            token={token}
+            onClose={() => setSelectedProduct(null)}
+            onUpdate={(updatedProduct) => {
+              setProducts(products.map(p => p.productID === updatedProduct.productID ? updatedProduct : p));
+              setSelectedProduct(updatedProduct);
+            }}
+            handleToggleSell={handleToggleSell}
+          />
         )}
       </div>
 
@@ -593,7 +739,15 @@ const MyProducts = () => {
       )}
 
       {/* Repair / Recycle Modal */}
-      {isFormOpen && <RepairRecycleForm onClose={() => setIsFormOpen(false)} />}
+      {isFormOpen && (
+        <RepairRecycleForm
+          onClose={() => setIsFormOpen(false)}
+          onSuccess={() => {
+            // Re-fetch products to show the updated status immediately
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 };

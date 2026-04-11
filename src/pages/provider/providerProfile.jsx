@@ -23,6 +23,59 @@ export default function ProviderProfile() {
   const [district, setDistrict] = useState('');
   const [serviceRadiusKm, setServiceRadiusKm] = useState(10);
   const [location, setLocation] = useState({ lat: 6.9271, lng: 79.8612 });
+  const [errors, setErrors] = useState({});
+
+  const textOnlyRegex = /^[A-Za-z\s]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validateForm = () => {
+    const nextErrors = {};
+
+    if (!businessName.trim()) {
+      nextErrors.businessName = 'Business name is required.';
+    } else if (!textOnlyRegex.test(businessName.trim())) {
+      nextErrors.businessName = 'Business name should contain letters only.';
+    }
+
+    if (!providerType) {
+      nextErrors.providerType = 'Provider type is required.';
+    }
+
+    if (!email.trim()) {
+      nextErrors.email = 'Email is required.';
+    } else if (!emailRegex.test(email.trim())) {
+      nextErrors.email = 'Enter a valid email address.';
+    }
+
+    if (!phone.trim()) {
+      nextErrors.phone = 'Mobile number is required.';
+    } else if (!/^\d{10}$/.test(phone.trim())) {
+      nextErrors.phone = 'Mobile number must be exactly 10 digits.';
+    }
+
+    if (contactPerson.trim() && !textOnlyRegex.test(contactPerson.trim())) {
+      nextErrors.contactPerson = 'Contact person should contain letters only.';
+    }
+
+    const radiusValue = Number(serviceRadiusKm);
+    if (Number.isNaN(radiusValue) || radiusValue <= 0) {
+      nextErrors.serviceRadiusKm = 'Radius should be a positive number.';
+    }
+
+    if (!addressLine.trim()) {
+      nextErrors.addressLine = 'Address line is required.';
+    }
+
+    if (!city.trim()) {
+      nextErrors.city = 'City is required.';
+    }
+
+    if (!district.trim()) {
+      nextErrors.district = 'District is required.';
+    }
+
+    return nextErrors;
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -77,6 +130,14 @@ export default function ProviderProfile() {
   });
 
   const updateProfile = async () => {
+
+    const nextErrors = validateForm();
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error('Please fix the highlighted fields.');
+      return;
+    }
 
     const token = localStorage.getItem('token');
 
@@ -204,10 +265,17 @@ export default function ProviderProfile() {
                     id="business-name"
                     type="text"
                     value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                      setBusinessName(value);
+                      if (errors.businessName) {
+                        setErrors((prev) => ({ ...prev, businessName: '' }));
+                      }
+                    }}
                     placeholder="e.g. GreenLoop Restoration Hub"
                     className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-green-500 focus:bg-white transition-all placeholder:text-slate-400 text-sm"
                   />
+                  {errors.businessName && <p className="text-xs text-red-600">{errors.businessName}</p>}
                 </div>
 
                 {/* Provider Type */}
@@ -226,6 +294,7 @@ export default function ProviderProfile() {
                     </select>
                     <span className="material-symbols-outlined absolute right-2 top-2 text-slate-400 pointer-events-none text-sm">expand_more</span>
                   </div>
+                  {errors.providerType && <p className="text-xs text-red-600">{errors.providerType}</p>}
                 </div>
 
                 {/* Services Multi-select */}
@@ -286,11 +355,20 @@ export default function ProviderProfile() {
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-semibold text-slate-700">Service Radius (KM)</label>
                   <input 
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={serviceRadiusKm}
-                    onChange={(e) => setServiceRadiusKm(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      setServiceRadiusKm(value);
+                      if (errors.serviceRadiusKm) {
+                        setErrors((prev) => ({ ...prev, serviceRadiusKm: '' }));
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm"
                   />
+                  {errors.serviceRadiusKm && <p className="text-xs text-red-600">{errors.serviceRadiusKm}</p>}
                 </div>
               </div>
             </section>
@@ -305,9 +383,16 @@ export default function ProviderProfile() {
                   <input 
                     type="text"
                     value={contactPerson}
-                    onChange={(e) => setContactPerson(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                      setContactPerson(value);
+                      if (errors.contactPerson) {
+                        setErrors((prev) => ({ ...prev, contactPerson: '' }));
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm"
                   />
+                  {errors.contactPerson && <p className="text-xs text-red-600">{errors.contactPerson}</p>}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -315,19 +400,34 @@ export default function ProviderProfile() {
                   <input 
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email) {
+                        setErrors((prev) => ({ ...prev, email: '' }));
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm"
                   />
+                  {errors.email && <p className="text-xs text-red-600">{errors.email}</p>}
                 </div>
 
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-semibold text-slate-700">Phone</label>
                   <input 
                     type="text"
+                    inputMode="numeric"
+                    maxLength={10}
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setPhone(value);
+                      if (errors.phone) {
+                        setErrors((prev) => ({ ...prev, phone: '' }));
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-lg bg-slate-50 border border-slate-200 text-sm"
                   />
+                  {errors.phone && <p className="text-xs text-red-600">{errors.phone}</p>}
                 </div>
 
               </div>
@@ -455,9 +555,15 @@ export default function ProviderProfile() {
                   <input 
                     type="text"
                     value={addressLine}
-                    onChange={(e) => setAddressLine(e.target.value)}
+                    onChange={(e) => {
+                      setAddressLine(e.target.value);
+                      if (errors.addressLine) {
+                        setErrors((prev) => ({ ...prev, addressLine: '' }));
+                      }
+                    }}
                     className="w-full h-10 px-3 rounded-lg bg-white border border-slate-200 text-sm"
                   />
+                  {errors.addressLine && <p className="text-xs text-red-600">{errors.addressLine}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -466,9 +572,15 @@ export default function ProviderProfile() {
                     <input 
                       type="text"
                       value={city}
-                      onChange={(e) => setCity(e.target.value)}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        if (errors.city) {
+                          setErrors((prev) => ({ ...prev, city: '' }));
+                        }
+                      }}
                       className="w-full h-10 px-3 rounded-lg bg-white border border-slate-200 text-sm"
                     />
+                    {errors.city && <p className="text-xs text-red-600">{errors.city}</p>}
                   </div>
 
                   <div className="flex flex-col gap-2">
@@ -476,9 +588,15 @@ export default function ProviderProfile() {
                     <input 
                       type="text"
                       value={district}
-                      onChange={(e) => setDistrict(e.target.value)}
+                      onChange={(e) => {
+                        setDistrict(e.target.value);
+                        if (errors.district) {
+                          setErrors((prev) => ({ ...prev, district: '' }));
+                        }
+                      }}
                       className="w-full h-10 px-3 rounded-lg bg-white border border-slate-200 text-sm"
                     />
+                    {errors.district && <p className="text-xs text-red-600">{errors.district}</p>}
                   </div>
                 </div>
 

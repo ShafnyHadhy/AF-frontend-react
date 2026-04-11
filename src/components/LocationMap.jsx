@@ -16,8 +16,8 @@ const makePinIcon = (color) => ({
                 <path fill="${color}" d="M18 2c-6.075 0-11 4.925-11 11 0 8.25 11 21 11 21s11-12.75 11-21c0-6.075-4.925-11-11-11zm0 15.25A4.25 4.25 0 1 1 18 9a4.25 4.25 0 0 1 0 8.5z"/>
             </svg>
         `),
-    scaledSize: new window.google.maps.Size(36, 36),
-    anchor: new window.google.maps.Point(18, 36),
+    scaledSize: { width: 36, height: 36 },
+    anchor: { x: 18, y: 36 },
 });
 
 export default function LocationMap({
