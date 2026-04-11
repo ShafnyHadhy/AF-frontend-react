@@ -9,16 +9,16 @@ import "jspdf-autotable";
 
 // ── Lifecycle event config ──────────────────────────────────────────────────
 const LIFECYCLE_EVENTS = [
-  { value: "registered",          label: "📝 Registered",             color: "bg-gray-100 text-gray-700 border-gray-300",     icon: "inventory_2" },
-  { value: "repair request",      label: "🔧 Repair Requested",       color: "bg-amber-100 text-amber-700 border-amber-300",   icon: "build" },
-  { value: "repaired",            label: "✅ Repaired",               color: "bg-green-100 text-green-700 border-green-300",   icon: "check_circle" },
-  { value: "recycling request",   label: "♻️ Recycling Requested",    color: "bg-teal-100 text-teal-700 border-teal-300",     icon: "recycling" },
-  { value: "recycled",            label: "🌿 Recycled",               color: "bg-emerald-100 text-emerald-700 border-emerald-300", icon: "eco" },
-  { value: "listed on marketplace", label: "🏪 Listed for Sale",      color: "bg-blue-100 text-blue-700 border-blue-300",     icon: "storefront" },
-  { value: "marketplace listing", label: "🏪 Listed for Sale",        color: "bg-blue-100 text-blue-700 border-blue-300",     icon: "storefront" },
-  { value: "active",              label: "▶️ Back to Active Use",     color: "bg-sky-100 text-sky-700 border-sky-300",        icon: "play_circle" },
-  { value: "damaged",             label: "⚠️ Damaged",                color: "bg-red-100 text-red-700 border-red-300",        icon: "warning" },
-  { value: "in transit",          label: "🚚 In Transit",             color: "bg-purple-100 text-purple-700 border-purple-300", icon: "local_shipping" },
+  { value: "registered", label: " Registered", color: "bg-gray-100 text-gray-700 border-gray-300", icon: "inventory_2" },
+  { value: "repair request", label: " Repair Requested", color: "bg-amber-100 text-amber-700 border-amber-300", icon: "build" },
+  { value: "repaired", label: " Repaired", color: "bg-green-100 text-green-700 border-green-300", icon: "check_circle" },
+  { value: "recycling request", label: " Recycling Requested", color: "bg-teal-100 text-teal-700 border-teal-300", icon: "recycling" },
+  { value: "recycled", label: " Recycled", color: "bg-emerald-100 text-emerald-700 border-emerald-300", icon: "eco" },
+  { value: "listed on marketplace", label: " Listed for Sale", color: "bg-blue-100 text-blue-700 border-blue-300", icon: "storefront" },
+  { value: "marketplace listing", label: " Listed for Sale", color: "bg-blue-100 text-blue-700 border-blue-300", icon: "storefront" },
+  { value: "active", label: " Back to Active Use", color: "bg-sky-100 text-sky-700 border-sky-300", icon: "play_circle" },
+  { value: "damaged", label: " Damaged", color: "bg-red-100 text-red-700 border-red-300", icon: "warning" },
+  { value: "in transit", label: " In Transit", color: "bg-purple-100 text-purple-700 border-purple-300", icon: "local_shipping" },
 ];
 
 const getEventConfig = (eventType) => {
@@ -796,11 +796,11 @@ const MyProducts = () => {
 
       {/* Repair / Recycle Modal */}
       {isFormOpen && (
-        <RepairRecycleForm 
-          onClose={() => setIsFormOpen(false)} 
+        <RepairRecycleForm
+          onClose={() => setIsFormOpen(false)}
           onSuccess={() => {
             // Re-fetch products to show the updated status immediately
-            window.location.reload(); 
+            window.location.reload();
           }}
         />
       )}
