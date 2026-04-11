@@ -261,6 +261,7 @@ export default function RepairRecycleForm({ onClose, editData, onSuccess }) {
                                             setFormData({ 
                                                 ...formData, 
                                                 productName: name, 
+                                                productID: product?.productID || "",
                                                 image: product?.images?.[0] || formData.image 
                                             });
                                         }}
