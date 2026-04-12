@@ -88,6 +88,10 @@ export default function EditProfilePage() {
     navigate("/login");
   }
 
+  function handleGoBack() {
+    navigate(-1);
+  }
+
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -209,40 +213,28 @@ export default function EditProfilePage() {
               {/* Desktop Navigation - Left Aligned */}
               <nav className="hidden lg:flex items-center gap-1">
                 <button
-                  onClick={() => navigate("/provider")}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                >
-                  Dashboard
-                </button>
-                <button
-                  onClick={() => navigate("/provider/inbox")}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                >
-                  Requests
-                </button>
-                <button
                   onClick={() => navigate("/user")}
                   className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                 >
                   My Profile
-                </button>
-                <button
-                  onClick={() => navigate("/provider/earnings")}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                >
-                  Earnings
-                </button>
-                <button
-                  onClick={() => navigate("/provider/settings")}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                >
-                  Settings
                 </button>
               </nav>
             </div>
 
             {/* Right Section: Actions & Profile */}
             <div className="flex items-center gap-3">
+              <button
+                onClick={handleGoBack}
+                className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors flex items-center gap-1 group"
+                title="Go back"
+              >
+                <span className="material-symbols-outlined text-[22px] group-hover:-translate-x-0.5 transition-transform">
+                  arrow_back
+                </span>
+                <span className="text-sm font-medium hidden sm:inline">
+                  Back
+                </span>
+              </button>
               {/* Notifications */}
               <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors relative">
                 <span className="material-symbols-outlined">notifications</span>
@@ -335,34 +327,19 @@ export default function EditProfilePage() {
           {/* Mobile Navigation */}
           <div className="lg:hidden py-3 flex gap-2 overflow-x-auto no-scrollbar border-t border-slate-50">
             <button
-              onClick={() => navigate("/provider")}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-slate-100 text-slate-500"
-            >
-              Dashboard
-            </button>
-            <button
-              onClick={() => navigate("/provider/inbox")}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-slate-100 text-slate-500"
-            >
-              Requests
-            </button>
-            <button
               onClick={() => navigate("/user")}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-slate-100 text-slate-500"
+              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-[#166534] text-white shadow-md shadow-green-900/10"
             >
               My Profile
             </button>
             <button
-              onClick={() => navigate("/provider/earnings")}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-slate-100 text-slate-500"
+              onClick={handleGoBack}
+              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-green-100 text-green-600 hover:bg-green-200 shadow-sm flex items-center gap-1"
             >
-              Earnings
-            </button>
-            <button
-              onClick={() => navigate("/provider/settings")}
-              className="whitespace-nowrap px-4 py-1.5 rounded-full font-bold text-xs transition-all bg-slate-100 text-slate-500"
-            >
-              Settings
+              <span className="material-symbols-outlined text-[16px]">
+                arrow_back
+              </span>
+              Back
             </button>
           </div>
         </div>
