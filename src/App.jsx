@@ -27,6 +27,7 @@ function App() {
         <Toaster position="top-right" />
 
         <Routes>
+          <Route path="/*" element={<HomePage />} />
           <Route path="/register/step1" element={<RegisterPage />} />
           <Route path="/user" element={<UserPage />} />
           <Route path="/verify-otp" element={<VerifyOTPPage />} />

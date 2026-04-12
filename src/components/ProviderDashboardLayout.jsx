@@ -59,7 +59,7 @@ export default function ProviderDashboardLayout({
             <div className="flex items-center gap-10">
               {/* Logo */}
               <div className="flex items-center gap-2.5 group cursor-pointer">
-                <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
+                <div className="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-sm shadow-green-900/20 group-hover:scale-105 transition-transform">
                   <span className="material-symbols-outlined text-[20px]">
                     eco
                   </span>

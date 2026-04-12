@@ -7,13 +7,13 @@ export default function Footer() {
                 <div className="mb-16 grid grid-cols-2 gap-12 md:grid-cols-4 lg:grid-cols-5">
                     <div className="col-span-2 lg:col-span-2">
                     <div className="mb-6 flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2463eb] text-white">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#166534] text-white">
                         <span className="material-symbols-outlined text-xl">
-                            
+                            eco
                         </span>
                         </div>
                         <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        UseMeAgain
+                        ReVolve
                         </span>
                     </div>
 
@@ -25,7 +25,7 @@ export default function Footer() {
                     <div className="flex gap-4">
                         {/* Social icons kept as inline SVG */}
                         <a
-                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#2463eb] dark:bg-slate-800 dark:text-slate-400"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#166534] dark:bg-slate-800 dark:text-slate-400"
                         href="#"
                         aria-label="Twitter"
                         >
@@ -38,7 +38,7 @@ export default function Footer() {
                         </a>
 
                         <a
-                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#2463eb] dark:bg-slate-800 dark:text-slate-400"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#166534] dark:bg-slate-800 dark:text-slate-400"
                         href="#"
                         aria-label="Instagram"
                         >
@@ -51,7 +51,7 @@ export default function Footer() {
                         </a>
 
                         <a
-                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#2463eb] dark:bg-slate-800 dark:text-slate-400"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors hover:text-[#166534] dark:bg-slate-800 dark:text-slate-400"
                         href="#"
                         aria-label="YouTube"
                         >
@@ -71,22 +71,22 @@ export default function Footer() {
                     </h5>
                     <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             How it Works
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Partner Program
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Sustainability API
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Enterprise Solutions
                         </a>
                         </li>
@@ -99,22 +99,22 @@ export default function Footer() {
                     </h5>
                     <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Our Mission
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Impact Report
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Careers
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Press Kit
                         </a>
                         </li>
@@ -127,17 +127,17 @@ export default function Footer() {
                     </h5>
                     <ul className="space-y-4 text-sm text-slate-500 dark:text-slate-400">
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Privacy Policy
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Terms of Service
                         </a>
                         </li>
                         <li>
-                        <a className="transition-colors hover:text-[#2463eb]" href="#">
+                        <a className="transition-colors hover:text-[#166534]" href="#">
                             Cookie Policy
                         </a>
                         </li>
