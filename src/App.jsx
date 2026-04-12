@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminLayout from './pages/AdminLayout'
 import HomePage from "./pages/homePage";
 import LoginPage from "./pages/loginPage";
-import RegisterPage from "./pages/registerPage";
 import UserPage from "./pages/userPage";
 import VerifyOTPPage from "./pages/verifyOTPPage";
 import { Toaster } from "react-hot-toast";
@@ -19,6 +18,7 @@ import RequestRecycling from "./pages/Products/RequestRecycling";
 import MyRequests from "./pages/Products/MyRequests";
 import ManageRequestPage from "./pages/provider/manageRequest";
 import EditProfilePage from "./pages/editProfile";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
