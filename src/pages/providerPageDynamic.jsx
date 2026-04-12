@@ -123,7 +123,13 @@ export default function ProviderDashboardPage() {
         };
     }, [activeTab, providerType]); 
 
-    if (loading) return <div>Loading provider data...</div>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-[#f6f6f8] flex items-center justify-center">
+                <div className="h-10 w-10 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+            </div>
+        );
+    }
     if (error) return <div>{error}</div>;
 
     return (

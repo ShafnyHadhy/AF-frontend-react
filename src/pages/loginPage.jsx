@@ -56,11 +56,11 @@ export default function LoginPage() {
       } else if (user.role === "provider") {
         navigate("/provider");
       } else if (user.role === "customer") {
-        navigate("/customer");
+        navigate("/");
       } else if (user.role === "recycler") {
         navigate("/provider");
       } else {
-        navigate("/my-products");
+        navigate("/");
       }
     } catch (err) {
       const message =
