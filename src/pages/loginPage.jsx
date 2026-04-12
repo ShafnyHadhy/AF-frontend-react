@@ -335,11 +335,11 @@ export default function LoginPage() {
 
       {/* Main Content */}
       <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
-        <div className="w-full max-w-[1200px]">
+        <div className="w-full max-w-300">
           <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
             <div className="md:col-span-4 relative p-6 text-white flex flex-col justify-between">
               {" "}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-center gap-3 mb-5">
                   {" "}
@@ -404,7 +404,7 @@ export default function LoginPage() {
                   {" "}
                   <div className="mb-4 text-center">
                     {" "}
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-2">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-linear-to-br from-cyan-500/20 to-blue-500/20 border border-white/20 mb-2">
                       {" "}
                       <svg
                         className="w-6 h-6 text-white"
@@ -490,7 +490,7 @@ export default function LoginPage() {
                     <button
                       onClick={login}
                       disabled={loading}
-                      className="mt-1 w-full h-10 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]" // Reduced mt-2 to mt-1, h-12 to h-10
+                      className="mt-1 w-full h-10 rounded-lg text-sm font-bold text-slate-900 bg-linear-to-r from-cyan-300 to-blue-300 hover:from-cyan-200 hover:to-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]" // Reduced mt-2 to mt-1, h-12 to h-10
                     >
                       {loading ? (
                         <span className="flex items-center justify-center gap-2">

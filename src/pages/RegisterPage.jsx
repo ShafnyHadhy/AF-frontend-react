@@ -240,7 +240,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen w-full bg-[url('/bbg.jpg')] bg-cover bg-center overflow-hidden bg-fixed">
       <nav className="w-full bg-black/40 backdrop-blur-md border-b border-white/10 fixed top-0 left-0 z-50">
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-300 mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div class="w-9 h-9 rounded-xl bg-[#166534] flex items-center justify-center text-white shadow-lg shadow-green-900/20 group-hover:scale-105 transition-transform">
               <span class="material-symbols-outlined text-[20px]">eco</span>
@@ -286,7 +286,7 @@ export default function RegisterPage() {
             </a>
             <button
               onClick={() => navigate("/login")}
-              className="px-5 py-2 rounded-lg bg-gradient-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
+              className="px-5 py-2 rounded-lg bg-linear-to-r from-cyan-500/20 to-green-500/20 border border-white/20 text-white text-sm font-semibold hover:from-cyan-500/30 hover:to-green-500/30 transition-all duration-200 hover:scale-105"
             >
               Login
             </button>
@@ -313,10 +313,10 @@ export default function RegisterPage() {
 
       {/* Main Content */}
       <div className="min-h-screen w-full bg-black/40 flex items-center justify-center px-6 py-8 pt-28">
-        <div className="w-full max-w-[1200px]">
+        <div className="w-full max-w-300">
           <div className="grid grid-cols-1 md:grid-cols-12 rounded-3xl overflow-hidden shadow-2xl border border-white/15 bg-white/10 backdrop-blur-xl">
             <div className="md:col-span-4 relative p-8 text-white flex flex-col justify-between">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-green-500/30 via-cyan-400/15 to-transparent pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-center gap-3 mb-8">
@@ -768,7 +768,7 @@ export default function RegisterPage() {
                   <button
                     onClick={handleRegister}
                     disabled={loading}
-                    className="mt-6 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-gradient-to-r from-cyan-300 to-green-300 hover:from-cyan-200 hover:to-green-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                    className="mt-6 w-full h-12 rounded-lg text-sm font-bold text-slate-900 bg-linear-to-r from-cyan-300 to-green-300 hover:from-cyan-200 hover:to-green-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">
